@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "/Users/ibohun/CLionProjects/doom-nukem/main.c" "/Users/ibohun/CLionProjects/doom-nukem/cmake-build-debug/CMakeFiles/doom_nukem.dir/main.c.o"
+  "/Users/ibohun/CLionProjects/42-doom-nukem/main.c" "/Users/ibohun/CLionProjects/42-doom-nukem/cmake-build-debug/CMakeFiles/doom_nukem.dir/main.c.o"
   )
 set(CMAKE_C_COMPILER_ID "AppleClang")
 
