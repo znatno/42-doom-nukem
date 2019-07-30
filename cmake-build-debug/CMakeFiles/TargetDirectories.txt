@@ -1,0 +1,3 @@
+/Users/ibohun/CLionProjects/doom-nukem/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/ibohun/CLionProjects/doom-nukem/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/ibohun/CLionProjects/doom-nukem/cmake-build-debug/CMakeFiles/doom_nukem.dir
