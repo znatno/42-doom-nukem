@@ -18,6 +18,30 @@
 # include <pthread.h>
 # include <math.h>
 # include "libft.h"
+# include <stdio.h>
+# include "/Users/ggavryly/.brew/Cellar/sdl2/2.0.9_1/include/SDL2/SDL.h"
+# define WIN_HEIGHT		1000
+# define WIN_WIDTH		1000
+# define ERROR			printf("Ah SHIT, here we go again")
 
+typedef struct	s_sdl
+{
+	SDL_DisplayMode		display_mode;
+	SDL_Window			*win;
+	SDL_Renderer		*renderer;
+}				t_sdl;
+
+typedef struct	s_sdl_tex
+{
+	SDL_Rect	text_rect;
+	u_int32_t	p_offset_x;
+	u_int32_t	p_offset_y;
+	u_int32_t	p_width_x;
+	u_int32_t	p_height_y;
+	u_int32_t	b_offset_x;
+	u_int32_t	b_offset_y;
+	u_int32_t	b_width_x;
+	u_int32_t	b_height_y;
+}				t_sdl_tex;
 
 #endif
