@@ -6,5 +6,5 @@ C_FLAGS = -g   -std=gnu99
 
 C_DEFINES = 
 
-C_INCLUDES = -I/Users/ggavryly/.brew/include/SDL2 -I/Users/ggavryly/CLionProjects/42-doom-nukem/./libft/include -I/Users/ggavryly/CLionProjects/42-doom-nukem/./src -I/Users/ggavryly/CLionProjects/42-doom-nukem/./include 
+C_INCLUDES = -I/Users/ibohun/.brew/include/SDL2 -I/Users/ibohun/CLionProjects/42-doom-nukem/./libft/include -I/Users/ibohun/CLionProjects/42-doom-nukem/./src -I/Users/ibohun/CLionProjects/42-doom-nukem/./include 
 

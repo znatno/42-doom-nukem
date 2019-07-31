@@ -1,8 +1,3 @@
-<<<<<<< HEAD
 .idea/
-<<<<<<< HEAD
-=======
-cmake-build-debug/
->>>>>>> GENA_GENA_GENA
-=======
->>>>>>> origin/GENA_GENA_GENA
+*.iml
+
