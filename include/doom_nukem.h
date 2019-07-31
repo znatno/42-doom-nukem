@@ -20,13 +20,14 @@
 # include "libft.h"
 # include <stdio.h>
 # include "SDL.h"
+# include "SDL_mixer.h"
+# include "SDL_image.h"
 # define WIN_HEIGHT		1000
 # define WIN_WIDTH		1000
 # define ERROR(x)		printf("Ah SHIT, here we go again %s", x)
 
 typedef struct			s_sdl_image
 {
-	SDL_Rect			text_rect;
 	u_int32_t			p_offset_x;
 	u_int32_t			p_offset_y;
 	u_int32_t			p_width;
@@ -40,9 +41,11 @@ typedef struct			s_sdl_image
 typedef struct			s_sdl_main
 {
 	SDL_DisplayMode		display_mode;
-	SDL_Window			*win;
+	SDL_Window			*window;
 	SDL_Renderer		*renderer;
-	SDL_
+	SDL_Surface			surface;
+	SDL_Texture			*texture;
+	SDL_Rect			text_rect;
 	t_sdl_image			*sdl_img;
 }						t_sdl_main;
 
