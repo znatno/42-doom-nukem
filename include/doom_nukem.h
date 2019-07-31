@@ -25,18 +25,7 @@
 # define WIN_HEIGHT		1000
 # define WIN_WIDTH		1000
 # define ERROR(x)		printf("Ah SHIT, here we go again %s", x)
-
-typedef struct			s_sdl_image
-{
-	u_int32_t			p_offset_x;
-	u_int32_t			p_offset_y;
-	u_int32_t			p_width;
-	u_int32_t			p_height;
-	u_int32_t			b_offset_x;
-	u_int32_t			b_offset_y;
-	u_int32_t			b_width;
-	u_int32_t			b_height;
-}						t_sdl_image;
+# define TEXTURE_SCALE	1.0
 
 typedef struct			s_sdl_main
 {
@@ -45,8 +34,8 @@ typedef struct			s_sdl_main
 	SDL_Renderer		*renderer;
 	SDL_Surface			surface;
 	SDL_Texture			*texture;
-	SDL_Rect			text_rect;
-	t_sdl_image			*sdl_img;
+	SDL_Rect			src_rect;
+	SDL_Rect			dst_rect;
 }						t_sdl_main;
 
 
