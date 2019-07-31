@@ -7,11 +7,11 @@ set(CMAKE_C_STANDARD 99)
 set(SDL2_INCLUDE_DIR ~/.brew/Cellar/sdl2/2.0.9_1/include/SDL2/)
 set(SDL2_LIBRARY ~/.brew/Cellar/sdl2/2.0.9_1/lib/)
 
-set(SDL_MIXER_INCLUDE_DIR ~/.brew/Cellar/sdl_mixer/1.2.12_3/include/SDL/)
-set(SDL_MIXER_LIBRARY ~/.brew/Cellar/sdl_mixer/1.2.12_3/lib/)
+set(SDL_MIXER_INCLUDE_DIR ~/.brew/Cellar/sdl2_mixer/2.0.4/include/SDL2/)
+set(SDL_MIXER_LIBRARY ~/.brew/Cellar/sdl2_mixer/2.0.4/lib/)
 
-set(SDL_IMAGE_INCLUDE_DIR ~/.brew/Cellar/sdl_image/1.2.12_7/include/SDL/)
-set(SDL_IMAGE_LIBRARY ~/.brew/Cellar/sdl_image/1.2.12_7/lib)
+set(SDL_IMAGE_INCLUDE_DIR ~/.brew/Cellar/sdl2_image/2.0.5/include/SDL2/)
+set(SDL_IMAGE_LIBRARY ~/.brew/Cellar/sdl2_image/2.0.5/lib/)
 
 set(LIBFT_INCLUDE_DIR ./libft/include/)
 set(LIBFT_LIBRARY ./libft/)
@@ -38,4 +38,4 @@ file(GLOB all
 
 add_executable(doom-nukem ${all})
 
-target_link_libraries(doom-nukem -lft -lSDL2 -lSDL_image -lSDL_mixer)
+target_link_libraries(doom-nukem -lft -lSDL2 -lSDL2_image -lSDL2_mixer)
