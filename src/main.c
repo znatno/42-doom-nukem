@@ -3,9 +3,9 @@
 int 	main(int ar, char **av)
 {
 	t_sdl_main		sdl;
-	t_sdl_image		img;
 
-	sdl.sdl_img = &img;
 	init_sdl(&sdl);
+	SDL_RenderCopy(sdl.renderer, sdl.texture, &sdl.src_rect, &sdl.dst_rect);
+	SDL_RenderPresent(sdl.renderer);
 	return (0);
 }

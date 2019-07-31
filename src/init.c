@@ -14,15 +14,15 @@
 
 void	init_sdl(t_sdl_main *sdl)
 {
-	sdl->sdl_img->p_offset_x = 0;
-	sdl->sdl_img->p_offset_y = 0;
-	sdl->sdl_img->p_width = 250;
-	sdl->sdl_img->p_height = 200;
+	sdl->src_rect.x = 0;
+	sdl->src_rect.y = 0;
+	sdl->src_rect.w = 250;
+	sdl->src_rect.h = 200;
 
-	sdl->sdl_img->b_offset_x = 0;
-	sdl->sdl_img->b_offset_y = 0;
-	sdl->sdl_img->b_width = sdl->display_mode.w;
-	sdl->sdl_img->b_height = sdl->display_mode.h;
+	sdl->dst_rect.x = 0;
+	sdl->dst_rect.y = 0;
+	sdl->dst_rect.w  = sdl->display_mode.w;
+	sdl->dst_rect.h = sdl->display_mode.h;
 
 	if (SDL_Init(SDL_INIT_EVERYTHING != 0))
 		ERROR("init");
