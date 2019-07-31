@@ -19,8 +19,8 @@ link_directories(${SDL2_LIBRARY}
                  ${SOURCE})
 
 file(GLOB all
-        "${INCLUDE}/*.h"
-        "${SOURCE}/*.c")
+        "${INCLUDE}*.h"
+        "${SOURCE}*.c")
 
 add_executable(doom-nukem ${all})
 

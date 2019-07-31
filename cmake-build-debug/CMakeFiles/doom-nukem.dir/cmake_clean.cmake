@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/doom-nukem.dir/src/init.c.o"
   "CMakeFiles/doom-nukem.dir/src/main.c.o"
   "doom-nukem.pdb"
   "doom-nukem"

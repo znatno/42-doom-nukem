@@ -88,7 +88,10 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="/Users/ggavryly/CLionProjects/42-doom-nukem/include/doom-nukem.h">
+		<Unit filename="/Users/ggavryly/CLionProjects/42-doom-nukem/include/doom_nukem.h">
+			<Option target="doom-nukem"/>
+		</Unit>
+		<Unit filename="/Users/ggavryly/CLionProjects/42-doom-nukem/src/init.c">
 			<Option target="doom-nukem"/>
 		</Unit>
 		<Unit filename="/Users/ggavryly/CLionProjects/42-doom-nukem/src/main.c">

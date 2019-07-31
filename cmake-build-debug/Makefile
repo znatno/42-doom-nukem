@@ -123,6 +123,33 @@ doom-nukem/fast:
 	$(MAKE) -f CMakeFiles/doom-nukem.dir/build.make CMakeFiles/doom-nukem.dir/build
 .PHONY : doom-nukem/fast
 
+src/init.o: src/init.c.o
+
+.PHONY : src/init.o
+
+# target to build an object file
+src/init.c.o:
+	$(MAKE) -f CMakeFiles/doom-nukem.dir/build.make CMakeFiles/doom-nukem.dir/src/init.c.o
+.PHONY : src/init.c.o
+
+src/init.i: src/init.c.i
+
+.PHONY : src/init.i
+
+# target to preprocess a source file
+src/init.c.i:
+	$(MAKE) -f CMakeFiles/doom-nukem.dir/build.make CMakeFiles/doom-nukem.dir/src/init.c.i
+.PHONY : src/init.c.i
+
+src/init.s: src/init.c.s
+
+.PHONY : src/init.s
+
+# target to generate assembly for a file
+src/init.c.s:
+	$(MAKE) -f CMakeFiles/doom-nukem.dir/build.make CMakeFiles/doom-nukem.dir/src/init.c.s
+.PHONY : src/init.c.s
+
 src/main.o: src/main.c.o
 
 .PHONY : src/main.o
@@ -159,6 +186,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
 	@echo "... doom-nukem"
+	@echo "... src/init.o"
+	@echo "... src/init.i"
+	@echo "... src/init.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

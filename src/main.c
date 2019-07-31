@@ -1,12 +1,12 @@
-#include <stdio.h>
-#include "/Users/ggavryly/.brew/Cellar/sdl2/2.0.9_1/include/SDL2/SDL.h"
+#include "doom_nukem.h"
 
 int 	main(int ar, char **av)
 {
-	SDL_DisplayMode	display_mode;
-	if (SDL_Init(SDL_INIT_EVERYTHING != 0))
-		printf("Ah SHIT, here we go again");
+	t_sdl_main		sdl;
+	t_sdl_image		img;
+
+	sdl.sdl_img = &img;
+	init_sdl(&sdl);
 	int request = SDL_GetDesktopDisplayMode(0, &display_mode);
-	printf("eg");
 	return (0);
 }
