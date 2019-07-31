@@ -19,7 +19,7 @@
 # include <math.h>
 # include "libft.h"
 # include <stdio.h>
-# include "/Users/ggavryly/.brew/Cellar/sdl2/2.0.9_1/include/SDL2/SDL.h"
+# include "/Users/vopolonc/.brew/Cellar/sdl2/2.0.9_1/include/SDL2/SDL.h"
 # define WIN_HEIGHT		1000
 # define WIN_WIDTH		1000
 # define ERROR			printf("Ah SHIT, here we go again")

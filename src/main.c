@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "/Users/ggavryly/.brew/Cellar/sdl2/2.0.9_1/include/SDL2/SDL.h"
+#include "/Users/vopolonc/.brew/Cellar/sdl2/2.0.9_1/include/SDL2/SDL.h"
 
 int 	main(int ar, char **av)
 {
