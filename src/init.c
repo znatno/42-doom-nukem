@@ -23,17 +23,15 @@ void	init_sdl(t_sdl_main *sdl)
 	sdl->sdl_img->b_offset_y = 0;
 	sdl->sdl_img->b_width = sdl->display_mode.w;
 	sdl->sdl_img->b_height = sdl->display_mode.h;
-	reherkph[ergkp[ergerpogregk]];
 
 	if (SDL_Init(SDL_INIT_EVERYTHING != 0))
 		ERROR("init");
 	int request = SDL_GetDesktopDisplayMode(0, &sdl->display_mode);
-	sdl->win = SDL_CreateWindow("Gena_test",0,0,WIN_WIDTH, WIN_HEIGHT,  SDL_WINDOW_SHOWN);
-	if (!sdl->win)
+	sdl->window = SDL_CreateWindow("Gena_test",0,0,WIN_WIDTH, WIN_HEIGHT,  SDL_WINDOW_SHOWN);
+	if (!sdl->window)
 		ERROR("win");
-	sdl->renderer = SDL_CreateRenderer(sdl->win, -1, SDL_RENDERER_ACCELERATED);
+	sdl->renderer = SDL_CreateRenderer(sdl->window, -1, SDL_RENDERER_ACCELERATED);
 	if (!sdl->renderer)
 		ERROR("renderer");
-
 }
 
