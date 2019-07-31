@@ -29,12 +29,12 @@ typedef struct			s_sdl_image
 	SDL_Rect			text_rect;
 	u_int32_t			p_offset_x;
 	u_int32_t			p_offset_y;
-	u_int32_t			p_width_x;
-	u_int32_t			p_height_y;
+	u_int32_t			p_width;
+	u_int32_t			p_height;
 	u_int32_t			b_offset_x;
 	u_int32_t			b_offset_y;
-	u_int32_t			b_width_x;
-	u_int32_t			b_height_y;
+	u_int32_t			b_width;
+	u_int32_t			b_height;
 }						t_sdl_image;
 
 typedef struct			s_sdl_main
@@ -42,8 +42,10 @@ typedef struct			s_sdl_main
 	SDL_DisplayMode		display_mode;
 	SDL_Window			*win;
 	SDL_Renderer		*renderer;
+	SDL_
 	t_sdl_image			*sdl_img;
 }						t_sdl_main;
+
 
 
 void					init_sdl(t_sdl_main *sdl);

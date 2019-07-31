@@ -7,6 +7,5 @@ int 	main(int ar, char **av)
 
 	sdl.sdl_img = &img;
 	init_sdl(&sdl);
-	int request = SDL_GetDesktopDisplayMode(0, &display_mode);
 	return (0);
 }
