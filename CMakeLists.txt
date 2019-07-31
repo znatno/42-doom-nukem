@@ -1,11 +1,9 @@
-<<<<<<< HEAD
 cmake_minimum_required(VERSION 3.14)
 project(doom_nukem C)
 
 set(CMAKE_C_STANDARD 99)
 
 add_executable(doom_nukem main.c)
-=======
 cmake_minimum_required(VERSION 3.13)
 project(doom-nukem C)
 
@@ -33,4 +31,3 @@ file(GLOB all
 add_executable(doom-nukem ${all})
 
 target_link_libraries(doom-nukem -lft -lSDL2)
->>>>>>> GENA_GENA_GENA
