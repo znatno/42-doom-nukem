@@ -48,10 +48,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/ibohun/CLionProjects/doom-nukem
+CMAKE_SOURCE_DIR = /Users/ggavryly/CLionProjects/doom-nukem
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/ibohun/CLionProjects/doom-nukem/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/ggavryly/CLionProjects/doom-nukem/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/ibohun/CLionProjects/doom-nukem/cmake-build-debug/CMakeFiles /Users/ibohun/CLionProjects/doom-nukem/cmake-build-debug/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/ggavryly/CLionProjects/doom-nukem/cmake-build-debug/CMakeFiles /Users/ggavryly/CLionProjects/doom-nukem/cmake-build-debug/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/ibohun/CLionProjects/doom-nukem/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/ggavryly/CLionProjects/doom-nukem/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -111,44 +111,44 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named doom_nukem
+# Target rules for targets named doom-nukem
 
 # Build rule for target.
-doom_nukem: cmake_check_build_system
-	$(MAKE) -f CMakeFiles/Makefile2 doom_nukem
-.PHONY : doom_nukem
+doom-nukem: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 doom-nukem
+.PHONY : doom-nukem
 
 # fast build rule for target.
-doom_nukem/fast:
-	$(MAKE) -f CMakeFiles/doom_nukem.dir/build.make CMakeFiles/doom_nukem.dir/build
-.PHONY : doom_nukem/fast
+doom-nukem/fast:
+	$(MAKE) -f CMakeFiles/doom-nukem.dir/build.make CMakeFiles/doom-nukem.dir/build
+.PHONY : doom-nukem/fast
 
-main.o: main.c.o
+src/main.o: src/main.c.o
 
-.PHONY : main.o
+.PHONY : src/main.o
 
 # target to build an object file
-main.c.o:
-	$(MAKE) -f CMakeFiles/doom_nukem.dir/build.make CMakeFiles/doom_nukem.dir/main.c.o
-.PHONY : main.c.o
+src/main.c.o:
+	$(MAKE) -f CMakeFiles/doom-nukem.dir/build.make CMakeFiles/doom-nukem.dir/src/main.c.o
+.PHONY : src/main.c.o
 
-main.i: main.c.i
+src/main.i: src/main.c.i
 
-.PHONY : main.i
+.PHONY : src/main.i
 
 # target to preprocess a source file
-main.c.i:
-	$(MAKE) -f CMakeFiles/doom_nukem.dir/build.make CMakeFiles/doom_nukem.dir/main.c.i
-.PHONY : main.c.i
+src/main.c.i:
+	$(MAKE) -f CMakeFiles/doom-nukem.dir/build.make CMakeFiles/doom-nukem.dir/src/main.c.i
+.PHONY : src/main.c.i
 
-main.s: main.c.s
+src/main.s: src/main.c.s
 
-.PHONY : main.s
+.PHONY : src/main.s
 
 # target to generate assembly for a file
-main.c.s:
-	$(MAKE) -f CMakeFiles/doom_nukem.dir/build.make CMakeFiles/doom_nukem.dir/main.c.s
-.PHONY : main.c.s
+src/main.c.s:
+	$(MAKE) -f CMakeFiles/doom-nukem.dir/build.make CMakeFiles/doom-nukem.dir/src/main.c.s
+.PHONY : src/main.c.s
 
 # Help Target
 help:
@@ -158,10 +158,10 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
-	@echo "... doom_nukem"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
+	@echo "... doom-nukem"
+	@echo "... src/main.o"
+	@echo "... src/main.i"
+	@echo "... src/main.s"
 .PHONY : help
 
 
