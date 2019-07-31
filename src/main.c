@@ -7,5 +7,6 @@ int 	main(int ar, char **av)
 	if (SDL_Init(SDL_INIT_EVERYTHING != 0))
 		printf("Ah SHIT, here we go again");
 	int request = SDL_GetDesktopDisplayMode(0, &display_mode);
-
+	printf("eg");
+	return (0);
 }
