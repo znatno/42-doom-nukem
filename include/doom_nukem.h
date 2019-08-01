@@ -14,14 +14,15 @@
 # define DOOM_NUKEM_H
 # include <unistd.h>
 # include <errno.h>
-# include <stdio.h>
-# include <pthread.h>
 # include <math.h>
-# include "libft.h"
+# include <pthread.h>
 # include <stdio.h>
+# include <stdbool.h>
+# include "libft.h"
 # include "SDL.h"
 # include "SDL_mixer.h"
 # include "SDL_image.h"
+
 # define WIN_HEIGHT		1000
 # define WIN_WIDTH		1000
 # define ERROR(x)		printf("Ah SHIT, here we go again %s", x)

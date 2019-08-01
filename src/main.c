@@ -1,6 +1,4 @@
-#include <stdio.h>
-#include <stdbool.h>
-#include "SDL.h"
+
 #include "doom_nukem.h"
 
 int		main(int ar, char **av)
