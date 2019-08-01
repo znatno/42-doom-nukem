@@ -41,5 +41,6 @@ typedef struct			s_sdl_main
 
 
 void					init_sdl(t_sdl_main *sdl);
+SDL_Texture				*load_texture(char *path, t_sdl_main *sdl);
 
 #endif
