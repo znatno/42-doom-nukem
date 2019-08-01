@@ -36,7 +36,7 @@ int		main(int ar, char **av)
 		while (SDL_PollEvent(&event))
 		{
 			if ((event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) || event.type == SDL_QUIT)
-				exit(0);
+				quit = true;
 			SDL_PumpEvents(); // обработчик событий.
 		}
 	}
