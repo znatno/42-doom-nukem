@@ -12,8 +12,14 @@ int 	main(int ar, char **av)
 							 NULL);
 	SDL_RenderCopy(sdl.renderer, sdl.texture, &sdl.src_rect, &sdl.dst_rect);
 	SDL_RenderPresent(sdl.renderer);
-	sdl.texture = IMG_Load("textures/2grivna.jpg");
-	SDL_Surface test;
-
+	sdl.surface = SDL_LoadBMP("textures/2grivna.jpg");
+	if (!sdl.surface)
+		ERROR("surface");
+	sdl.texture = SDL_CreateTextureFromSurface(sdl.renderer, sdl.surface);
+	if (!sdl.texture)
+		ERROR("texture");
+	SDL_FreeSurface(sdl.surface);
+	SDL_RenderClear(sdl.renderer);
+	SDL_RenderCopy(sdl.renderer, sdl.texture, NULL, NULL);
 	return (0);
 }
