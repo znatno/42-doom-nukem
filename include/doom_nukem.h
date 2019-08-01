@@ -19,29 +19,27 @@
 # include <math.h>
 # include "libft.h"
 # include <stdio.h>
-# include "/Users/vopolonc/.brew/Cellar/sdl2/2.0.9_1/include/SDL2/SDL.h"
+# include "SDL.h"
+# include "SDL_mixer.h"
+# include "SDL_image.h"
 # define WIN_HEIGHT		1000
 # define WIN_WIDTH		1000
-# define ERROR			printf("Ah SHIT, here we go again")
+# define ERROR(x)		printf("Ah SHIT, here we go again %s", x)
+# define TEXTURE_SCALE	1.0
 
-typedef struct	s_sdl
+typedef struct			s_sdl_main
 {
 	SDL_DisplayMode		display_mode;
-	SDL_Window			*win;
+	SDL_Window			*window;
 	SDL_Renderer		*renderer;
-}				t_sdl;
+	SDL_Surface			surface;
+	SDL_Texture			*texture;
+	SDL_Rect			src_rect;
+	SDL_Rect			dst_rect;
+}						t_sdl_main;
 
-typedef struct	s_sdl_tex
-{
-	SDL_Rect	text_rect;
-	u_int32_t	p_offset_x;
-	u_int32_t	p_offset_y;
-	u_int32_t	p_width_x;
-	u_int32_t	p_height_y;
-	u_int32_t	b_offset_x;
-	u_int32_t	b_offset_y;
-	u_int32_t	b_width_x;
-	u_int32_t	b_height_y;
-}				t_sdl_tex;
+
+
+void					init_sdl(t_sdl_main *sdl);
 
 #endif
