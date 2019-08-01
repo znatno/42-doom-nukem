@@ -1,3 +1,6 @@
+How to compile:
+gcc [main|portend|prender.c] -o sdltest `sdl-config --cflags --libs`
+
 Description from
 https://bisqwit.iki.fi/jutut/kuvat/programming_examples/portalrendering.html
 
