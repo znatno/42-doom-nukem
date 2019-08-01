@@ -16,3 +16,9 @@ void	error_box(char *title, char *sub_title, t_sdl_main *sdl)
 {
 	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, sub_title , sdl->window);
 }
+
+void	exit_sdl(t_sdl_main *sdl)
+{
+	SDL_DestroyWindow(sdl->window);
+	SDL_Quit();
+}
