@@ -35,9 +35,10 @@ int		main(int ar, char **av)
 	{
 		while (SDL_PollEvent(&event))
 		{
+			if ((event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) || event.type == SDL_QUIT)
+				exit(0);
 			SDL_PumpEvents(); // обработчик событий.
 		}
 	}
-	SDL_Delay(60000);
 	return (0);
 }
