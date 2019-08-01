@@ -40,5 +40,10 @@ int		main(int ar, char **av)
 			SDL_PumpEvents(); // обработчик событий.
 		}
 	}
+	// Close and destroy the window
+	SDL_DestroyWindow(sdl.window);
+
+	// Clean up
+	SDL_Quit();
 	return (0);
 }
