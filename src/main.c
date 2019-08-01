@@ -8,14 +8,13 @@ int 	main(int ar, char **av)
 
 
 	init_sdl(&sdl);
-	SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR,
-							 "Missing file",
-							 "File is missing. Please reinstall the program.",
-							 NULL);
-	SDL_RenderCopy(sdl.renderer, sdl.texture, &sdl.src_rect, &sdl.dst_rect);
+	if (!sdl.surface)
+		ERROR("surface");
+	sdl.texture = load_texture("../textures/2grivna.jpg", &sdl);
+	if (!sdl.texture)
+		ERROR("texture");
+	SDL_RenderClear(sdl.renderer);
+	SDL_RenderCopy(sdl.renderer, sdl.texture, NULL, NULL);
 	SDL_RenderPresent(sdl.renderer);
-	sdl.texture = IMG_Load("textures/2grivna.jpg");
-	SDL_Surface test;
-
 	return (0);
 }
