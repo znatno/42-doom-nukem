@@ -3,16 +3,6 @@
 #include "SDL.h"
 #include "doom_nukem.h"
 
-void	apply_surface(int x, int y, SDL_Texture *tex, SDL_Renderer *rend)
-{
-	SDL_Rect pos;
-
-	pos.x = x;
-	pos.y = y;
-	SDL_QueryTexture(tex, NULL, NULL, &pos.w, &pos.h);
-	SDL_RenderCopy(rend, tex, NULL, &pos);
-}
-
 int		main(int ar, char **av)
 {
 	t_sdl_main		sdl;
