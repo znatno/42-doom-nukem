@@ -16,14 +16,15 @@ int		main(int ar, char **av)
 
 	SDL_Event 		event;
 	bool 			quit;
-	const Uint8 *keyboardState = SDL_GetKeyboardState(NULL);
+	const Uint8 *keyboard_state;
 
+	keyboard_state = SDL_GetKeyboardState(NULL);
 	quit = false;
 	while(!quit)
 	{
 		while (SDL_PollEvent(&event))
 		{
-			if ((event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) || event.type == SDL_QUIT)
+			if (keyboard_state[SDL_SCANCODE_ESCAPE] || event.type == SDL_QUIT)
 				quit = true;
 			SDL_PumpEvents(); // обработчик событий.
 		}
