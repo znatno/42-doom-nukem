@@ -1,5 +1,5 @@
 #include <math.h>
-#include <SDL.h>
+#include "SDL.h"
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
