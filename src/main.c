@@ -3,16 +3,6 @@
 #include "SDL.h"
 #include "doom_nukem.h"
 
-void	apply_surface(int x, int y, SDL_Texture *tex, SDL_Renderer *rend)
-{
-	SDL_Rect pos;
-
-	pos.x = x;
-	pos.y = y;
-	SDL_QueryTexture(tex, NULL, NULL, &pos.w, &pos.h);
-	SDL_RenderCopy(rend, tex, NULL, &pos);
-}
-
 int		main(int ar, char **av)
 {
 	t_sdl_main		sdl;
@@ -35,9 +25,15 @@ int		main(int ar, char **av)
 	{
 		while (SDL_PollEvent(&event))
 		{
+			if ((event.key.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE) || event.type == SDL_QUIT)
+				quit = true;
 			SDL_PumpEvents(); // обработчик событий.
 		}
 	}
-	SDL_Delay(60000);
+	// Close and destroy the window
+	SDL_DestroyWindow(sdl.window);
+
+	// Clean up
+	SDL_Quit();
 	return (0);
 }
