@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-gcc main.c -o engine `sdl-config --cflags --libs`
+gcc -O3 main.c -o engine `sdl-config --cflags --libs`

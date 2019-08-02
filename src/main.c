@@ -20,6 +20,7 @@ static struct sector
 	signed char *neighbors;           // Each edge may have a corresponding neighboring sector
 	unsigned npoints;                 // How many vertexes there are
 } *sectors = NULL;
+
 static unsigned NumSectors = 0;
 
 /* Player: location */
@@ -141,7 +142,11 @@ static void vline(int x, int y1, int y2, int top, int middle, int bottom)
  */
 static void MovePlayer(float dx, float dy)
 {
-	float px = player.where.x, py = player.where.y;
+	float px;
+	float py;
+
+	px = player.where.x;
+	py = player.where.y;
 	/* Check if this movement crosses one of this sector's edges
 	 * that have a neighboring sector on the other side.
 	 * Because the edge vertices of each sector are defined in
