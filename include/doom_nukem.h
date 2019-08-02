@@ -12,6 +12,7 @@
 
 #ifndef DOOM_NUKEM_H
 # define DOOM_NUKEM_H
+
 # include <unistd.h>
 # include <errno.h>
 # include <math.h>

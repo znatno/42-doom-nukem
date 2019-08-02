@@ -1,11 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include "SDL.h"
+#include "sdl1.h"
 
-/* Define window size */
-#define W 608
-#define H 480
+/* VOPOLONC PART START */
 /* Define various vision related constants */
 #define EyeHeight  6    // Camera height from floor when standing
 #define DuckHeight 2.5  // And when crouching
@@ -58,7 +53,6 @@ static struct player
     / vxs((x1)-(x2), (y1)-(y2), (x3)-(x4), (y3)-(y4)), \
     vxs(vxs(x1,y1, x2,y2), (y1)-(y2), vxs(x3,y3, x4,y4), (y3)-(y4)) \
     / vxs((x1)-(x2), (y1)-(y2), (x3)-(x4), (y3)-(y4))}) \
-
 
 static void LoadData()
 {
@@ -121,7 +115,9 @@ static void UnloadData()
 	sectors = NULL;
 	NumSectors = 0;
 }
+/* VOPOLONC PART END */
 
+/* IBOHUN PART 1 START */
 static SDL_Surface *surface = NULL;
 
 /* vline: Draw a vertical line on screen, with a different color pixel in top & bottom */
@@ -171,7 +167,9 @@ static void MovePlayer(float dx, float dy)
 	player.anglesin = sinf(player.angle);
 	player.anglecos = cosf(player.angle);
 }
+/* IBOHUN PART 1 END */
 
+/* GGAVRYLY PART START */
 static void DrawScreen()
 {
 	enum
@@ -335,7 +333,9 @@ static void DrawScreen()
 		++renderedsectors[now.sectorno];
 	} while (head != tail); // render any other queued sectors
 }
+/* GGAVRYLY PART END */
 
+/* IBOHUN (& somebody else) PART 2 START */
 int main()
 {
 	LoadData();
@@ -510,3 +510,4 @@ int main()
 	SDL_Quit();
 	return 0;
 }
+/* IBOHUN (& somebody else) PART 2 END */
