@@ -1,4 +1,5 @@
 /* My Strange Includes Start */
+
 #include "SDL_main.h"
 #include "SDL_stdinc.h"
 #include "SDL_audio.h"
@@ -14,12 +15,14 @@
 #include "SDL_timer.h"
 #include "SDL_video.h"
 #include "SDL_version.h"
+
 /* End */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include "SDL.h"
+
 
 /* Define window size */
 #define W 608
