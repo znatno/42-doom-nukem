@@ -36,6 +36,11 @@ file(GLOB all
         "${INCLUDE}*.h"
         "${SOURCE}*.c")
 
-add_executable(doom-nukem ${all})
+#include_directories(~/.brew/Cellar/sdl/1.2.15_1/include/SDL/)
 
+#link_directories(~/.brew/Cellar/sdl/1.2.15_1/lib/)
+
+add_executable(doom-nukem ${all} src/sdl1.h)
+
+#target_link_libraries(doom-nukem -lSDL)
 target_link_libraries(doom-nukem -lft -lSDL2 -lSDL2_image -lSDL2_mixer)
