@@ -232,7 +232,7 @@ static int LoadTexture(void)
     if(lseek(fd, 0, SEEK_END) == 0)
     {
 InitializeTextures:;
-        // Initialize by loading textures
+        // Initialize by loading bin
         #define LoadTexture(filename, name) \
             Texture* name = NULL; do { \
                 FILE* fp = fopen(filename, "rb"); \
@@ -275,7 +275,7 @@ InitializeTextures:;
             SafeWrite(fd, &dummylightmap, sizeof(Texture)); \
             SafeWrite(fd, &dummylightmap, sizeof(Texture)); } while(0)
 
-        printf("Initializing textures... ");
+        printf("Initializing bin... ");
         lseek(fd, 0, SEEK_SET);
         for(unsigned n=0; n<NumSectors; ++n)
         {
@@ -303,7 +303,7 @@ InitializeTextures:;
     char* texturedata = mmap(NULL, filesize, PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
     if(!texturedata) perror("mmap");
 
-    printf("Loading textures\n");
+    printf("Loading bin\n");
     off_t pos = 0;
     for(unsigned n=0; n<NumSectors; ++n)
     {
@@ -1771,7 +1771,7 @@ static void DrawScreen(void)
                 // This involves a few division calculations _per_ pixel, and would have been way
                 // too slow for the platforms targeted by Doom and Duke3D.
                 // In any case, there's no neat way to do it.
-                // It is why the SNES port of Doom didn't do floor & ceiling textures at all.
+                // It is why the SNES port of Doom didn't do floor & ceiling bin at all.
                 for(int y=ytop[x]; y<=ybottom[x]; ++y)
                 {
                     if(y >= cya && y <= cyb) { y = cyb; continue; }
