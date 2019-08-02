@@ -93,7 +93,7 @@ static void LoadData()
 				sect->vertex = malloc((m + 1) * sizeof(*sect->vertex));
 				for (n = 0; n < m; ++n) sect->neighbors[n] = num[m + n];
 				for (n = 0; n < m; ++n)
-					sect->vertex[n + 1] = vert[num[n]]; // TODO: Range checking
+					sect->vertex[n + 1] = vert[num[n]]; // T0D0: Range checking
 				sect->vertex[0] = sect->vertex[m]; // Ensure the vertexes form a loop
 				free(num);
 				break;
@@ -101,7 +101,7 @@ static void LoadData()
 				float angle;
 				sscanf(ptr += n, "%f %f %f %d", &v.x, &v.y, &angle, &n);
 				player = (struct player) {{v.x, v.y, 0}, {0, 0, 0}, angle, 0, 0,
-										  0, n}; // TODO: Range checking
+										  0, n}; // T0D0: Range checking
 				player.where.z = sectors[player.sector].floor + EyeHeight;
 		}
 	fclose(fp);
@@ -122,18 +122,24 @@ static void UnloadData()
 static SDL_Surface *surface = NULL;
 
 /* vline: Draw a vertical line on screen, with a different color pixel in top & bottom */
-static void vline(int x, int y1, int y2, int top, int middle, int bottom)
+static void vline(int x, int y[2], int top, int middle, int bottom)
 {
-	int *pix = (int *) surface->pixels;
-	y1 = clamp(y1, 0, H - 1);
-	y2 = clamp(y2, 0, H - 1);
-	if (y2 == y1)
-		pix[y1 * W + x] = middle;
-	else if (y2 > y1)
+	//todo: needs to norm 3 colors into struct or smthing else
+	int *pix;
+	int i;
+
+	pix = (int *) surface->pixels;
+	y[0] = clamp(y[0], 0, H - 1);
+	y[1] = clamp(y[1], 0, H - 1);
+	if (y[1] == y[0])
+		pix[y[0] * W + x] = middle;
+	else if (y[1] > y[0])
 	{
-		pix[y1 * W + x] = top;
-		for (int y = y1 + 1; y < y2; ++y) pix[y * W + x] = middle;
-		pix[y2 * W + x] = bottom;
+		pix[y[0] * W + x] = top;
+		i = y[0] + 1;
+		while (++i < y[1])
+			pix[i * W + x] = middle;
+		pix[y[1] * W + x] = bottom;
 	}
 }
 
