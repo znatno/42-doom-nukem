@@ -122,24 +122,24 @@ static void UnloadData()
 static SDL_Surface *surface = NULL;
 
 /* vline: Draw a vertical line on screen, with a different color pixel in top & bottom */
-static void vline(int x, int y[2], int top, int middle, int bottom)
+static void vline(int x, int y1, int y2, int top, int middle, int bottom)
 {
 	//todo: needs to norm 3 colors into struct or smthing else
 	int *pix;
 	int i;
 
 	pix = (int *) surface->pixels;
-	y[0] = clamp(y[0], 0, H - 1);
-	y[1] = clamp(y[1], 0, H - 1);
-	if (y[1] == y[0])
-		pix[y[0] * W + x] = middle;
-	else if (y[1] > y[0])
+	y1 = clamp(y1, 0, H - 1);
+	y2 = clamp(y2, 0, H - 1);
+	if (y2 == y1)
+		pix[y1 * W + x] = middle;
+	else if (y2 > y1)
 	{
-		pix[y[0] * W + x] = top;
-		i = y[0] + 1;
-		while (++i < y[1])
-			pix[i * W + x] = middle;
-		pix[y[1] * W + x] = bottom;
+		pix[y1 * W + x] = top;
+		i = y1 + 1;
+		while (i < y2)
+			pix[i++ * W + x] = middle;
+		pix[y2 * W + x] = bottom;
 	}
 }
 
@@ -148,8 +148,9 @@ static void vline(int x, int y[2], int top, int middle, int bottom)
  */
 static void MovePlayer(float dx, float dy)
 {
-	float px;
-	float py;
+	float	px;
+	float	py;
+	int		s;
 
 	px = player.where.x;
 	py = player.where.y;
@@ -161,16 +162,17 @@ static void MovePlayer(float dx, float dy)
 	 */
 	const struct sector *const sect = &sectors[player.sector];
 	const struct xy *const vert = sect->vertex;
-	for (unsigned s = 0; s < sect->npoints; ++s)
-		if (sect->neighbors[s] >= 0
-			&&
+
+	s = 0;
+	while (++s < sect->npoints)
+		if (sect->neighbors[s] >= 0 &&
 			IntersectBox(px, py, px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
-						 vert[s + 1].x, vert[s + 1].y)
-			&& PointSide(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
-						 vert[s + 1].x, vert[s + 1].y) < 0)
+						 vert[s + 1].x, vert[s + 1].y) &&
+			PointSide(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
+					vert[s + 1].x, vert[s + 1].y) < 0)
 		{
 			player.sector = sect->neighbors[s];
-			break;
+			break ;
 		}
 
 	player.where.x += dx;
@@ -356,8 +358,9 @@ int main()
 	SDL_EnableKeyRepeat(150, 30);
 	SDL_ShowCursor(SDL_DISABLE);
 
-	int wsad[4] = {0, 0, 0,
-				   0}, ground = 0, falling = 1, moving = 0, ducking = 0;
+	int wsad[4] = {0, 0, 0, 0}, \
+	ground = 0, falling = 1, moving = 0, ducking = 0;
+
 	float yaw = 0;
 	for (;;)
 	{
