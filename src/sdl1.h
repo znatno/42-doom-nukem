@@ -24,7 +24,7 @@
 #include "SDL.h"
 
 /* Define window size */
-#define W 608
-#define H 480
+#define W 1280
+#define H 800
 
 #endif
