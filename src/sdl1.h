@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include "SDL.h"
-
+#include "libft.h"
 /* Define window size */
 #define W 608
 #define H 320
@@ -151,7 +151,7 @@ typedef struct	s_calc_tmp_int
 {
 	int 		y_top[W];
 	int 		y_bottom[W];
-	int 		*rendered_sectors;
+	int 		*renderedsectors;
 	int 		x1;
 	int 		x2;
 	int 		neightbor;
@@ -196,6 +196,7 @@ typedef struct		s_calc_tmp_struct
 	struct xy			i2;
 	t_item				*head;
 	t_item				*tail;
+	struct sector		*sectore;
 }					t_cacl_tmp_struct;
 
 
