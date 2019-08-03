@@ -2,58 +2,6 @@
 
 /* VOPOLONC PART START */
 /* Define various vision related constants */
-#define EyeHeight  6    // Camera height from floor when standing
-#define DuckHeight 2.5  // And when crouching
-#define HeadMargin 1    // How much room there is above camera before the head hits the ceiling
-#define KneeHeight 2    // How tall obstacles the player can simply walk over without jumping
-#define hfov (0.73f*H)  // Affects the horizontal field of vision
-#define vfov (.2f*H)    // Affects the vertical field of vision
-
-/* Sectors: Floor and ceiling height; list of edge vertices and neighbors */
-static struct sector
-{
-	float floor, ceil;
-	struct xy
-	{
-		float x, y;
-	} *vertex; // Each vertex has an x and y coordinate
-	signed char *neighbors;           // Each edge may have a corresponding neighboring sector
-	unsigned npoints;                 // How many vertexes there are
-} *sectors = NULL;
-
-static unsigned NumSectors = 0;
-
-/* Player: location */
-static struct player
-{
-	struct xyz
-	{
-		float x, y, z;
-	} where,      // Current position
-			velocity;   // Current motion vector
-	float angle, anglesin, anglecos, yaw;   // Looking towards (and sin() and cos() thereof)
-	unsigned sector;                        // Which sector the player is currently in
-} player;
-
-// Utility functions. Because C doesn't have templates,
-// we use the slightly less safe preprocessor macros to
-// implement these functions that work with multiple types.
-#define min(a, b)             (((a) < (b)) ? (a) : (b)) // min: Choose smaller of two scalars.
-#define max(a, b)             (((a) > (b)) ? (a) : (b)) // max: Choose greater of two scalars.
-#define clamp(a, mi, ma)      min(max(a,mi),ma)         // clamp: Clamp value into set range.
-#define vxs(x0, y0, x1, y1)    ((x0)*(y1) - (x1)*(y0))   // vxs: Vector cross product
-// Overlap:  Determine whether the two number ranges overlap.
-#define Overlap(a0, a1, b0, b1) (min(a0,a1) <= max(b0,b1) && min(b0,b1) <= max(a0,a1))
-// IntersectBox: Determine whether two 2D-boxes intersect.
-#define IntersectBox(x0, y0, x1, y1, x2, y2, x3, y3) (Overlap(x0,x1,x2,x3) && Overlap(y0,y1,y2,y3))
-// PointSide: Determine which side of a line the point is on. Return value: <0, =0 or >0.
-#define PointSide(px, py, x0, y0, x1, y1) vxs((x1)-(x0), (y1)-(y0), (px)-(x0), (py)-(y0))
-// Intersect: Calculate the point of intersection between two lines.
-#define Intersect(x1, y1, x2, y2, x3, y3, x4, y4) ((struct xy) { \
-    vxs(vxs(x1,y1, x2,y2), (x1)-(x2), vxs(x3,y3, x4,y4), (x3)-(x4)) \
-    / vxs((x1)-(x2), (y1)-(y2), (x3)-(x4), (y3)-(y4)), \
-    vxs(vxs(x1,y1, x2,y2), (y1)-(y2), vxs(x3,y3, x4,y4), (y3)-(y4)) \
-    / vxs((x1)-(x2), (y1)-(y2), (x3)-(x4), (y3)-(y4))}) \
 
 static void LoadData()
 {
@@ -119,27 +67,20 @@ static void UnloadData()
 /* VOPOLONC PART END */
 
 /* IBOHUN PART 1 START */
-static SDL_Surface *surface = NULL;
 
 /* vline: Draw a vertical line on screen, with a different color pixel in top & bottom */
-static void vline(int x, int y1, int y2, int top, int middle, int bottom)
+static void vline(int x, int y1, int y2, int color)
 {
-	//todo: needs to norm 3 colors into struct or smthing else
-	int *pix;
-	int i;
-
-	pix = (int *) surface->pixels;
+	int *pix = (int *) surface->pixels;
 	y1 = clamp(y1, 0, H - 1);
 	y2 = clamp(y2, 0, H - 1);
 	if (y2 == y1)
-		pix[y1 * W + x] = middle;
+		pix[y1 * W + x] = BLACK_COLOR; //верхня і нижня межа екрану
 	else if (y2 > y1)
 	{
-		pix[y1 * W + x] = top;
-		i = y1 + 1;
-		while (i < y2)
-			pix[i++ * W + x] = middle;
-		pix[y2 * W + x] = bottom;
+		pix[y1 * W + x] = SEC_COLOR; //проміжок секторів
+		for (int y = y1 + 1; y < y2; ++y) pix[y * W + x] = color;
+		pix[y2 * W + x] = color;
 	}
 }
 
@@ -148,12 +89,7 @@ static void vline(int x, int y1, int y2, int top, int middle, int bottom)
  */
 static void MovePlayer(float dx, float dy)
 {
-	float	px;
-	float	py;
-	int		s;
-
-	px = player.where.x;
-	py = player.where.y;
+	float px = player.where.x, py = player.where.y;
 	/* Check if this movement crosses one of this sector's edges
 	 * that have a neighboring sector on the other side.
 	 * Because the edge vertices of each sector are defined in
@@ -162,17 +98,16 @@ static void MovePlayer(float dx, float dy)
 	 */
 	const struct sector *const sect = &sectors[player.sector];
 	const struct xy *const vert = sect->vertex;
-
-	s = 0;
-	while (++s < sect->npoints)
-		if (sect->neighbors[s] >= 0 &&
+	for (unsigned s = 0; s < sect->npoints; ++s)
+		if (sect->neighbors[s] >= 0
+			&&
 			IntersectBox(px, py, px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
-						 vert[s + 1].x, vert[s + 1].y) &&
-			PointSide(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
-					vert[s + 1].x, vert[s + 1].y) < 0)
+						 vert[s + 1].x, vert[s + 1].y)
+			&& PointSide(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
+						 vert[s + 1].x, vert[s + 1].y) < 0)
 		{
 			player.sector = sect->neighbors[s];
-			break ;
+			break;
 		}
 
 	player.where.x += dx;
@@ -304,9 +239,9 @@ static void DrawScreen()
 						yb, ytop[x], ybottom[x]); // bottom
 
 				/* Render ceiling: everything above this sector's ceiling height. */
-				vline(x, ytop[x], cya - 1, 0x111111, 0x222222, 0x111111);
+				vline(x, ytop[x], cya - 1, 0x222222);
 				/* Render floor: everything below this sector's floor height. */
-				vline(x, cyb + 1, ybottom[x], 0x0000FF, 0x0000AA, 0x0000FF);
+				vline(x, cyb + 1, ybottom[x], 0x0000AA);
 
 				/* Is there another sector behind this edge? */
 				if (neighbor >= 0)
@@ -319,20 +254,19 @@ static void DrawScreen()
 					/* If our ceiling is higher than their ceiling, render upper wall */
 					unsigned r1 = 0x010101 * (255 - z), r2 =
 							0x040007 * (31 - z / 8);
-					vline(x, cya, cnya - 1, 0, x == x1 || x == x2 ? 0 : r1,
-						  0); // Between our and their ceiling
+					vline(x, cya, cnya - 1, x == x1 || x == x2 ? SEC_COLOR : r1); //
+					// Between our and their ceiling
 					ytop[x] = clamp(max(cya, cnya), ytop[x], H -
 															 1);   // Shrink the remaining window below these ceilings
 					/* If our floor is lower than their floor, render bottom wall */
-					vline(x, cnyb + 1, cyb, 0, x == x1 || x == x2 ? 0 : r2,
-						  0); // Between their and our floor
+					vline(x, cnyb + 1, cyb, x == x1 || x == x2 ? SEC_COLOR : r2); // Between their and our floor
 					ybottom[x] = clamp(min(cyb, cnyb), 0,
 									   ybottom[x]); // Shrink the remaining window above these floors
 				} else
 				{
 					/* There's no neighbor. Render wall from top (cya = ceiling level) to bottom (cyb = floor level). */
 					unsigned r = 0x010101 * (255 - z);
-					vline(x, cya, cyb, 0, x == x1 || x == x2 ? 0 : r, 0);
+					vline(x, cya, cyb, x == x1 || x == x2 ? SEC_COLOR : r);
 				}
 			}
 			/* Schedule the neighboring sector for rendering within the window formed by this wall. */
