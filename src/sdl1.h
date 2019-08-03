@@ -1,7 +1,6 @@
 #ifndef DOOM_NUKEM_SDL1_H
 #define DOOM_NUKEM_SDL1_H
 
-/* Strange Includes Start */
 #include "SDL_main.h"
 #include "SDL_stdinc.h"
 #include "SDL_audio.h"
@@ -16,12 +15,10 @@
 #include "SDL_timer.h"
 #include "SDL_video.h"
 #include "SDL_version.h"
-/* End */
-
+#include "SDL.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "SDL.h"
 
 /* Define window size */
 #define W 608
@@ -31,11 +28,11 @@
 #define DuckHeight 2.5  // And when crouching
 #define HeadMargin 1    // How much room there is above camera before the head hits the ceiling
 #define KneeHeight 2    // How tall obstacles the player can simply walk over without jumping
-#define hfov (0.73f*H)  // Affects the horizontal field of vision
-#define vfov (.2f*H)    // Affects the vertical field of vision
+#define hfov (0.73f * H)  // Affects the horizontal field of vision
+#define vfov (.2f * H)    // Affects the vertical field of vision
 
 /* Sectors: Floor and ceiling height; list of edge vertices and neighbors */
-static struct sector
+static struct sector //TODO: DELETE THIS
 {
 	float floor, ceil;
 	struct xy
@@ -46,36 +43,36 @@ static struct sector
 	unsigned npoints;                 // How many vertexes there are
 } *sectors = NULL;
 
-static unsigned NumSectors = 0;
+static unsigned NumSectors = 0; //TODO: DELETE THIS
 
 //Coordinates
-typedef struct	s_xyz1
+typedef struct	s_xyz
 {
 	float	x;
 	float	y;
 	float	z;
-}				t_xyz1;
+}				t_xyz;
 
-typedef struct	s_xy1
+typedef struct	s_xy
 {
 	float	x;
 	float	y;
-}				t_xy1;
+}				t_xy;
 
 // Player: location
-typedef struct	s_player1
+typedef struct	s_player
 {
-	t_xyz1		where;		// Current position
-	t_xyz1		velocity;	// Current motion vector
+	t_xyz		where;		// Current position
+	t_xyz		velocity;	// Current motion vector
 	float		angle;
 	float		anglesin;
 	float		anglecos;
 	float		yaw;		// Looking towards (and sin() and cos() thereof)
 	unsigned	sector;		// Which sector the player is currently in
-}				t_player1;
+}				t_player;
 
 /* Player: location */
-struct player
+struct player //TODO: DELETE THIS
 {
 	struct xyz
 	{
@@ -92,6 +89,7 @@ struct player
 // Utility functions. Because C doesn't have templates,
 // we use the slightly less safe preprocessor macros to
 // implement these functions that work with multiple types.
+//TODO: DELETE ALL OF THESE — MAKE FUNCTIONS
 #define min(a, b)             (((a) < (b)) ? (a) : (b)) // min: Choose smaller of two scalars.
 #define max(a, b)             (((a) > (b)) ? (a) : (b)) // max: Choose greater of two scalars.
 #define clamp(a, mi, ma)      min(max(a,mi),ma)         // clamp: Clamp value into set range.

@@ -3,7 +3,7 @@
 /* VOPOLONC PART START */
 /* Define various vision related constants */
 
-static void LoadData()
+static void LoadData(t_player *plr)
 {
 	FILE *fp = fopen("map-clear.txt", "rt");
 	if (!fp)
@@ -48,9 +48,9 @@ static void LoadData()
 			case 'p':; // player
 				float angle;
 				sscanf(ptr += n, "%f %f %f %d", &v.x, &v.y, &angle, &n);
-				player = (struct player) {{v.x, v.y, 0}, {0, 0, 0}, angle, 0, 0,
-										  0, n}; // T0D0: Range checking
-				player.where.z = sectors[player.sector].floor + EyeHeight;
+				*plr = (t_player){{v.x, v.y, 0}, {0, 0, 0}, angle, 0, 0, 0, n};
+				// T0D0: Range checking
+				plr->where.z = sectors[plr->sector].floor + EyeHeight;
 		}
 	fclose(fp);
 	free(vert);
@@ -87,17 +87,22 @@ static void vline(int x, int y1, int y2, int color)
 /* MovePlayer(dx,dy): Moves the player by (dx,dy) in the map, and
  * also updates their anglesin/anglecos/sector properties properly.
  */
-static void MovePlayer(float dx, float dy)
+static void MovePlayer(t_player *plr, float dx, float dy)
 {
-	float px = player.where.x, py = player.where.y;
+	float	px;
+	float	py;
+
+	px = plr->where.x;
+	py = plr->where.y;
 	/* Check if this movement crosses one of this sector's edges
 	 * that have a neighboring sector on the other side.
 	 * Because the edge vertices of each sector are defined in
 	 * clockwise order, PointSide will always return -1 for a point
 	 * that is outside the sector and 0 or 1 for a point that is inside.
 	 */
-	const struct sector *const sect = &sectors[player.sector];
+	const struct sector *const sect = &sectors[plr->sector];
 	const struct xy *const vert = sect->vertex;
+
 	for (unsigned s = 0; s < sect->npoints; ++s)
 		if (sect->neighbors[s] >= 0
 			&&
@@ -106,19 +111,19 @@ static void MovePlayer(float dx, float dy)
 			&& PointSide(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
 						 vert[s + 1].x, vert[s + 1].y) < 0)
 		{
-			player.sector = sect->neighbors[s];
+			plr->sector = sect->neighbors[s];
 			break;
 		}
 
-	player.where.x += dx;
-	player.where.y += dy;
-	player.anglesin = sinf(player.angle);
-	player.anglecos = cosf(player.angle);
+	plr->where.x += dx;
+	plr->where.y += dy;
+	plr->anglesin = sinf(plr->angle);
+	plr->anglecos = cosf(plr->angle);
 }
 /* IBOHUN PART 1 END */
 
 /* GGAVRYLY PART START */
-static void DrawScreen()
+static void DrawScreen(t_player *plr)
 {
 	enum
 	{
@@ -133,7 +138,7 @@ static void DrawScreen()
 	for (unsigned n = 0; n < NumSectors; ++n) renderedsectors[n] = 0;
 
 	/* Begin whole-screen rendering from where the player is. */
-	*head = (struct item) {player.sector, 0, W - 1};
+	*head = (struct item) {plr->sector, 0, W - 1};
 	if (++head == queue + MaxQueue) head = queue;
 
 	do
@@ -150,12 +155,12 @@ static void DrawScreen()
 		for (unsigned s = 0; s < sect->npoints; ++s)
 		{
 			/* Acquire the x,y coordinates of the two endpoints (vertices) of this edge of the sector */
-			float vx1 = sect->vertex[s + 0].x - player.where.x, vy1 =
-					sect->vertex[s + 0].y - player.where.y;
-			float vx2 = sect->vertex[s + 1].x - player.where.x, vy2 =
-					sect->vertex[s + 1].y - player.where.y;
-			/* Rotate them around the player's view */
-			float pcos = player.anglecos, psin = player.anglesin;
+			float vx1 = sect->vertex[s + 0].x - plr->where.x, vy1 =
+					sect->vertex[s + 0].y - plr->where.y;
+			float vx2 = sect->vertex[s + 1].x - plr->where.x, vy2 =
+					sect->vertex[s + 1].y - plr->where.y;
+			/* Rotate them around the plr's view */
+			float pcos = plr->anglecos, psin = plr->anglesin;
 			float tx1 = vx1 * psin - vy1 * pcos, tz1 = vx1 * pcos + vy1 * psin;
 			float tx2 = vx2 * psin - vy2 * pcos, tz2 = vx2 * pcos + vy2 * psin;
 			/* Is the wall at least partially in front of the player? */
@@ -204,18 +209,18 @@ static void DrawScreen()
 			if (x1 >= x2 || x2 < now.sx1 || x1 > now.sx2)
 				continue; // Only render if it's visible
 			/* Acquire the floor and ceiling heights, relative to where the player's view is */
-			float yceil = sect->ceil - player.where.z;
-			float yfloor = sect->floor - player.where.z;
+			float yceil = sect->ceil - plr->where.z;
+			float yfloor = sect->floor - plr->where.z;
 			/* Check the edge type. neighbor=-1 means wall, other=boundary between two sectors. */
 			int neighbor = sect->neighbors[s];
 			float nyceil = 0, nyfloor = 0;
 			if (neighbor >= 0) // Is another sector showing through this portal?
 			{
-				nyceil = sectors[neighbor].ceil - player.where.z;
-				nyfloor = sectors[neighbor].floor - player.where.z;
+				nyceil = sectors[neighbor].ceil - plr->where.z;
+				nyfloor = sectors[neighbor].floor - plr->where.z;
 			}
 			/* Project our ceiling & floor heights into screen coordinates (Y coordinate) */
-#define Yaw(y, z) (y + z*player.yaw)
+#define Yaw(y, z) (y + z*plr->yaw)
 			int y1a = H / 2 - (int) (Yaw(yceil, tz1) * yscale1), y1b =
 					H / 2 - (int) (Yaw(yfloor, tz1) * yscale1);
 			int y2a = H / 2 - (int) (Yaw(yceil, tz2) * yscale2), y2b =
@@ -285,7 +290,9 @@ static void DrawScreen()
 /* IBOHUN (& somebody else) PART 2 START */
 int main()
 {
-	LoadData();
+	t_player plr;
+
+	LoadData(&plr);
 
 	surface = SDL_SetVideoMode(W, H, 32, 0);
 
@@ -295,11 +302,12 @@ int main()
 	int wsad[4] = {0, 0, 0, 0}, \
 	ground = 0, falling = 1, moving = 0, ducking = 0;
 
+
 	float yaw = 0;
 	for (;;)
 	{
 		SDL_LockSurface(surface);
-		DrawScreen();
+		DrawScreen(&plr);
 		SDL_UnlockSurface(surface);
 		SDL_Flip(surface);
 
@@ -308,38 +316,38 @@ int main()
 		ground = !falling;
 		if (falling)
 		{
-			player.velocity.z -= 0.05f; /* Add gravity */
-			float nextz = player.where.z + player.velocity.z;
-			if (player.velocity.z < 0 && nextz < sectors[player.sector].floor +
+			plr.velocity.z -= 0.05f; /* Add gravity */
+			float nextz = plr.where.z + plr.velocity.z;
+			if (plr.velocity.z < 0 && nextz < sectors[plr.sector].floor +
 												 eyeheight) // When going down
 			{
 				/* Fix to ground */
-				player.where.z = sectors[player.sector].floor + eyeheight;
-				player.velocity.z = 0;
+				plr.where.z = sectors[plr.sector].floor + eyeheight;
+				plr.velocity.z = 0;
 				falling = 0;
 				ground = 1;
-			} else if (player.velocity.z > 0 &&
-					   nextz > sectors[player.sector].ceil) // When going up
+			} else if (plr.velocity.z > 0 &&
+					   nextz > sectors[plr.sector].ceil) // When going up
 			{
 				/* Prevent jumping above ceiling */
-				player.velocity.z = 0;
+				plr.velocity.z = 0;
 				falling = 1;
 			}
 			if (falling)
 			{
-				player.where.z += player.velocity.z;
+				plr.where.z += plr.velocity.z;
 				moving = 1;
 			}
 		}
 		/* Horizontal collision detection */
 		if (moving)
 		{
-			float px = player.where.x, py = player.where.y;
-			float dx = player.velocity.x, dy = player.velocity.y;
+			float px = plr.where.x, py = plr.where.y;
+			float dx = plr.velocity.x, dy = plr.velocity.y;
 
-			const struct sector *const sect = &sectors[player.sector];
+			const struct sector *const sect = &sectors[plr.sector];
 			const struct xy *const vert = sect->vertex;
-			/* Check if the player is about to cross one of the sector's edges */
+			/* Check if the plr is about to cross one of the sector's edges */
 			for (unsigned s = 0; s < sect->npoints; ++s)
 				if (IntersectBox(px, py, px + dx, py + dy, vert[s + 0].x,
 								 vert[s + 0].y, vert[s + 1].x, vert[s + 1].y)
@@ -354,8 +362,8 @@ int main()
 							sect->neighbors[s] < 0 ? -9e9 : min(sect->ceil,
 																sectors[sect->neighbors[s]].ceil);
 					/* Check whether we're bumping into a wall. */
-					if (hole_high < player.where.z + HeadMargin
-						|| hole_low > player.where.z - eyeheight + KneeHeight)
+					if (hole_high < plr.where.z + HeadMargin
+						|| hole_low > plr.where.z - eyeheight + KneeHeight)
 					{
 						/* Bumps into a wall! Slide along the wall. */
 						/* This formula is from Wikipedia article "vector projection". */
@@ -366,7 +374,7 @@ int main()
 						moving = 0;
 					}
 				}
-			MovePlayer(dx, dy);
+			MovePlayer(&plr, dx, dy);
 			falling = 1;
 		}
 
@@ -395,7 +403,7 @@ int main()
 						case ' ': /* jump */
 							if (ground)
 							{
-								player.velocity.z += 0.5;
+								plr.velocity.z += 0.5;
 								falling = 1;
 							}
 							break;
@@ -415,38 +423,38 @@ int main()
 		/* mouse aiming */
 		int x, y;
 		SDL_GetRelativeMouseState(&x, &y);
-		player.angle += x * 0.03f;
+		plr.angle += x * 0.03f;
 		yaw = clamp(yaw - y * 0.05f, -5, 5);
-		player.yaw = yaw - player.velocity.z * 0.5f;
-		MovePlayer(0, 0);
+		plr.yaw = yaw - plr.velocity.z * 0.5f;
+		MovePlayer(&plr, 0, 0);
 
 		float move_vec[2] = {0.f, 0.f};
 		if (wsad[0])
 		{
-			move_vec[0] += player.anglecos * 0.2f;
-			move_vec[1] += player.anglesin * 0.2f;
+			move_vec[0] += plr.anglecos * 0.2f;
+			move_vec[1] += plr.anglesin * 0.2f;
 		}
 		if (wsad[1])
 		{
-			move_vec[0] -= player.anglecos * 0.2f;
-			move_vec[1] -= player.anglesin * 0.2f;
+			move_vec[0] -= plr.anglecos * 0.2f;
+			move_vec[1] -= plr.anglesin * 0.2f;
 		}
 		if (wsad[2])
 		{
-			move_vec[0] += player.anglesin * 0.2f;
-			move_vec[1] -= player.anglecos * 0.2f;
+			move_vec[0] += plr.anglesin * 0.2f;
+			move_vec[1] -= plr.anglecos * 0.2f;
 		}
 		if (wsad[3])
 		{
-			move_vec[0] -= player.anglesin * 0.2f;
-			move_vec[1] += player.anglecos * 0.2f;
+			move_vec[0] -= plr.anglesin * 0.2f;
+			move_vec[1] += plr.anglecos * 0.2f;
 		}
 		int pushing = wsad[0] || wsad[1] || wsad[2] || wsad[3];
 		float acceleration = pushing ? 0.4 : 0.2;
 
-		player.velocity.x = player.velocity.x * (1 - acceleration) +
+		plr.velocity.x = plr.velocity.x * (1 - acceleration) +
 							move_vec[0] * acceleration;
-		player.velocity.y = player.velocity.y * (1 - acceleration) +
+		plr.velocity.y = plr.velocity.y * (1 - acceleration) +
 							move_vec[1] * acceleration;
 
 		if (pushing) moving = 1;
