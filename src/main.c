@@ -69,7 +69,7 @@ static void UnloadData()
 /* IBOHUN PART 1 START */
 
 /* vline: Draw a vertical line on screen, with a different color pixel in top & bottom */
-static void vline(int x, int y1, int y2, int color)
+void vline(int x, int y1, int y2, int color)
 {
 	int *pix = (int *) surface->pixels;
 	y1 = clamp(y1, 0, H - 1);
@@ -280,6 +280,8 @@ static void DrawScreen()
 		++renderedsectors[now.sectorno];
 	} while (head != tail); // render any other queued sectors
 }
+
+
 /* GGAVRYLY PART END */
 
 /* IBOHUN (& somebody else) PART 2 START */
@@ -299,7 +301,7 @@ int main()
 	for (;;)
 	{
 		SDL_LockSurface(surface);
-		DrawScreen();
+		draw_screen(sectors, NumSectors);
 		SDL_UnlockSurface(surface);
 		SDL_Flip(surface);
 

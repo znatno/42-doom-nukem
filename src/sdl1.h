@@ -26,7 +26,8 @@
 /* Define window size */
 #define W 608
 #define H 320
-
+#define Yaw(y, z) (y + z*player.yaw)
+#define MaxQue	32
 #define EyeHeight  6    // Camera height from floor when standing
 #define DuckHeight 2.5  // And when crouching
 #define HeadMargin 1    // How much room there is above camera before the head hits the ceiling
@@ -55,6 +56,7 @@ typedef struct	s_xyz1
 	float	y;
 	float	z;
 }				t_xyz1;
+
 
 typedef struct	s_xy1
 {
@@ -112,7 +114,97 @@ struct player
 
 static SDL_Surface *surface = NULL;
 
+typedef struct	s_tmp_iter
+{
+	int 		start_do;
+	int 		x;
+	unsigned 	s;
+}				t_tmp_iter;
+
+typedef struct	s_calc_tmp_float
+{
+	float vx1;
+	float vx2;
+	float vy1;
+	float vy2;
+	float pcos;
+	float psin;
+	float tx1;
+	float tx2;
+	float tz1;
+	float tz2;
+	float nearz;
+	float farz;
+	float nearside;
+	float farside;
+	float xscale1;
+	float xscale2;
+	float yscale1;
+	float yscale2;
+	float yceil;
+	float yfloor;
+	float nyceil;
+	float nyfloor;
+}				t_calc_tmp_float;
+
+typedef struct	s_calc_tmp_int
+{
+	int 		y_top[W];
+	int 		y_bottom[W];
+	int 		*rendered_sectors;
+	int 		x1;
+	int 		x2;
+	int 		neightbor;
+	int 		y1a;
+	int 		y1b;
+	int 		y2a;
+	int 		y2b;
+	int 		ny1a;
+	int 		ny1b;
+	int 		ny2a;
+	int 		ny2b;
+	int 		beginx;
+	int 		endx;
+	int 		z;
+	int 		ya;
+	int 		cya;
+	int 		yb;
+	int 		cyb;
+	int 		nya;
+	int 		cnya;
+	int 		nyb;
+	int 		cnyb;
+	unsigned	r1;
+	unsigned 	r2;
+	unsigned	r;
+}				t_calc_tmp_int;
+
+
+typedef struct	s_item
+{
+	int sectorno;
+	int sx1;
+	int sx2;
+}				t_item;
+
+typedef struct		s_calc_tmp_struct
+{
+	t_item				now;
+	const struct sector *sect;
+	struct sector		*sectors;
+	struct xy			i1;
+	struct xy			i2;
+	t_item				*head;
+	t_item				*tail;
+}					t_cacl_tmp_struct;
+
+
+
+
 #define SEC_COLOR 0x0000ff00
 #define BLACK_COLOR 0x00
+
+void	draw_screen();
+void	vline(int x, int y1, int y2, int color);
 
 #endif
