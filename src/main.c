@@ -29,11 +29,36 @@ static struct player
 	struct xyz
 	{
 		float x, y, z;
-	} where,      // Current position
-			velocity;   // Current motion vector
-	float angle, anglesin, anglecos, yaw;   // Looking towards (and sin() and cos() thereof)
-	unsigned sector;                        // Which sector the player is currently in
+	}	where,      // Current position
+		velocity;   // Current motion vector
+
+	float 	angle;
+	float	anglesin;
+	float	anglecos, yaw;   // Looking towards (and sin() and cos() thereof)
+	unsigned sector;         // Which sector the player is currently in
 } player;
+
+/*
+//Coordinates
+typedef struct	s_xyz
+{
+	float	x;
+	float	y;
+	float	z;
+}				t_xyz;
+
+// Player: location
+typedef struct	s_player
+{
+	t_xyz		where;		// Current position
+	t_xyz		velocity;	// Current motion vector
+	float		angle;
+	float		anglesin;
+	float		anglecos;
+	float		yaw;		// Looking towards (and sin() and cos() thereof)
+	unsigned	sector;		// Which sector the player is currently in
+}				t_player;
+*/
 
 // Utility functions. Because C doesn't have templates,
 // we use the slightly less safe preprocessor macros to
@@ -120,26 +145,22 @@ static void UnloadData()
 
 /* IBOHUN PART 1 START */
 static SDL_Surface *surface = NULL;
+#define SEC_COLOR 0xff000000
+#define BLACK_COLOR 0x00
 
 /* vline: Draw a vertical line on screen, with a different color pixel in top & bottom */
-static void vline(int x, int y1, int y2, int top, int middle, int bottom)
+static void vline(int x, int y1, int y2, int color)
 {
-	//todo: needs to norm 3 colors into struct or smthing else
-	int *pix;
-	int i;
-
-	pix = (int *) surface->pixels;
+	int *pix = (int *) surface->pixels;
 	y1 = clamp(y1, 0, H - 1);
 	y2 = clamp(y2, 0, H - 1);
 	if (y2 == y1)
-		pix[y1 * W + x] = middle;
+		pix[y1 * W + x] = BLACK_COLOR; //верхня і нижня межа екрану
 	else if (y2 > y1)
 	{
-		pix[y1 * W + x] = top;
-		i = y1 + 1;
-		while (i < y2)
-			pix[i++ * W + x] = middle;
-		pix[y2 * W + x] = bottom;
+		pix[y1 * W + x] = SEC_COLOR; //проміжок секторів
+		for (int y = y1 + 1; y < y2; ++y) pix[y * W + x] = color;
+		pix[y2 * W + x] = color;
 	}
 }
 
@@ -148,12 +169,7 @@ static void vline(int x, int y1, int y2, int top, int middle, int bottom)
  */
 static void MovePlayer(float dx, float dy)
 {
-	float	px;
-	float	py;
-	int		s;
-
-	px = player.where.x;
-	py = player.where.y;
+	float px = player.where.x, py = player.where.y;
 	/* Check if this movement crosses one of this sector's edges
 	 * that have a neighboring sector on the other side.
 	 * Because the edge vertices of each sector are defined in
@@ -162,17 +178,16 @@ static void MovePlayer(float dx, float dy)
 	 */
 	const struct sector *const sect = &sectors[player.sector];
 	const struct xy *const vert = sect->vertex;
-
-	s = 0;
-	while (++s < sect->npoints)
-		if (sect->neighbors[s] >= 0 &&
+	for (unsigned s = 0; s < sect->npoints; ++s)
+		if (sect->neighbors[s] >= 0
+			&&
 			IntersectBox(px, py, px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
-						 vert[s + 1].x, vert[s + 1].y) &&
-			PointSide(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
-					vert[s + 1].x, vert[s + 1].y) < 0)
+						 vert[s + 1].x, vert[s + 1].y)
+			&& PointSide(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
+						 vert[s + 1].x, vert[s + 1].y) < 0)
 		{
 			player.sector = sect->neighbors[s];
-			break ;
+			break;
 		}
 
 	player.where.x += dx;
@@ -304,9 +319,9 @@ static void DrawScreen()
 						yb, ytop[x], ybottom[x]); // bottom
 
 				/* Render ceiling: everything above this sector's ceiling height. */
-				vline(x, ytop[x], cya - 1, 0x111111, 0x222222, 0x111111);
+				vline(x, ytop[x], cya - 1, 0x222222);
 				/* Render floor: everything below this sector's floor height. */
-				vline(x, cyb + 1, ybottom[x], 0x0000FF, 0x0000AA, 0x0000FF);
+				vline(x, cyb + 1, ybottom[x], 0x0000AA);
 
 				/* Is there another sector behind this edge? */
 				if (neighbor >= 0)
@@ -319,20 +334,18 @@ static void DrawScreen()
 					/* If our ceiling is higher than their ceiling, render upper wall */
 					unsigned r1 = 0x010101 * (255 - z), r2 =
 							0x040007 * (31 - z / 8);
-					vline(x, cya, cnya - 1, 0, x == x1 || x == x2 ? 0 : r1,
-						  0); // Between our and their ceiling
+					vline(x, cya, cnya - 1, x == x1 || x == x2 ? 0 : r1); // Between our and their ceiling
 					ytop[x] = clamp(max(cya, cnya), ytop[x], H -
 															 1);   // Shrink the remaining window below these ceilings
 					/* If our floor is lower than their floor, render bottom wall */
-					vline(x, cnyb + 1, cyb, 0, x == x1 || x == x2 ? 0 : r2,
-						  0); // Between their and our floor
+					vline(x, cnyb + 1, cyb, x == x1 || x == x2 ? 0 : r2); // Between their and our floor
 					ybottom[x] = clamp(min(cyb, cnyb), 0,
 									   ybottom[x]); // Shrink the remaining window above these floors
 				} else
 				{
 					/* There's no neighbor. Render wall from top (cya = ceiling level) to bottom (cyb = floor level). */
 					unsigned r = 0x010101 * (255 - z);
-					vline(x, cya, cyb, 0, x == x1 || x == x2 ? 0 : r, 0);
+					vline(x, cya, cyb, x == x1 || x == x2 ? 0 : r);
 				}
 			}
 			/* Schedule the neighboring sector for rendering within the window formed by this wall. */
