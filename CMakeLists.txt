@@ -43,7 +43,7 @@ include_directories(~/.brew/include/SDL)
 #link_directories(~/.brew/Cellar/sdl/1.2.15_1/lib/)
 link_directories(~/.brew/lib)
 
-add_executable(doom-nukem src/main.c src/sdl1.h)
+add_executable(doom-nukem src/main.c src/draw_screen.c src/sdl1.h)
 
 #target_link_libraries(doom-nukem -lSDL)
 #target_link_libraries(doom-nukem -lft -lSDL2 -lSDL2_image -lSDL2_mixer)
