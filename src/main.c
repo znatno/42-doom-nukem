@@ -32,24 +32,24 @@ static void LoadData(t_player *plr, t_sector1 **sectors)
 				}
 				break;
 			case 's': // sector
-				*sectors = realloc(*(sectors), ++NumSectors * sizeof(**sectors));
-				t_sector1 sect;
-				sect = *sectors[NumSectors - 1];
+				*sectors = realloc(*sectors, ++NumSectors * sizeof(**sectors));
+				t_sector1 *sect;
+				sect = &(*sectors)[NumSectors - 1];
 				int *num = NULL;
-				sscanf(ptr += n, "%f%f%n", &sect.floor, &sect.ceil, &n);
+				sscanf(ptr += n, "%f%f%n", &sect->floor, &sect->ceil, &n);
 				for (m = 0; sscanf(ptr += n, "%32s%n", word, &n) == 1 &&
 							word[0] != '#';)
 				{
 					num = realloc(num, ++m * sizeof(*num));
 					num[m - 1] = word[0] == 'x' ? -1 : atoi(word);
 				}
-				sect.npoints = m /= 2;
-				sect.neighbors = malloc((m) * sizeof(*sect.neighbors));
-				sect.vertex = malloc((m + 1) * sizeof(*sect.vertex));
-				for (n = 0; n < m; ++n) sect.neighbors[n] = num[m + n];
+				sect->npoints = m /= 2;
+				sect->neighbors = malloc((m) * sizeof(*sect->neighbors));
+				sect->vertex = malloc((m + 1) * sizeof(*sect->vertex));
+				for (n = 0; n < m; ++n) sect->neighbors[n] = num[m + n];
 				for (n = 0; n < m; ++n)
-					sect.vertex[n + 1] = vert[num[n]]; // T0D0: Range checking
-				sect.vertex[0] = sect.vertex[m]; // Ensure the vertexes form a
+					sect->vertex[n + 1] = vert[num[n]]; // T0D0: Range checking
+				sect->vertex[0] = sect->vertex[m]; // Ensure the vertexes form a
 				// loop
 				free(num);
 				break;
@@ -67,11 +67,11 @@ static void LoadData(t_player *plr, t_sector1 **sectors)
 static void UnloadData(t_sector1 **sectors)
 {
 	for (unsigned a = 0; a < NumSectors; ++a)
-		free(sectors[a]->vertex);
+		free((*sectors)[a].vertex);
 	for (unsigned a = 0; a < NumSectors; ++a)
-		free(sectors[a]->neighbors);
+		free((*sectors)[a].neighbors);
 	free(sectors);
-	sectors = NULL;
+	*sectors = NULL;
 	NumSectors = 0;
 }
 /* VOPOLONC PART END */
@@ -116,20 +116,20 @@ static void MovePlayer(t_player *plr, t_sector1 **sectors, float dx, float dy)
 	 */
 
 	t_xy		*vert;
-	t_sector1	sect;
+	t_sector1	*sect;
 
-	sect = *sectors[plr->sector];
-	vert = sect.vertex;
+	sect = &(*sectors)[plr->sector];
+	vert = sect->vertex;
 	s = 0;
-	while (s < sect.npoints)
+	while (s < sect->npoints)
 	{
-		if (sect.neighbors[s] >= 0 &&
+		if (sect->neighbors[s] >= 0 &&
 			IntersectBox(px, py, px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
 						 vert[s + 1].x, vert[s + 1].y) &&
 		 	PointSide(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
 						 vert[s + 1].x, vert[s + 1].y) < 0)
 		{
-			plr->sector = sect.neighbors[s];
+			plr->sector = sect->neighbors[s];
 			break;
 		}
 		s++;
@@ -142,7 +142,7 @@ static void MovePlayer(t_player *plr, t_sector1 **sectors, float dx, float dy)
 /* IBOHUN PART 1 END */
 
 /* GGAVRYLY PART START */
-static void DrawScreen(t_player *plr)
+static void DrawScreen(t_player *plr, t_sector1 **sectors)
 {
 	enum
 	{
@@ -175,7 +175,12 @@ static void DrawScreen(t_player *plr)
 			continue; // Odd = still rendering, 0x20 = give up
 		++renderedsectors[now.sectorno];
 
-		const struct sector *const sect = &sectors3[now.sectorno];
+
+		t_sector1 *sect;
+
+		sect = &(*sectors)[now.sectorno];
+
+
 		/* Render each wall of this sector that is facing towards player. */
 		for (unsigned s = 0; s < sect->npoints; ++s)
 		{
@@ -241,8 +246,8 @@ static void DrawScreen(t_player *plr)
 			float nyceil = 0, nyfloor = 0;
 			if (neighbor >= 0) // Is another sector showing through this portal?
 			{
-				nyceil = sectors3[neighbor].ceil - plr->where.z;
-				nyfloor = sectors3[neighbor].floor - plr->where.z;
+				nyceil = (*sectors)[neighbor].ceil - plr->where.z;
+				nyfloor = (*sectors)[neighbor].floor - plr->where.z;
 			}
 			/* Project our ceiling & floor heights into screen coordinates (Y coordinate) */
 #define Yaw(y, z) (y + z*plr->yaw)
@@ -319,7 +324,7 @@ int main()
 	t_sector1	*sectors;
 	t_sector1	sect;
 
-	//sectors = malloc(sizeof(t_sector1));
+	sectors = NULL;
 
 	LoadData(&plr, &sectors);
 
@@ -336,7 +341,7 @@ int main()
 	for (;;)
 	{
 		SDL_LockSurface(surface);
-		DrawScreen(&plr);
+		DrawScreen(&plr, &sectors);
 		SDL_UnlockSurface(surface);
 		SDL_Flip(surface);
 
