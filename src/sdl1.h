@@ -41,9 +41,10 @@ static struct sector //TODO: DELETE THIS
 	} *vertex; // Each vertex has an x and y coordinate
 	signed char *neighbors;           // Each edge may have a corresponding neighboring sector
 	unsigned npoints;                 // How many vertexes there are
-} *sectors = NULL;
+} *sectors3 = NULL;
 
-static unsigned NumSectors = 0; //TODO: DELETE THIS
+
+unsigned NumSectors = 0; //TODO: DELETE THIS
 
 //Coordinates
 typedef struct	s_xyz
@@ -59,32 +60,28 @@ typedef struct	s_xy
 	float	y;
 }				t_xy;
 
+/* Sectors: Floor and ceiling height; list of edge vertices and neighbors */
+typedef struct		s_sector1
+{
+	float			floor;
+	float			ceil;
+	t_xy			*vertex;
+	signed char		*neighbors;       // Each edge may have a corresponding neighboring sector
+	unsigned		npoints;          // How many vertexes there are
+}					t_sector1;
+
+
 // Player: location
-typedef struct	s_player
+typedef struct		s_player
 {
-	t_xyz		where;		// Current position
-	t_xyz		velocity;	// Current motion vector
-	float		angle;
-	float		anglesin;
-	float		anglecos;
-	float		yaw;		// Looking towards (and sin() and cos() thereof)
-	unsigned	sector;		// Which sector the player is currently in
-}				t_player;
-
-/* Player: location */
-struct player //TODO: DELETE THIS
-{
-	struct xyz
-	{
-		float x, y, z;
-	}	where,      // Current position
-			velocity;   // Current motion vector
-
-	float 	angle;
-	float	anglesin;
-	float	anglecos, yaw;   // Looking towards (and sin() and cos() thereof)
-	unsigned sector;         // Which sector the player is currently in
-} player;
+	t_xyz			where;		// Current position
+	t_xyz			velocity;	// Current motion vector
+	float			angle;
+	float			anglesin;
+	float			anglecos;
+	float			yaw;		// Looking towards (and sin() and cos() thereof)
+	unsigned		sector;		// Which sector the player is currently in
+}					t_player;
 
 // Utility functions. Because C doesn't have templates,
 // we use the slightly less safe preprocessor macros to

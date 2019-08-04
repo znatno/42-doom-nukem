@@ -3,7 +3,7 @@
 /* VOPOLONC PART START */
 /* Define various vision related constants */
 
-static void LoadData(t_player *plr)
+static void LoadData(t_player *plr, t_sector1 **sectors)
 {
 	FILE *fp = fopen("map-clear.txt", "rt");
 	if (!fp)
@@ -12,8 +12,14 @@ static void LoadData(t_player *plr)
 		exit(1);
 	}
 	char Buf[256], word[256], *ptr;
-	struct xy *vert = NULL, v;
+
+	t_xy *vert;
+	t_xy v;
+
+	vert = NULL;
+
 	int n, m, NumVertices = 0;
+
 	while (fgets(Buf, sizeof Buf, fp))
 		switch (sscanf(ptr = Buf, "%32s%n", word, &n) == 1 ? word[0] : '\0')
 		{
@@ -26,23 +32,25 @@ static void LoadData(t_player *plr)
 				}
 				break;
 			case 's': // sector
-				sectors = realloc(sectors, ++NumSectors * sizeof(*sectors));
-				struct sector *sect = &sectors[NumSectors - 1];
+				*sectors = realloc(*(sectors), ++NumSectors * sizeof(**sectors));
+				t_sector1 sect;
+				sect = *sectors[NumSectors - 1];
 				int *num = NULL;
-				sscanf(ptr += n, "%f%f%n", &sect->floor, &sect->ceil, &n);
+				sscanf(ptr += n, "%f%f%n", &sect.floor, &sect.ceil, &n);
 				for (m = 0; sscanf(ptr += n, "%32s%n", word, &n) == 1 &&
 							word[0] != '#';)
 				{
 					num = realloc(num, ++m * sizeof(*num));
 					num[m - 1] = word[0] == 'x' ? -1 : atoi(word);
 				}
-				sect->npoints = m /= 2;
-				sect->neighbors = malloc((m) * sizeof(*sect->neighbors));
-				sect->vertex = malloc((m + 1) * sizeof(*sect->vertex));
-				for (n = 0; n < m; ++n) sect->neighbors[n] = num[m + n];
+				sect.npoints = m /= 2;
+				sect.neighbors = malloc((m) * sizeof(*sect.neighbors));
+				sect.vertex = malloc((m + 1) * sizeof(*sect.vertex));
+				for (n = 0; n < m; ++n) sect.neighbors[n] = num[m + n];
 				for (n = 0; n < m; ++n)
-					sect->vertex[n + 1] = vert[num[n]]; // T0D0: Range checking
-				sect->vertex[0] = sect->vertex[m]; // Ensure the vertexes form a loop
+					sect.vertex[n + 1] = vert[num[n]]; // T0D0: Range checking
+				sect.vertex[0] = sect.vertex[m]; // Ensure the vertexes form a
+				// loop
 				free(num);
 				break;
 			case 'p':; // player
@@ -50,16 +58,18 @@ static void LoadData(t_player *plr)
 				sscanf(ptr += n, "%f %f %f %d", &v.x, &v.y, &angle, &n);
 				*plr = (t_player){{v.x, v.y, 0}, {0, 0, 0}, angle, 0, 0, 0, n};
 				// T0D0: Range checking
-				plr->where.z = sectors[plr->sector].floor + EyeHeight;
+				plr->where.z = sectors[plr->sector]->floor + EyeHeight;
 		}
 	fclose(fp);
 	free(vert);
 }
 
-static void UnloadData()
+static void UnloadData(t_sector1 **sectors)
 {
-	for (unsigned a = 0; a < NumSectors; ++a) free(sectors[a].vertex);
-	for (unsigned a = 0; a < NumSectors; ++a) free(sectors[a].neighbors);
+	for (unsigned a = 0; a < NumSectors; ++a)
+		free(sectors[a]->vertex);
+	for (unsigned a = 0; a < NumSectors; ++a)
+		free(sectors[a]->neighbors);
 	free(sectors);
 	sectors = NULL;
 	NumSectors = 0;
@@ -75,11 +85,14 @@ static void vline(int x, int y1, int y2, int color)
 	y1 = clamp(y1, 0, H - 1);
 	y2 = clamp(y2, 0, H - 1);
 	if (y2 == y1)
-		pix[y1 * W + x] = BLACK_COLOR; //верхня і нижня межа екрану
+		pix[y1 * W + x] = BLACK_COLOR; //нижня межа вікна
 	else if (y2 > y1)
 	{
 		pix[y1 * W + x] = SEC_COLOR; //проміжок секторів
-		for (int y = y1 + 1; y < y2; ++y) pix[y * W + x] = color;
+		if (y1 == 0 || y1 == 1)
+			pix[y1 * W + x] = BLACK_COLOR; //верхня межа вікна
+		for (int y = y1 + 1; y <= y2; ++y)
+			pix[y * W + x] = color;
 		pix[y2 * W + x] = color;
 	}
 }
@@ -87,10 +100,11 @@ static void vline(int x, int y1, int y2, int color)
 /* MovePlayer(dx,dy): Moves the player by (dx,dy) in the map, and
  * also updates their anglesin/anglecos/sector properties properly.
  */
-static void MovePlayer(t_player *plr, float dx, float dy)
+static void MovePlayer(t_player *plr, t_sector1 **sectors, float dx, float dy)
 {
 	float	px;
 	float	py;
+	unsigned s;
 
 	px = plr->where.x;
 	py = plr->where.y;
@@ -100,21 +114,26 @@ static void MovePlayer(t_player *plr, float dx, float dy)
 	 * clockwise order, PointSide will always return -1 for a point
 	 * that is outside the sector and 0 or 1 for a point that is inside.
 	 */
-	const struct sector *const sect = &sectors[plr->sector];
-	const struct xy *const vert = sect->vertex;
 
-	for (unsigned s = 0; s < sect->npoints; ++s)
-		if (sect->neighbors[s] >= 0
-			&&
+	t_xy		*vert;
+	t_sector1	sect;
+
+	sect = *sectors[plr->sector];
+	vert = sect.vertex;
+	s = 0;
+	while (s < sect.npoints)
+	{
+		if (sect.neighbors[s] >= 0 &&
 			IntersectBox(px, py, px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
-						 vert[s + 1].x, vert[s + 1].y)
-			&& PointSide(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
+						 vert[s + 1].x, vert[s + 1].y) &&
+		 	PointSide(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
 						 vert[s + 1].x, vert[s + 1].y) < 0)
 		{
-			plr->sector = sect->neighbors[s];
+			plr->sector = sect.neighbors[s];
 			break;
 		}
-
+		s++;
+	}
 	plr->where.x += dx;
 	plr->where.y += dy;
 	plr->anglesin = sinf(plr->angle);
@@ -129,13 +148,18 @@ static void DrawScreen(t_player *plr)
 	{
 		MaxQueue = 32
 	};  // maximum number of pending portal renders
+
 	struct item
 	{
 		int sectorno, sx1, sx2;
 	} queue[MaxQueue], *head = queue, *tail = queue;
+
 	int ytop[W] = {0}, ybottom[W], renderedsectors[NumSectors];
-	for (unsigned x = 0; x < W; ++x) ybottom[x] = H - 1;
-	for (unsigned n = 0; n < NumSectors; ++n) renderedsectors[n] = 0;
+
+	for (unsigned x = 0; x < W; ++x)
+		ybottom[x] = H - 1;
+	for (unsigned n = 0; n < NumSectors; ++n)
+		renderedsectors[n] = 0;
 
 	/* Begin whole-screen rendering from where the player is. */
 	*head = (struct item) {plr->sector, 0, W - 1};
@@ -150,7 +174,8 @@ static void DrawScreen(t_player *plr)
 		if (renderedsectors[now.sectorno] & 0x21)
 			continue; // Odd = still rendering, 0x20 = give up
 		++renderedsectors[now.sectorno];
-		const struct sector *const sect = &sectors[now.sectorno];
+
+		const struct sector *const sect = &sectors3[now.sectorno];
 		/* Render each wall of this sector that is facing towards player. */
 		for (unsigned s = 0; s < sect->npoints; ++s)
 		{
@@ -216,8 +241,8 @@ static void DrawScreen(t_player *plr)
 			float nyceil = 0, nyfloor = 0;
 			if (neighbor >= 0) // Is another sector showing through this portal?
 			{
-				nyceil = sectors[neighbor].ceil - plr->where.z;
-				nyfloor = sectors[neighbor].floor - plr->where.z;
+				nyceil = sectors3[neighbor].ceil - plr->where.z;
+				nyfloor = sectors3[neighbor].floor - plr->where.z;
 			}
 			/* Project our ceiling & floor heights into screen coordinates (Y coordinate) */
 #define Yaw(y, z) (y + z*plr->yaw)
@@ -290,9 +315,13 @@ static void DrawScreen(t_player *plr)
 /* IBOHUN (& somebody else) PART 2 START */
 int main()
 {
-	t_player plr;
+	t_player	plr;
+	t_sector1	*sectors;
+	t_sector1	sect;
 
-	LoadData(&plr);
+	//sectors = malloc(sizeof(t_sector1));
+
+	LoadData(&plr, &sectors);
 
 	surface = SDL_SetVideoMode(W, H, 32, 0);
 
@@ -345,10 +374,13 @@ int main()
 			float px = plr.where.x, py = plr.where.y;
 			float dx = plr.velocity.x, dy = plr.velocity.y;
 
-			const struct sector *const sect = &sectors[plr.sector];
-			const struct xy *const vert = sect->vertex;
+			sect = sectors[plr.sector];
+
+			const t_xy *vert;
+			vert = sect.vertex;
+
 			/* Check if the plr is about to cross one of the sector's edges */
-			for (unsigned s = 0; s < sect->npoints; ++s)
+			for (unsigned s = 0; s < sect.npoints; ++s)
 				if (IntersectBox(px, py, px + dx, py + dy, vert[s + 0].x,
 								 vert[s + 0].y, vert[s + 1].x, vert[s + 1].y)
 					&& PointSide(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
@@ -356,25 +388,27 @@ int main()
 				{
 					/* Check where the hole is. */
 					float hole_low =
-							sect->neighbors[s] < 0 ? 9e9 : max(sect->floor,
-															   sectors[sect->neighbors[s]].floor);
+							sect.neighbors[s] < 0 ? 9e9 : max(sect.floor,
+															   sectors[sect
+															   .neighbors[s]].floor);
 					float hole_high =
-							sect->neighbors[s] < 0 ? -9e9 : min(sect->ceil,
-																sectors[sect->neighbors[s]].ceil);
+							sect.neighbors[s] < 0 ? -9e9 : min(sect.ceil,
+																sectors[sect
+																.neighbors[s]].ceil);
 					/* Check whether we're bumping into a wall. */
 					if (hole_high < plr.where.z + HeadMargin
 						|| hole_low > plr.where.z - eyeheight + KneeHeight)
 					{
 						/* Bumps into a wall! Slide along the wall. */
 						/* This formula is from Wikipedia article "vector projection". */
-						float xd = vert[s + 1].x - vert[s + 0].x, yd =
-								vert[s + 1].y - vert[s + 0].y;
+						float	xd = vert[s + 1].x - vert[s + 0].x,
+								yd = vert[s + 1].y - vert[s + 0].y;
 						dx = xd * (dx * xd + yd * dy) / (xd * xd + yd * yd);
 						dy = yd * (dx * xd + yd * dy) / (xd * xd + yd * yd);
 						moving = 0;
 					}
 				}
-			MovePlayer(&plr, dx, dy);
+			MovePlayer(&plr, &sectors, dx, dy);
 			falling = 1;
 		}
 
@@ -426,7 +460,7 @@ int main()
 		plr.angle += x * 0.03f;
 		yaw = clamp(yaw - y * 0.05f, -5, 5);
 		plr.yaw = yaw - plr.velocity.z * 0.5f;
-		MovePlayer(&plr, 0, 0);
+		MovePlayer(&plr, &sectors, 0, 0);
 
 		float move_vec[2] = {0.f, 0.f};
 		if (wsad[0])
@@ -462,7 +496,7 @@ int main()
 		SDL_Delay(10);
 	}
 	done:
-	UnloadData();
+	UnloadData(&sectors);
 	SDL_Quit();
 	return 0;
 }
