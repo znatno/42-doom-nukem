@@ -23,6 +23,7 @@
 #include <math.h>
 #include "SDL.h"
 #include "libft.h"
+#include <stdlib.h>
 /* Define window size */
 #define W 608
 #define H 320
@@ -214,7 +215,9 @@ typedef struct		s_draw_sreen_calc
 #define SEC_COLOR 0x0000ff00
 #define BLACK_COLOR 0x00
 
-void	draw_screen();
-void	vline(int x, int y1, int y2, int color);
+void		draw_screen();
+char		*ft_itof(long double k);
+void		vline(int x, int y1, int y2, int color);
+void		vertex(struct xy *vertex, int num_vertex);
 
 #endif

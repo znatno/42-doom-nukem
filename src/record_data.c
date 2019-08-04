@@ -12,27 +12,47 @@
 
 #include "sdl1.h"
 
-void	vertex(char *path ,int *y, int **x, int count_y, int *count_x)
+
+char	*trim_itof(char *flt)
+{
+	int		i;
+
+	i = ft_strlen(flt);
+	if (flt[i - 1] == '0')
+	{
+		flt[i - 2] = '\0';
+		return (flt);
+	}
+	return (flt);
+}
+
+void	vertex(struct xy *vertex, int num_vertex)
 {
 	int fd;
 	int i;
+	char *tmp;
 
 	i = 0;
-	fd = 0;
-	if ((fd = open(path, O_WRONLY) < 0))
+	fd = open("../maps/ya_karta.doom", O_WRONLY);
+	tmp = (char *)malloc(sizeof(char) * 256);
+	ft_bzero(tmp, 256);
+	if (fd == -1)
 	{
-		system("mkdir ya_karta.doom");
-		if ((fd = open("ya_karta.doom", O_WRONLY) < 0))
-		{
-			printf("Ah shit, here we go again %s", "write to ya_karta.doom");
-			return;
-		}
+		system("touch ../maps/ya_karta.doom");
+		fd = open("../maps/ya_karta.doom", O_WRONLY);
 	}
-	while (i < count_y)
+	while (i < num_vertex)
 	{
-
-		write(fd, ft_it)
+		tmp = ft_strcpy(tmp, "vertex ");
+		tmp = ft_strcat(tmp , trim_itof(ft_itof(vertex[i].y)));
+		tmp = ft_strcat(tmp, " ");
+		tmp = ft_strcat(tmp, trim_itof(ft_itof(vertex[i].x)));
+		tmp = ft_strcat(tmp, "\n");
+		write(fd, tmp, ft_strlen(tmp));
 		i++;
 	}
+	close(fd);
 
 }
+
+

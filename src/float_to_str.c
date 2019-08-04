@@ -77,7 +77,7 @@ char		*ft_itof(long double k)
 	int		i;
 
 	len[0] = float_len_before(k);
-	len[1] = 10;
+	len[1] = 1;
 	i = 0;
 	t = 1;
 	if (!(str = (char *)malloc(sizeof(char) * len[0] + len[1] + 1 + t)))
