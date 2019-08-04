@@ -9,6 +9,8 @@
 #define hfov (0.73f*H)  // Affects the horizontal field of vision
 #define vfov (.2f*H)    // Affects the vertical field of vision
 
+#define FILE_NAME "map-clear.txt"
+
 /* Sectors: Floor and ceiling height; list of edge vertices and neighbors */
 static struct sector
 {
@@ -54,25 +56,155 @@ static struct player
     vxs(vxs(x1,y1, x2,y2), (y1)-(y2), vxs(x3,y3, x4,y4), (y3)-(y4)) \
     / vxs((x1)-(x2), (y1)-(y2), (x3)-(x4), (y3)-(y4))}) \
 
-static void LoadData()
+int				check_file(int fd)
 {
+    if (fd == -1 || read(fd, 0, 0) < 0)
+    {
+        ft_putstr("empty file or it's directory\n");
+        return (0);
+    }
+    return (1);
+}
+
+//void			fill_map(t_env *map, char **cur, int i)
+//{
+//    int			j;
+//
+//    j = -1;
+//    map->matrix[i] = (int*)malloc(sizeof(int) * map->start);
+//    while (cur[++j])
+//        map->matrix[i][j] = (short)ft_atoi(cur[j]);
+//}
+//
+//int				get_valid_line(t_env *map, char **cur)
+//{
+//    int			i;
+//    int			j;
+//
+//    j = 0;
+//    i = -1;
+//    if (!map->start)
+//    {
+//        while (cur[++i])
+//            map->start++;
+//        if (map->start < 1)
+//            return (-1);
+//        return (1);
+//    }
+//    else if (map->start > 0)
+//        while (cur[++i])
+//            j++;
+//    if (j == map->start)
+//        map->cols += j;
+//    else
+//    {
+//        ft_free_2d_v2(cur);
+//        return (-1);
+//    }
+//    return (1);
+//}
+
+
+//int				writer(char **av, int fd)
+//{
+//    char		**cur;
+//    char		*line;
+//    int			i;
+//
+//    i = 0;
+//    cur = NULL;
+//    line = NULL;
+//    fd = open(av[1], O_RDONLY);
+//    init_env(map, 1);
+//    map->matrix = (int**)malloc(sizeof(int*) * map->rows);
+//    while (get_next_line(fd, &line) > 0)
+//    {
+//        cur = ft_strsplit(line, ' ');
+//        fill_map(map, cur, i++);
+//        ft_strdel(&line);
+//        ft_free_2d_v2(cur);
+//    }
+//    mapper(map);
+//    return (0);
+//}
+
+//void            print_rr(char **arr) {
+//    while (**arr != NULL) {
+//
+//    }
+//}
+
+
+#define isdigit(c) (c >= '0' && c <= '9')
+
+double atof(const char *s)
+{
+    double a = 0.0;
+    int exp = 0;
+    int c;
+    int sign = 1;
+    int i = 0;
+
+    if (s[0] == '-') {
+        sign = -1;
+        s++;
+    }
+    while ((c = *s++) != '\0' && isdigit(c)) {
+        a = a*10.0 + (c - '0');
+    }
+    if (c == '.') {
+        while ((c = *s++) != '\0' && isdigit(c)) {
+            a = a*10.0 + (c - '0');
+            exp = exp-1;
+        }
+    }
+    while (isdigit(c)) {
+        i = i*10 + (c - '0');
+        c = *s++;
+    }
+    while (exp < 0) {
+        a *= 0.1;
+        exp++;
+    }
+    return a * sign;
+}
+
+void			reader(char *line, int fd)
+{
+    char		**cur;
+
+    cur = NULL;
+    while (get_next_line(fd, &line) > 0) {
+        if (*line == 'v') {
+
+        }
+        exit (1);
+//        print_rr()
+    }
+    return ;
+}
+
+static void LoadData() {
     // my defines
-    int i; int j = 0; int k = 0;
+    int i;
+    int j = 0;
+    int k = 0;
+    char Buf[256], word[256], *ptr;
+    struct xy *vert = NULL, v;
+    int n, m, NumVertices = 0;
+    int fd;
+    char *line;
 
-
-
-	FILE *fp = fopen("maps/map-clear.txt", "rt");
-	if (!fp)
-	{
-		perror("maps/map-clear.txt");
-		exit(1);
-	}
-	char Buf[256], word[256], *ptr;
-	struct xy *vert = NULL, v;
-	int n, m, NumVertices = 0;
-
-//	get_next_line();
-    exit(1);
+    line = ft_strnew(1);
+    fd = open(FILE_NAME, O_RDONLY);
+    if (!(check_file(fd))){
+        exit (-1);
+    }
+//     map = reader(map, line, fd);
+    reader(line, fd);
+//    (map) ? writer(map, av, fd) : ft_putstr("err\n");
+//    writer(FILE_NAME, fd);
+    exit(0);
 	//	while (fgets(Buf, sizeof Buf, fp))
 //		switch (sscanf(ptr = Buf, "%32s%n", word, &n) == 1 ? word[0] : '\0')
 //		{
@@ -172,8 +304,8 @@ static void LoadData()
 //										  0, n}; // TODO: Range checking
 //				player.where.z = sectors[player.sector].floor + EyeHeight;
 //		}
-	fclose(fp);
-	free(vert);
+//	fclose(fp);
+//	free(vert);
 }
 
 static void UnloadData()
