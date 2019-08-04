@@ -1,5 +1,5 @@
 #include "sdl1.h"
-
+#include "../include/doom_nukem.h"
 /* VOPOLONC PART START */
 /* Define various vision related constants */
 #define EyeHeight  6    // Camera height from floor when standing
@@ -56,53 +56,122 @@ static struct player
 
 static void LoadData()
 {
-	FILE *fp = fopen("map-clear.txt", "rt");
+    // my defines
+    int i; int j = 0; int k = 0;
+
+
+
+	FILE *fp = fopen("maps/map-clear.txt", "rt");
 	if (!fp)
 	{
-		perror("map-clear.txt");
+		perror("maps/map-clear.txt");
 		exit(1);
 	}
 	char Buf[256], word[256], *ptr;
 	struct xy *vert = NULL, v;
 	int n, m, NumVertices = 0;
-	while (fgets(Buf, sizeof Buf, fp))
-		switch (sscanf(ptr = Buf, "%32s%n", word, &n) == 1 ? word[0] : '\0')
-		{
-			case 'v': // vertex
-				for (sscanf(ptr += n, "%f%n", &v.y, &n);
-					 sscanf(ptr += n, "%f%n", &v.x, &n) == 1;)
-				{
-					vert = realloc(vert, ++NumVertices * sizeof(*vert));
-					vert[NumVertices - 1] = v;
-				}
-				break;
-			case 's': // sector
-				sectors = realloc(sectors, ++NumSectors * sizeof(*sectors));
-				struct sector *sect = &sectors[NumSectors - 1];
-				int *num = NULL;
-				sscanf(ptr += n, "%f%f%n", &sect->floor, &sect->ceil, &n);
-				for (m = 0; sscanf(ptr += n, "%32s%n", word, &n) == 1 &&
-							word[0] != '#';)
-				{
-					num = realloc(num, ++m * sizeof(*num));
-					num[m - 1] = word[0] == 'x' ? -1 : atoi(word);
-				}
-				sect->npoints = m /= 2;
-				sect->neighbors = malloc((m) * sizeof(*sect->neighbors));
-				sect->vertex = malloc((m + 1) * sizeof(*sect->vertex));
-				for (n = 0; n < m; ++n) sect->neighbors[n] = num[m + n];
-				for (n = 0; n < m; ++n)
-					sect->vertex[n + 1] = vert[num[n]]; // TODO: Range checking
-				sect->vertex[0] = sect->vertex[m]; // Ensure the vertexes form a loop
-				free(num);
-				break;
-			case 'p':; // player
-				float angle;
-				sscanf(ptr += n, "%f %f %f %d", &v.x, &v.y, &angle, &n);
-				player = (struct player) {{v.x, v.y, 0}, {0, 0, 0}, angle, 0, 0,
-										  0, n}; // TODO: Range checking
-				player.where.z = sectors[player.sector].floor + EyeHeight;
-		}
+
+//	get_next_line();
+    exit(1);
+	//	while (fgets(Buf, sizeof Buf, fp))
+//		switch (sscanf(ptr = Buf, "%32s%n", word, &n) == 1 ? word[0] : '\0')
+//		{
+//	    /*
+//	     *  VERTEX -> y {x}
+//	     *  Сохраняет таким образом vert[индекс одного вектора].x|y
+//	     *  Если в вертексе больше одного 'x', то значение 'y' не меняем
+//	     *
+//	     *  vertex 'y0' {x0 x1 x2}
+//	     *  vertex 'y1' {x3 x4 x6}
+//	     *
+//	     */
+//			case 'v': // vertex
+////			   j += 1;
+//				for (sscanf(ptr += n, "%f%n", &v.y, &n); sscanf(ptr += n, "%f%n", &v.x, &n) == 1;)
+//				{
+//
+//					vert = realloc(vert, ++NumVertices * sizeof(*vert));
+//					vert[NumVertices - 1] = v;
+//					i++;
+//				}
+//				break;
+//		/*
+//		 *  SECTORS -> floor ceil {vertex}
+//		 *  массив делится
+//		 */
+//			case 's':
+//				sectors = realloc(sectors, ++NumSectors * sizeof(*sectors));
+//				/*
+//				 *  sectors -> является массивом структур sector
+//				 *  каждая строка sector будет индексом sectors[индекс.сектора(начиная с нуля)]
+//				 */
+//				struct sector *sect =
+//				        &sectors[NumSectors - 1];
+//				int *num = NULL;
+//				/*
+//				 *
+//				 * Считываем высоту потолка и пола
+//				 *
+//				 */
+//				sscanf(ptr += n, "%f%f%n", &sect->floor, &sect->ceil, &n);
+//
+//				/*
+//				 * num хранит в себе остаток чисел после ceil и flooг
+//				 */
+//
+//				for (m = 0; sscanf(ptr += n, "%32s%n", word, &n) == 1 &&
+//							word[0] != '#';)
+//				{
+//					num = realloc(num, ++m * sizeof(*num));
+//					num[m - 1] = word[0] == 'x' ? -1 : atoi(word);
+//				}
+//
+//				/*
+//				 *  Общее количество точек в вертексе делим на два
+//				 *  это будут наши соединения ( npoints )
+//				 */
+//
+//				sect->npoints = m /= 2;
+//
+//				/*
+//                 *  размер *neighbors = 1 byte
+//                 *  размер npoints = m\2;
+//                 *  (m \ 2) * 1 byte = наше выделение под neighors
+//                 *  тоже самое под vertex, но на 1 больше,
+//                 *  т.к последняя связь ведёт к первому элементу вертекса
+//                 */
+//
+//				sect->neighbors = malloc((sect->npoints) * sizeof(*sect->neighbors));
+//				sect->vertex = malloc((m + 1) * sizeof(*sect->vertex));
+//
+//				/*
+//				 *
+//				 */
+//				k++;
+//                if (k == 8) {printf("m = %d\n", m);}
+//				for (n = 0; n < m; ++n)
+//				{
+//                    sect->neighbors[n] = num[m + n];
+//                    if (k == 8) {
+//                        printf("n = %d num = %d\n", n, num[m + n]);
+//                    };
+//                }
+//
+//				for (n = 0; n < m; ++n)
+//					sect->vertex[n + 1] = vert[num[n]]; // TODO: Range checking
+//				sect->vertex[0] = sect->vertex[m]; // Ensure the vertexes form a loop
+//				free(num);
+//				break;
+//			case 'p':;
+//			/*
+//			 *	player
+//			*/
+//				float angle;
+//				sscanf(ptr += n, "%f %f %f %d", &v.x, &v.y, &angle, &n);
+//				player = (struct player) {{v.x, v.y, 0}, {0, 0, 0}, angle, 0, 0,
+//										  0, n}; // TODO: Range checking
+//				player.where.z = sectors[player.sector].floor + EyeHeight;
+//		}
 	fclose(fp);
 	free(vert);
 }
