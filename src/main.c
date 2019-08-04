@@ -12,6 +12,13 @@
 #define FILE_NAME "map-clear.txt"
 
 /* Sectors: Floor and ceiling height; list of edge vertices and neighbors */
+
+typedef struct test_t {
+  int a;
+  char *b;
+  float x;
+} test_p;
+
 static struct sector
 {
 	float floor, ceil;
@@ -64,6 +71,22 @@ int				check_file(int fd)
         return (0);
     }
     return (1);
+}
+
+void *ft_realloc(void *ptr, size_t newsize)
+{
+    char *newptr;
+    size_t cursize;
+
+    if (ptr == 0)
+        return (malloc(newsize));
+    cursize = sizeof(ptr);
+    if (newsize <= cursize)
+        return (ptr);
+    newptr = malloc(newsize);
+    ft_memcpy(ptr, newptr, cursize);
+    free(ptr);
+    return (newptr);
 }
 
 //void			fill_map(t_env *map, char **cur, int i)
@@ -137,6 +160,12 @@ int				check_file(int fd)
 
 #define isdigit(c) (c >= '0' && c <= '9')
 
+struct posf_t {
+    int     pos;
+    bool    is_y;
+    float   value;
+    float   y;
+};
 double atof(const char *s)
 {
     double a = 0.0;
@@ -169,19 +198,87 @@ double atof(const char *s)
     return a * sign;
 }
 
+struct posf_t atof_posf(const char *s, struct posf_t posf)
+{
+    int exp = 0;
+    int c;
+    int sign = 1;
+    int i = posf.pos;
+
+    posf.value = 0.0;
+    if (s[0 + posf.pos] == '-') {
+        sign = -1;
+        s++;
+    }
+    while ((c = s[0 + posf.pos++]) != '\0' && isdigit(c)) {
+        posf.value = posf.value * 10.0 + (c - '0');
+    }
+    if (c == '.') {
+        while ((c = s[0 + posf.pos++]) != '\0' && isdigit(c)) {
+            posf.value = posf.value*10.0 + (c - '0');
+            exp = exp-1;
+        }
+    }
+    while (isdigit(c)) {
+        i = i*10 + (c - '0');
+        c = s[0 + posf.pos++];
+    }
+    while (exp < 0) {
+        posf.value *= 0.1;
+        exp++;
+    }
+    posf.value *= sign;
+    return posf;
+}
+
 void			reader(char *line, int fd)
 {
-    char		**cur;
+    char		        **cur;
+    struct posf_t       posf;
+    struct xy *vert = NULL, v;
+    int n, m, NumVertices = 0;
 
+    posf.pos = 0;
+    posf.value = 0;
+    posf.is_y = 0;
     cur = NULL;
     while (get_next_line(fd, &line) > 0) {
-        if (*line == 'v') {
+        posf.pos = 0;
+        posf.value = 0;
+        if ((posf.is_y = 1) && *line == 'v') {
+
+            while (line[posf.pos]) {
+                while (!ft_isdigit(line[posf.pos])) {
+                    posf.pos++ ;
+                }
+                vert = ft_realloc(vert, ++NumVertices * sizeof(*vert));
+                if (posf.is_y) {
+                    posf = atof_posf(line,posf);
+                    vert[NumVertices - 1].y = posf.value;
+                    posf.y = posf.value;
+                    while (!ft_isdigit(line[posf.pos])) {
+                        posf.pos++;
+                    }
+                    posf = atof_posf(line,posf);
+                    vert[NumVertices - 1].x = posf.value;
+                    posf.is_y = 0;
+                }
+                else
+                {
+                    posf = atof_posf(line,posf);
+                    vert[NumVertices - 1].x = posf.value;
+                    vert[NumVertices - 1].y = posf.y;
+                }
+                posf.pos--;
+                printf("%f %f\n", vert[NumVertices - 1].y, vert[NumVertices - 1].x);
+
+            }
 
         }
-        exit (1);
-//        print_rr()
     }
-    return ;
+//        print_rr()
+    exit (1);
+return ;
 }
 
 static void LoadData() {
@@ -218,7 +315,7 @@ static void LoadData() {
 //	     *
 //	     */
 //			case 'v': // vertex
-////			   j += 1;
+//			   j += 1;
 //				for (sscanf(ptr += n, "%f%n", &v.y, &n); sscanf(ptr += n, "%f%n", &v.x, &n) == 1;)
 //				{
 //
@@ -541,6 +638,7 @@ int main()
 {
 	LoadData();
 
+	exit(1);
 	surface = SDL_SetVideoMode(W, H, 32, 0);
 
 	SDL_EnableKeyRepeat(150, 30);
