@@ -32,9 +32,10 @@ static void LoadData(t_player *plr, t_sector1 **sectors)
 				}
 				break;
 			case 's': // sector
-				*sectors = realloc(*sectors, ++NumSectors * sizeof(**sectors));
+				*sectors = realloc(*sectors, ++plr->NumSectors * sizeof
+				(**sectors));
 				t_sector1 *sect;
-				sect = &(*sectors)[NumSectors - 1];
+				sect = &(*sectors)[plr->NumSectors - 1];
 				int *num = NULL;
 				sscanf(ptr += n, "%f%f%n", &sect->floor, &sect->ceil, &n);
 				for (m = 0; sscanf(ptr += n, "%32s%n", word, &n) == 1 &&
@@ -56,7 +57,8 @@ static void LoadData(t_player *plr, t_sector1 **sectors)
 			case 'p':; // player
 				float angle;
 				sscanf(ptr += n, "%f %f %f %d", &v.x, &v.y, &angle, &n);
-				*plr = (t_player){{v.x, v.y, 0}, {0, 0, 0}, angle, 0, 0, 0, n};
+				*plr = (t_player){{v.x, v.y, 0}, {0, 0, 0}, \
+						angle, 0, 0, 0, n, plr->NumSectors};
 				// T0D0: Range checking
 				plr->where.z = sectors[plr->sector]->floor + EyeHeight;
 		}
@@ -64,15 +66,15 @@ static void LoadData(t_player *plr, t_sector1 **sectors)
 	free(vert);
 }
 
-static void UnloadData(t_sector1 **sectors)
+static void UnloadData(t_sector1 **sectors, t_player *plr)
 {
-	for (unsigned a = 0; a < NumSectors; ++a)
+	for (unsigned a = 0; a < plr->NumSectors; ++a)
 		free((*sectors)[a].vertex);
-	for (unsigned a = 0; a < NumSectors; ++a)
+	for (unsigned a = 0; a < plr->NumSectors; ++a)
 		free((*sectors)[a].neighbors);
-	free(sectors);
+	free(*sectors);
 	*sectors = NULL;
-	NumSectors = 0;
+	plr->NumSectors = 0;
 }
 /* VOPOLONC PART END */
 
@@ -102,22 +104,14 @@ static void vline(int x, int y1, int y2, int color)
  */
 static void MovePlayer(t_player *plr, t_sector1 **sectors, float dx, float dy)
 {
-	float	px;
-	float	py;
-	unsigned s;
+	t_xy		*vert;
+	t_sector1	*sect;
+	float		px;
+	float		py;
+	unsigned	s;
 
 	px = plr->where.x;
 	py = plr->where.y;
-	/* Check if this movement crosses one of this sector's edges
-	 * that have a neighboring sector on the other side.
-	 * Because the edge vertices of each sector are defined in
-	 * clockwise order, PointSide will always return -1 for a point
-	 * that is outside the sector and 0 or 1 for a point that is inside.
-	 */
-
-	t_xy		*vert;
-	t_sector1	*sect;
-
 	sect = &(*sectors)[plr->sector];
 	vert = sect->vertex;
 	s = 0;
@@ -154,11 +148,11 @@ static void DrawScreen(t_player *plr, t_sector1 **sectors)
 		int sectorno, sx1, sx2;
 	} queue[MaxQueue], *head = queue, *tail = queue;
 
-	int ytop[W] = {0}, ybottom[W], renderedsectors[NumSectors];
+	int ytop[W] = {0}, ybottom[W], renderedsectors[plr->NumSectors];
 
 	for (unsigned x = 0; x < W; ++x)
 		ybottom[x] = H - 1;
-	for (unsigned n = 0; n < NumSectors; ++n)
+	for (unsigned n = 0; n < plr->NumSectors; ++n)
 		renderedsectors[n] = 0;
 
 	/* Begin whole-screen rendering from where the player is. */
@@ -325,6 +319,7 @@ int main()
 	t_sector1	sect;
 
 	sectors = NULL;
+	plr.NumSectors = 0;
 
 	LoadData(&plr, &sectors);
 
@@ -501,7 +496,7 @@ int main()
 		SDL_Delay(10);
 	}
 	done:
-	UnloadData(&sectors);
+	UnloadData(&sectors, &plr);
 	SDL_Quit();
 	return 0;
 }

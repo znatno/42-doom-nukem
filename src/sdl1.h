@@ -44,8 +44,6 @@ static struct sector //TODO: DELETE THIS
 } *sectors3 = NULL;
 
 
-unsigned NumSectors = 0; //TODO: DELETE THIS
-
 //Coordinates
 typedef struct	s_xyz
 {
@@ -81,8 +79,10 @@ typedef struct		s_player
 	float			anglecos;
 	float			yaw;		// Looking towards (and sin() and cos() thereof)
 	unsigned		sector;		// Which sector the player is currently in
+	unsigned int	NumSectors;
 }					t_player;
 
+unsigned		NumSectors = 0;
 // Utility functions. Because C doesn't have templates,
 // we use the slightly less safe preprocessor macros to
 // implement these functions that work with multiple types.
