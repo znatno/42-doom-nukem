@@ -316,7 +316,7 @@ int 		exit_doom(t_sector **sectors, t_player *plr)
 {
 	UnloadData(&(*sectors), &(*plr));
 	SDL_Quit();
-	return (0);
+	exit(0);
 }
 
 void		do_fall(t_player *plr, t_sector **sectors)
@@ -397,7 +397,7 @@ void		do_move(t_player *plr, t_sector **sc)
 
 void		events(SDL_Event ev, t_sector **sectors, t_player *plr)
 {
-	if(ev.type)
+	if (ev.type)
 	{
 		if (ev.key.keysym.sym == 'w')
 			plr->key.w = ev.type == SDL_KEYDOWN;
@@ -407,29 +407,20 @@ void		events(SDL_Event ev, t_sector **sectors, t_player *plr)
 			plr->key.s = ev.type == SDL_KEYDOWN;
 		else if (ev.key.keysym.sym == 'd')
 			plr->key.d = ev.type == SDL_KEYDOWN;
-		else if (ev.key.keysym.sym == ' ')
+		else if (ev.key.keysym.sym == ' ' && plr->ground)
 		{
-			if (plr->ground)
-			{
 				plr->vlct.z += 0.5;
 				plr->falling = 1;
-			}
 		}
 		else if (ev.key.keysym.sym == 'q')
-		{
 			exit_doom(sectors, plr);
-			exit(0);
-		}
 		else if (ev.key.keysym.sym == SDLK_LCTRL)
 		{
 			plr->ducking = ev.type == SDL_KEYDOWN;
 			plr->falling = 1;
 		}
 		else if (ev.type == SDL_QUIT)
-		{
 			exit_doom(sectors, plr);
-			exit(0);
-		}
 	}
 }
 
@@ -466,7 +457,6 @@ int 		main()
 			do_fall(&plr, &sectors);
 		if (plr.moving) /* Horizontal collision detection */
 			do_move(&plr, &sectors);
-
 		SDL_Event ev;
 		while (SDL_PollEvent(&ev))
 			if (ev.type)
@@ -479,7 +469,7 @@ int 		main()
 		plr.ms.yaw = clamp(plr.ms.yaw - plr.ms.y * 0.05f, -5, 5);
 		plr.yaw = plr.ms.yaw - plr.vlct.z * 0.5f;
 		MovePlayer(&plr, &sectors, 0, 0);
-		plr.mv = (t_move_vec){ .x = 0.f, .y = 0.f};
+		plr.mv = (t_move_vec){.x = 0.f, .y = 0.f};
 		if (plr.key.w)
 			plr.mv = (t_move_vec){.x = plr.mv.x + plr.anglecos * 0.2f,
 						 			.y = plr.mv.y + plr.anglesin * 0.2f};

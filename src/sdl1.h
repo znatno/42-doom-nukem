@@ -99,7 +99,7 @@ typedef struct		s_player
 	t_move_vec		mv;
 	int 			pushing;
 	float			aclrt;		// acceleration
-	t_xy_i			ms;
+	t_xy_i			ms;			// mouse aiming
 }					t_player;
 
 // Utility functions. Because C doesn't have templates,
