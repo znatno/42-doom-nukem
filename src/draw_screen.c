@@ -160,7 +160,8 @@ void	super_calc4(t_draw_screen_calc *ds, t_sector *sector, t_player plr)
 void	ultra_calc5(t_draw_screen_calc *ds)
 {
 	/* Calculate the Z coordinate for this point. (Only used for lighting.) */
-	ds->i->z = ((ds->it->x - ds->i->x1) * (ds->f->tz2 - ds->f->tz1) / (ds->i->x2 - ds->i->x1) + ds->f->tz1) * 8;//Maybe delete this?
+	ds->i->z = (int)((ds->it->x - ds->i->x1) * (ds->f->tz2 - ds->f->tz1) /
+			(ds->i->x2 - ds->i->x1) + ds->f->tz1) * 8;//Maybe delete this?
 	/* Acquire the Y coordinates for our ceiling & floor for this X coordinate-> Clamp them-> */
 	ds->i->ya = (ds->it->x - ds->i->x1) * (ds->i->y2a - ds->i->y1a) / (ds->i->x2 - ds->i->x1) + ds->i->y1a;
 	ds->i->cya = clamp(ds->i->ya, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // top
@@ -210,8 +211,8 @@ void	super_calc56(t_draw_screen_calc *ds)
 	}
 }
 
-void	super_duper_calc456(t_draw_screen_calc *ds , t_sector *sectore, t_item
-queue[MaxQue], t_player plr)
+void	super_duper_calc456(t_draw_screen_calc *ds , t_sector *sectore,
+							t_item queue[MaxQue], t_player plr)
 {
 	super_calc4(ds, sectore, plr);
 	for (ds->it->x = ds->i->beginx; ds->it->x <= ds->i->endx; ++ds->it->x)
