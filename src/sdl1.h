@@ -46,6 +46,13 @@ typedef struct	s_xy
 	float	y;
 }				t_xy;
 
+typedef struct	s_xy_i
+{
+	int			x;
+	int			y;
+	float 		yaw;
+}				t_xy_i;
+
 /* Sectors: Floor and ceiling height; list of edge vertices and neighbors */
 typedef struct		s_sector
 {
