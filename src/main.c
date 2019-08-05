@@ -238,6 +238,9 @@ double atof(const char *s)
 //    return posf;
 //}
 
+void     print_sector(int id_s);
+void     print_vertex(int id_v);
+
 struct posf_t atof_posf(const char *s, struct posf_t posf)
 {
     int exp = 0;
@@ -248,7 +251,7 @@ struct posf_t atof_posf(const char *s, struct posf_t posf)
     posf.value = 0.0;
     if (s[0 + posf.pos] == '-') {
         sign = -1;
-        s++;
+        posf.pos++;
     }
     while ((c = s[0 + posf.pos++]) != '\0' && isdigit(c)) {
         posf.value = posf.value * 10.0 + (c - '0');
@@ -267,6 +270,7 @@ struct posf_t atof_posf(const char *s, struct posf_t posf)
         posf.value *= 0.1;
         exp++;
     }
+
     posf.value *= sign;
     return posf;
 }
@@ -320,8 +324,10 @@ void			reader(char *line, int fd) {
                  */
 
                 posf.pos--;
+//                printf("-----------------------\n");
 //                printf("%f %f\n", vert[NumVertices - 1].y, vert[NumVertices - 1].x);
             }
+//            printf("\n-----%1.1f--VERTEX END-----------\n",vert[NumVertices - 1].y);
         }
         /*
          *  SECTORS -> floor ceil {vertex.x{index} | neighbors}
@@ -371,16 +377,23 @@ void			reader(char *line, int fd) {
              * all все значения что после ceil и floor
              * записываем в num[all]
              */
+            /*
+             * БАГА НА КОТОРУЮ МИНУС 2 ЧАСА
+             */
+
             int all = 0;
-            while (line[posf.pos]) {
+            int len = ft_strlen(line);
+            while (line[posf.pos] && len >= posf.pos) {
                 while (!ft_isdigit(line[posf.pos])) {
                     posf.pos++;
                 }
                 if (line[posf.pos - 1] == '-')
                     posf.pos--;
-                num = realloc(num, ++all * sizeof(*num));
-                posf = atof_posf(line, posf);
-                num[all - 1] = (int) posf.value;
+                if (len >= posf.pos) {
+                    num = realloc(num, ++all * sizeof(*num));
+                    posf = atof_posf(line, posf);
+                    num[all - 1] = posf.value;
+                }
             }
 //				/*
 //				 *  Общее количество точек в вертексе делим на два
@@ -396,31 +409,43 @@ void			reader(char *line, int fd) {
 //                 *  т.к последняя связь ведёт к первому элементу вертекса
 //                 */
 //
-            sect->neighbors = malloc((sect->npoints) * sizeof(*sect->neighbors));
+            sect->neighbors = malloc((all) * sizeof(*sect->neighbors));
             sect->vertex = malloc((all + 1) * sizeof(*sect->vertex));
+
             n = 0;
             /*
              * Записываем связи соседей
              * <vertex{x} | соседи>
              * соседи находятся во второй половине массива
              */
+
+            /*
+             * Комментарий для дебага связей
+             */
+
+            static int id = -1;
+            id++;
+            printf("[%d] all = %d\n",id,all);
             while (n < all) {
-                sect->neighbors[n] = (num[all + n]);
+                sect->neighbors[n] = num[all + n];
                 n++;
             }
-//				printf("\n");
+
 
 
             n = 0;
             while (n < all) {
                 sect->vertex[n + 1] = vert[num[n]];
-//                    printf("%d %f %f \n", num[n], vert[num[n]].x, vert[num[n]].y);
                 n++;
+//                    prinxtf("num = %d\n", num[n]);
             }
-                printf("\n-------------------------\n");
+//                printf("\n-------------------------\n");
 
-            sect->vertex[0] = sect->vertex[all]; // Ensure the vertexes form a loop
-//            free(num);
+            sect->vertex[0] = sect->vertex[all];
+//            printf(" %d ", sect->nu[0]);
+//            printf("\n-------------------------\n");
+//            printf("x = %f y = %f\n", sect->vertex[0].x,sect->vertex[0].y );// Ensure the vertexes form a loop
+            free(num);
 //				free(num);
 //				break;
 
@@ -447,7 +472,31 @@ void			reader(char *line, int fd) {
             player.where.z = sectors[player.sector].floor + EyeHeight;
         }
     }
+//    exit(1);
+//    print_vertex(0);
     free(vert);
+}
+
+void print_vertex(int id)
+{
+    for (int i = 0; i < sectors[id].npoints; ++i) {
+        printf("vertex[%d] -> y = %f x = %f\n",id,sectors[0].vertex[i].y, sectors[0].vertex[i].x);
+    }
+
+    exit(1);
+}
+
+void print_sector(int id)
+{
+    printf("--------sector{%d}-------------\n", id);
+    printf("floor = %5.1f  ceil = %5.1f:\n",sectors[id].floor, sectors[id].ceil);
+    for (int i = 0; i < sectors[id].npoints; ++i) {
+        printf("y = %10.1f x = %7.1f\n",sectors[id].vertex[i].y, sectors[id].vertex[i].x);
+    }
+    for (int i = 0; i < sectors[id].npoints; ++i) {
+        printf("neighbors = %d\n", sectors->neighbors[i]);
+    }
+    printf("------------------------------\n");
 }
 
 static void LoadData() {
