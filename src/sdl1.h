@@ -19,12 +19,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <stdbool.h>
-
+#include "libft.h"
 /* Define window size */
 #define W 608
 #define H 320
-
+#define Yaw(y, z) (y + z*player.yaw)
+#define MaxQue	32
 #define EyeHeight  6    // Camera height from floor when standing
 #define DuckHeight 2.5  // And when crouching
 #define HeadMargin 1    // How much room there is above camera before the head hits the ceiling
@@ -40,7 +40,7 @@ typedef struct	s_xyz
 	float	z;
 }				t_xyz;
 
-typedef struct	s_xy
+typedef struct	s_xy1
 {
 	float	x;
 	float	y;
@@ -125,7 +125,109 @@ typedef struct		s_player
 
 static SDL_Surface *surface = NULL;
 
+typedef struct	s_tmp_iter
+{
+	int 		start_do;
+	int 		x;
+	unsigned 	s;
+}				t_tmp_iter;
+
+typedef struct	s_calc_tmp_float
+{
+	float vx1;
+	float vx2;
+	float vy1;
+	float vy2;
+	float pcos;
+	float psin;
+	float tx1;
+	float tx2;
+	float tz1;
+	float tz2;
+	float nearz;
+	float farz;
+	float nearside;
+	float farside;
+	float xscale1;
+	float xscale2;
+	float yscale1;
+	float yscale2;
+	float yceil;
+	float yfloor;
+	float nyceil;
+	float nyfloor;
+}				t_calc_tmp_float;
+
+typedef struct	s_calc_tmp_int
+{
+	int 		y_top[W];
+	int 		y_bottom[W];
+	int 		*renderedsectors;
+	int 		x1;
+	int 		x2;
+	int 		neightbor;
+	int 		y1a;
+	int 		y1b;
+	int 		y2a;
+	int 		y2b;
+	int 		ny1a;
+	int 		ny1b;
+	int 		ny2a;
+	int 		ny2b;
+	int 		beginx;
+	int 		endx;
+	int 		z;
+	int 		ya;
+	int 		cya;
+	int 		yb;
+	int 		cyb;
+	int 		nya;
+	int 		cnya;
+	int 		nyb;
+	int 		cnyb;
+	unsigned	r1;
+	unsigned 	r2;
+	unsigned	r;
+}				t_calc_tmp_int;
+
+
+typedef struct	s_item
+{
+	int sectorno;
+	int sx1;
+	int sx2;
+}				t_item;
+
+typedef struct		s_calc_tmp_struct
+{
+	t_item				now;
+	const struct sector *sect;
+	struct sector		*sectors;
+	struct xy			i1;
+	struct xy			i2;
+	t_item				*head;
+	t_item				*tail;
+	struct sector		*sectore;
+}					t_cacl_tmp_struct;
+
+typedef struct		s_draw_sreen_calc
+{
+	t_calc_tmp_int		*i;
+	t_calc_tmp_float	*f;
+	t_cacl_tmp_struct	*s;
+	t_tmp_iter			*it;
+	t_item				*que;
+}					t_draw_screen_calc;
+
+
+
+
 #define SEC_COLOR 0x0000ff00
 #define BLACK_COLOR 0x00
+
+void		draw_screen();
+char		*ft_itof(long double k);
+void		vline(int x, int y1, int y2, int color);
+void		vertex(struct xy *vertex, int num_vertex);
 
 #endif
