@@ -451,9 +451,9 @@ int 		main()
 	SDL_EnableKeyRepeat(150, 30);
 	SDL_ShowCursor(SDL_DISABLE);
 
-	float yaw;
-	yaw = 0;
-
+	//float yaw;
+	//yaw = 0;
+	plr.ms.yaw = 0;
 	while (1)
 	{
 		SDL_LockSurface(surface);
@@ -471,19 +471,14 @@ int 		main()
 		while (SDL_PollEvent(&ev))
 			if (ev.type)
 				events(ev, &sectors, &plr); /* events(); */
-
-
 		/* mouse aiming */
-		int x;
-		int y;
-
-		SDL_GetRelativeMouseState(&x, &y);
-		plr.angle += x * 0.03f;
-		yaw = clamp(yaw - y * 0.05f, -5, 5);
-		plr.yaw = yaw - plr.vlct.z * 0.5f;
+		plr.ms.x = 0;
+		plr.ms.y = 0;
+		SDL_GetRelativeMouseState(&plr.ms.x, &plr.ms.y);
+		plr.angle += plr.ms.x * 0.03f;
+		plr.ms.yaw = clamp(plr.ms.yaw - plr.ms.y * 0.05f, -5, 5);
+		plr.yaw = plr.ms.yaw - plr.vlct.z * 0.5f;
 		MovePlayer(&plr, &sectors, 0, 0);
-
-
 		plr.mv = (t_move_vec){ .x = 0.f, .y = 0.f};
 		if (plr.key.w)
 			plr.mv = (t_move_vec){.x = plr.mv.x + plr.anglecos * 0.2f,
