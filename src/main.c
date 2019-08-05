@@ -438,14 +438,22 @@ int 		main()
 	t_player	plr;
 	t_sector	*sectors;
 
+
 	sectors = NULL;
 	plr.NumSectors = 0;
 	plr = (t_player){ .ground = 0, .falling = 1, .moving = 0, .ducking = 0 };
 	plr.key = (t_keys){ .w = 0, .s = 0, .a = 0, .d = 0 };
+
 	LoadData(&plr, &sectors);
+
 	surface = SDL_SetVideoMode(W, H, 32, 0);
+
 	SDL_EnableKeyRepeat(150, 30);
 	SDL_ShowCursor(SDL_DISABLE);
+
+	float yaw;
+	yaw = 0;
+
 	while (1)
 	{
 		SDL_LockSurface(surface);
@@ -458,17 +466,24 @@ int 		main()
 			do_fall(&plr, &sectors);
 		if (plr.moving) /* Horizontal collision detection */
 			do_move(&plr, &sectors);
+
 		SDL_Event ev;
 		while (SDL_PollEvent(&ev))
 			if (ev.type)
 				events(ev, &sectors, &plr); /* events(); */
-		t_xy_i		ms; /* mouse aiming */
-		ms.yaw = 0;
-		SDL_GetRelativeMouseState(&ms.x, &ms.y);
-		plr.angle += ms.x * 0.03f;
-		ms.yaw = clamp(ms.yaw - ms.y * 0.05f, -5, 5);
-		plr.yaw = ms.yaw - plr.vlct.z * 0.5f;
+
+
+		/* mouse aiming */
+		int x;
+		int y;
+
+		SDL_GetRelativeMouseState(&x, &y);
+		plr.angle += x * 0.03f;
+		yaw = clamp(yaw - y * 0.05f, -5, 5);
+		plr.yaw = yaw - plr.vlct.z * 0.5f;
 		MovePlayer(&plr, &sectors, 0, 0);
+
+
 		plr.mv = (t_move_vec){ .x = 0.f, .y = 0.f};
 		if (plr.key.w)
 			plr.mv = (t_move_vec){.x = plr.mv.x + plr.anglecos * 0.2f,
