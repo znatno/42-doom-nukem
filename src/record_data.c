@@ -26,7 +26,7 @@ char	*trim_itof(char *flt)
 	return (flt);
 }
 
-void	vertex(struct xy *vertex, int num_vertex)
+/*void	vertex(t_xy *vertex, int num_vertex)
 {
 	int fd;
 	int i;
@@ -52,4 +52,10 @@ void	vertex(struct xy *vertex, int num_vertex)
 		i++;
 	}
 	close(fd);
+<<<<<<< HEAD
 }
+=======
+}*/
+
+
+>>>>>>> ibohun-engine

@@ -24,7 +24,7 @@ int		main_loop_condition(t_draw_screen_calc *ds)
 	return (0);
 }
 
-void	init_draw(t_draw_screen_calc *ds, unsigned int num_sectors)
+void	init_draw(t_draw_screen_calc *ds, t_player plr)
 {
 	unsigned		i;
 
@@ -39,14 +39,14 @@ void	init_draw(t_draw_screen_calc *ds, unsigned int num_sectors)
 		i++;
 	}
 	i = 0;
-	ds->i->renderedsectors = (int *)malloc(sizeof(int) * num_sectors);
-	while (i < num_sectors)
+	ds->i->renderedsectors = (int *)malloc(sizeof(int) * plr.num_scts);
+	while (i < plr.num_scts)
 	{
 		ds->i->renderedsectors[i] = 0;
 		i++;
 	}
 	/* Begin whole-screen rendering from where the player is. */
-	*ds->s->head = (t_item) { player.sector, 0, W-1 };
+	*ds->s->head = (t_item){plr.sector, 0, W-1};
 }
 
 void	pick_sector_slice(t_draw_screen_calc *ds)
@@ -57,18 +57,22 @@ void	pick_sector_slice(t_draw_screen_calc *ds)
 		ds->s->tail = ds->que;
 }
 
+<<<<<<< HEAD
 void	rotate_view_(t_draw_screen_calc *ds)
+=======
+void	easy_calc1(t_draw_screen_calc *ds, t_player plr)
+>>>>>>> ibohun-engine
 {
 	/* Acquire the x,y coordinates of the two endpoints (vertices) of this edge of the sector */
-	ds->f->vx1 = ds->s->sect->vertex[ds->it->s + 0].x - player.where.x;
-	ds->f->vy1 = ds->s->sect->vertex[ds->it->s + 0].y - player.where.y;
+	ds->f->vx1 = ds->s->sect->vertex[ds->it->s + 0].x - plr.where.x;
+	ds->f->vy1 = ds->s->sect->vertex[ds->it->s + 0].y - plr.where.y;
 
-	ds->f->vx2 = ds->s->sect->vertex[ds->it->s + 1].x - player.where.x;
-	ds->f->vy2 = ds->s->sect->vertex[ds->it->s + 1].y - player.where.y;
+	ds->f->vx2 = ds->s->sect->vertex[ds->it->s + 1].x - plr.where.x;
+	ds->f->vy2 = ds->s->sect->vertex[ds->it->s + 1].y - plr.where.y;
 
 	/* Rotate them around the player's view */
-	ds->f->pcos = player.anglecos;
-	ds->f->psin = player.anglesin;
+	ds->f->pcos = plr.anglecos;
+	ds->f->psin = plr.anglesin;
 
 	ds->f->tx1 = ds->f->vx1 * ds->f->psin - ds->f->vy1 * ds->f->pcos;
 	ds->f->tz1 = ds->f->vx1 * ds->f->pcos + ds->f->vy1 * ds->f->psin;
@@ -84,8 +88,10 @@ void	medium_calc2(t_draw_screen_calc *ds)
 	ds->f->nearside = 1e-5f;
 	ds->f->farside = 20.f;
 	// Find an intersection between the wall and the approximate edges of player's view
-	ds->s->i1 = Intersect(ds->f->tx1, ds->f->tz1, ds->f->tx2, ds->f->tz2, -ds->f->nearside, ds->f->nearz,-ds->f->farside, ds->f->farz);
-	ds->s->i2 = Intersect(ds->f->tx1, ds->f->tz1, ds->f->tx2, ds->f->tz2, ds->f->nearside, ds->f->nearz,ds->f->farside, ds->f->farz);
+	ds->s->i1 = Intersect(ds->f->tx1, ds->f->tz1, ds->f->tx2, ds->f->tz2,
+			-ds->f->nearside, ds->f->nearz,-ds->f->farside, ds->f->farz);
+	ds->s->i2 = Intersect(ds->f->tx1, ds->f->tz1, ds->f->tx2, ds->f->tz2,
+			ds->f->nearside, ds->f->nearz,ds->f->farside, ds->f->farz);
 	if (ds->f->tz1 < ds->f->nearz)
 	{
 		if (ds->s->i1.y > 0)
@@ -126,18 +132,18 @@ void	hard_calc3(t_draw_screen_calc *ds)
 	ds->i->x2 = W / 2 - (int)(ds->f->tx2 * ds->f->xscale2);
 }
 
-void	super_calc4(t_draw_screen_calc *ds, struct sector *sectore)
+void	super_calc4(t_draw_screen_calc *ds, t_sector *sector, t_player plr)
 {
-	ds->f->yceil = ds->s->sect->ceil - player.where.z;
-	ds->f->yfloor = ds->s->sect->floor - player.where.z;
+	ds->f->yceil = ds->s->sect->ceil - plr.where.z;
+	ds->f->yfloor = ds->s->sect->floor - plr.where.z;
 	/* Check the edge type-> neighbor=-1 means wall, other=boundary between two sectors-> */
 	ds->i->neightbor = ds->s->sect->neighbors[ds->it->s];
 	ds->f->nyceil = 0;
 	ds->f->nyfloor = 0;
 	if (ds->i->neightbor >= 0) // Is another sector showing through this portal?
 	{
-		ds->f->nyceil = sectore[ds->i->neightbor].ceil - player.where.z;
-		ds->f->nyfloor = sectore[ds->i->neightbor].floor - player.where.z;
+		ds->f->nyceil = sector[ds->i->neightbor].ceil - plr.where.z;
+		ds->f->nyfloor = sector[ds->i->neightbor].floor - plr.where.z;
 	}
 	/* Project our ceiling & floor heights into screen coordinates (Y coordinate) */
 	ds->i->y1a = H / 2 - (int)(Yaw(ds->f->yceil, ds->f->tz1) * ds->f->yscale1);
@@ -158,7 +164,8 @@ void	super_calc4(t_draw_screen_calc *ds, struct sector *sectore)
 void	ultra_calc5(t_draw_screen_calc *ds)
 {
 	/* Calculate the Z coordinate for this point. (Only used for lighting.) */
-	ds->i->z = ((ds->it->x - ds->i->x1) * (ds->f->tz2 - ds->f->tz1) / (ds->i->x2 - ds->i->x1) + ds->f->tz1) * 8;//Maybe delete this?
+	ds->i->z = (int)((ds->it->x - ds->i->x1) * (ds->f->tz2 - ds->f->tz1) /
+			(ds->i->x2 - ds->i->x1) + ds->f->tz1) * 8;//Maybe delete this?
 	/* Acquire the Y coordinates for our ceiling & floor for this X coordinate-> Clamp them-> */
 	ds->i->ya = (ds->it->x - ds->i->x1) * (ds->i->y2a - ds->i->y1a) / (ds->i->x2 - ds->i->x1) + ds->i->y1a;
 	ds->i->cya = clamp(ds->i->ya, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // top
@@ -208,9 +215,10 @@ void	super_calc56(t_draw_screen_calc *ds)
 	}
 }
 
-void	super_duper_calc456(t_draw_screen_calc *ds , struct sector *sectore, t_item queue[MaxQue])
+void	super_duper_calc456(t_draw_screen_calc *ds , t_sector *sectore,
+							t_item queue[MaxQue], t_player plr)
 {
-	super_calc4(ds, sectore);
+	super_calc4(ds, sectore, plr);
 	for (ds->it->x = ds->i->beginx; ds->it->x <= ds->i->endx; ++ds->it->x)
 		super_calc56(ds);
 	/* Schedule the neighboring sector for rendering within the window formed by this wall-> */
@@ -222,13 +230,13 @@ void	super_duper_calc456(t_draw_screen_calc *ds , struct sector *sectore, t_item
 	}
 }
 
-void	draw_screen(struct sector *sectore, unsigned int num_sectors)
+void	draw_screen(t_sector *sector, t_player plr)
 {
 	t_tmp_iter			it;
 	t_item				qe[MaxQue];
 	t_calc_tmp_int		i;
 	t_calc_tmp_float	f;
-	t_cacl_tmp_struct	s;
+	t_calc_tmp_struct	s;
 	t_draw_screen_calc	ds;
 
 	ds.i = &i;
@@ -240,20 +248,29 @@ void	draw_screen(struct sector *sectore, unsigned int num_sectors)
 	ds.s->head = ds.que;
 	ds.s->tail = ds.que;
 
-	init_draw(&ds, num_sectors);
+	init_draw(&ds, plr);
 	if (++ds.s->head  == ds.que + MaxQue)
 		ds.s->head = ds.que;
 	while (main_loop_condition(&ds))
 	{
+<<<<<<< HEAD
 		pick_sector_slice(&ds);
 		if (ds.i->renderedsectors[ds.s->now.sectorno] & 0x21)
+=======
+		simple_calc0(&ds);
+		if ((unsigned)ds.i->renderedsectors[ds.s->now.sectorno] & 0x21u)
+>>>>>>> ibohun-engine
 			continue; // Odd = still rendering, 0x20 = give up
 		++ds.i->renderedsectors[ds.s->now.sectorno];
-		ds.s->sect = &sectore[ds.s->now.sectorno];
+		ds.s->sect = &sector[ds.s->now.sectorno];
 		/* Render each wall of this sector that is facing towards player. */
 		for (ds.it->s = 0; ds.it->s < ds.s->sect->npoints; ++ds.it->s)
 		{
+<<<<<<< HEAD
 			rotate_view_(&ds);
+=======
+			easy_calc1(&ds , plr);
+>>>>>>> ibohun-engine
 			/* Is the wall at least partially in front of the player? */
 			if (ds.f->tz1 <= 0 && ds.f->tz2 <= 0)
 				continue;
@@ -264,7 +281,7 @@ void	draw_screen(struct sector *sectore, unsigned int num_sectors)
 			if (ds.i->x1 >= ds.i->x2 || ds.i->x2 < ds.s->now.sx1 || ds.i->x1 > ds.s->now.sx2)
 				continue; // Only render if it's visible
 			/* Acquire the floor and ceiling heights, relative to where the player's view is */
-			super_duper_calc456(&ds, sectore, ds.que);
+			super_duper_calc456(&ds, sector, ds.que, plr);
 		} // for s in sector's edges
 		++ds.i->renderedsectors[ds.s->now.sectorno];
 	}

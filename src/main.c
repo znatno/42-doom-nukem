@@ -1,9 +1,41 @@
+#include <AppleTextureEncoder.h>
 #include "sdl1.h"
+
+bool Overlap(float a0, float a1, float b0, float b1)
+{
+	if ((min(a0,a1) <= max(b0,b1) && min(b0,b1) <= max(a0,a1)))
+		return (true);
+	else
+		return (false);
+}
+
+float IntersectBox(float x0, float y0, float x1, float y1, float x2, float y2, float x3, float y3)
+{
+	float result;
+	result = (Overlap(x0,x1,x2,x3) && Overlap(y0,y1,y2,y3));
+	return (result);
+}
+
+float PointSide(float px, float py, float x0, float y0, float x1, float y1)
+{
+	float result;
+	result = vxs((x1)-(x0), (y1)-(y0), (px)-(x0), (py)-(y0));
+	return (result);
+}
+
+t_xy Intersect(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4)
+{
+	t_xy result;
+
+	result = (t_xy) {.x = vxs(vxs(x1,y1, x2,y2), (x1)-(x2), vxs(x3,y3, x4,y4), (x3)-(x4)) / vxs((x1)-(x2), (y1)-(y2), (x3)-(x4), (y3)-(y4)), \
+	.y = vxs(vxs(x1,y1, x2,y2), (y1)-(y2), vxs(x3,y3, x4,y4), (y3)-(y4)) / vxs((x1)-(x2), (y1)-(y2), (x3)-(x4), (y3)-(y4))};
+	return (result);
+}
 
 /* VOPOLONC PART START */
 /* Define various vision related constants */
 
-static void LoadData()
+static void LoadData(t_player *plr, t_sector **sectors)
 {
 	FILE *fp = fopen("map-clear.txt", "rt");
 	if (!fp)
@@ -12,8 +44,14 @@ static void LoadData()
 		exit(1);
 	}
 	char Buf[256], word[256], *ptr;
-	struct xy *vert = NULL, v;
+
+	t_xy *vert;
+	t_xy v;
+
+	vert = NULL;
+
 	int n, m, NumVertices = 0;
+
 	while (fgets(Buf, sizeof Buf, fp))
 		switch (sscanf(ptr = Buf, "%32s%n", word, &n) == 1 ? word[0] : '\0')
 		{
@@ -26,8 +64,10 @@ static void LoadData()
 				}
 				break;
 			case 's': // sector
-				sectors = realloc(sectors, ++NumSectors * sizeof(*sectors));
-				struct sector *sect = &sectors[NumSectors - 1];
+				*sectors = realloc(*sectors, ++plr->num_scts * sizeof
+				(**sectors));
+				t_sector *sect;
+				sect = &(*sectors)[plr->num_scts - 1];
 				int *num = NULL;
 				sscanf(ptr += n, "%f%f%n", &sect->floor, &sect->ceil, &n);
 				for (m = 0; sscanf(ptr += n, "%32s%n", word, &n) == 1 &&
@@ -42,32 +82,35 @@ static void LoadData()
 				for (n = 0; n < m; ++n) sect->neighbors[n] = num[m + n];
 				for (n = 0; n < m; ++n)
 					sect->vertex[n + 1] = vert[num[n]]; // T0D0: Range checking
-				sect->vertex[0] = sect->vertex[m]; // Ensure the vertexes form a loop
+				sect->vertex[0] = sect->vertex[m]; // Ensure the vertexes form a
+				// loop
 				free(num);
 				break;
 			case 'p':; // player
 				float angle;
 				sscanf(ptr += n, "%f %f %f %d", &v.x, &v.y, &angle, &n);
-				player = (struct player) {{v.x, v.y, 0}, {0, 0, 0}, angle, 0, 0,
-										  0, n}; // T0D0: Range checking
-				player.where.z = sectors[player.sector].floor + EyeHeight;
+				*plr = (t_player){{v.x, v.y, 0}, {0, 0, 0}, \
+						angle, 0, 0, 0, n, plr->num_scts};
+				// T0D0: Range checking
+				plr->where.z = sectors[plr->sector]->floor + EyeHeight;
 		}
 	fclose(fp);
 	free(vert);
 }
 
-static void UnloadData()
+static void UnloadData(t_sector **sectors, t_player *plr)
 {
-	for (unsigned a = 0; a < NumSectors; ++a) free(sectors[a].vertex);
-	for (unsigned a = 0; a < NumSectors; ++a) free(sectors[a].neighbors);
-	free(sectors);
-	sectors = NULL;
-	NumSectors = 0;
+	for (unsigned a = 0; a < plr->num_scts; ++a)
+		free((*sectors)[a].vertex);
+	for (unsigned a = 0; a < plr->num_scts; ++a)
+		free((*sectors)[a].neighbors);
+	free(*sectors);
+	*sectors = NULL;
+	plr->num_scts = 0;
 }
 /* VOPOLONC PART END */
 
 /* IBOHUN PART 1 START */
-
 /* vline: Draw a vertical line on screen, with a different color pixel in top & bottom */
 void vline(int x, int y1, int y2, int color)
 {
@@ -75,221 +118,230 @@ void vline(int x, int y1, int y2, int color)
 	y1 = clamp(y1, 0, H - 1);
 	y2 = clamp(y2, 0, H - 1);
 	if (y2 == y1)
-		pix[y1 * W + x] = BLACK_COLOR; //верхня і нижня межа екрану
+		pix[y1 * W + x] = BLACK_COLOR; //нижня межа вікна
 	else if (y2 > y1)
 	{
 		pix[y1 * W + x] = SEC_COLOR; //проміжок секторів
-		for (int y = y1 + 1; y < y2; ++y) pix[y * W + x] = color;
+		if (y1 == 0 || y1 == 1)
+			pix[y1 * W + x] = BLACK_COLOR; //верхня межа вікна
+		for (int y = y1 + 1; y <= y2; ++y)
+			pix[y * W + x] = color;
 		pix[y2 * W + x] = color;
 	}
 }
-
+/* IBOHUN PART 1 END */
+/* IBOHUN (& somebody else) PART 2 START */
 /* MovePlayer(dx,dy): Moves the player by (dx,dy) in the map, and
  * also updates their anglesin/anglecos/sector properties properly.
  */
-static void MovePlayer(float dx, float dy)
+static void MovePlayer(t_player *plr, t_sector **sectors, float dx, float dy)
 {
-	float px = player.where.x, py = player.where.y;
-	/* Check if this movement crosses one of this sector's edges
-	 * that have a neighboring sector on the other side.
-	 * Because the edge vertices of each sector are defined in
-	 * clockwise order, PointSide will always return -1 for a point
-	 * that is outside the sector and 0 or 1 for a point that is inside.
-	 */
-	const struct sector *const sect = &sectors[player.sector];
-	const struct xy *const vert = sect->vertex;
-	for (unsigned s = 0; s < sect->npoints; ++s)
-		if (sect->neighbors[s] >= 0
-			&&
-			IntersectBox(px, py, px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
-						 vert[s + 1].x, vert[s + 1].y)
-			&& PointSide(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
-						 vert[s + 1].x, vert[s + 1].y) < 0)
+	t_sector	*sect;
+	t_xy		*vert;
+	float		px;
+	float		py;
+	unsigned	s;
+
+	px = plr->where.x;
+	py = plr->where.y;
+	sect = &(*sectors)[plr->sector];
+	vert = sect->vertex;
+	s = 0;
+	while (s < sect->npoints)
+	{
+		if (sect->neighbors[s] >= 0 &&
+			IntersectBox(px, py, px + dx, py + dy, vert[s + 0].x,
+					vert[s + 0].y, vert[s + 1].x, vert[s + 1].y) &&
+		 	PointSide(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
+					  vert[s + 1].x, vert[s + 1].y) < 0)
 		{
-			player.sector = sect->neighbors[s];
+			printf("%f", PointSide(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y, vert[s + 1].x, vert[s + 1].y));
+			plr->sector = sect->neighbors[s];
 			break;
 		}
-
-	player.where.x += dx;
-	player.where.y += dy;
-	player.anglesin = sinf(player.angle);
-	player.anglecos = cosf(player.angle);
+		s++;
+	}
+	plr->where.x += dx;
+	plr->where.y += dy;
+	plr->anglesin = sinf(plr->angle);
+	plr->anglecos = cosf(plr->angle);
 }
-/* IBOHUN PART 1 END */
-/* IBOHUN (& somebody else) PART 2 START */
-int main()
+
+int 		exit_doom(t_sector **sectors, t_player *plr)
 {
-	LoadData();
+	UnloadData(&(*sectors), &(*plr));
+	SDL_Quit();
+	exit(0);
+}
+
+void		do_fall(t_player *plr, t_sector **sectors)
+{
+	float nextz;
+
+	plr->vlct.z -= 0.05f; /* Add gravity */
+	nextz = plr->where.z + plr->vlct.z;
+	if (plr->vlct.z < 0 && nextz < (*sectors)[plr->sector].floor + plr->eyeheight) // When going down
+	{
+		plr->where.z = (*sectors)[plr->sector].floor + plr->eyeheight; /* Fix to ground */
+		plr->vlct.z = 0;
+		plr->falling = 0;
+		plr->ground = 1;
+	}
+	else if (plr->vlct.z > 0 && nextz > (*sectors)[plr->sector].ceil) // When going up
+	{
+		plr->vlct.z = 0; /* Prevent jumping above ceiling */
+		plr->falling = 1;
+	}
+	if (plr->falling)
+	{
+		plr->where.z += plr->vlct.z;
+		plr->moving = 1;
+	}
+}
+
+void		chholebump(t_sector **sectors, t_sector sect, unsigned int *s,
+					   t_player *plr, t_xy **vert, float *dx, float *dy)
+{
+	float hole_low; /* Check where the hole is. */
+	float hole_high;
+
+	hole_low = sect.neighbors[*s] < 0 ?
+			   9e9 : max(sect.floor, (*sectors)[sect.neighbors[*s]].floor);
+	hole_high = sect.neighbors[*s] < 0 ?
+				-9e9 : min(sect.ceil, (*sectors)[sect.neighbors[*s]].ceil);
+	/* Check whether we're bumping into a wall. */
+	if (hole_high < plr->where.z + HeadMargin || hole_low > plr->where.z - plr->eyeheight + KneeHeight)
+	{
+		float xd;
+		float yd;
+
+		xd = (*vert)[*s + 1].x - (*vert)[*s + 0].x;
+		yd = (*vert)[*s + 1].y - (*vert)[*s + 0].y;
+
+		*dx = xd * (*dx * xd + yd * *dy) / (xd * xd + yd * yd);
+		*dy = yd * (*dx * xd + yd * *dy) / (xd * xd + yd * yd);
+		plr->moving = 0;
+	}
+}
+
+void		do_move(t_player *plr, t_sector **sc)
+{
+	unsigned int	s;
+	float 			px;
+	float 			py;
+	float 			dx;
+	float 			dy;
+
+	px = plr->where.x;
+	py = plr->where.y;
+	dx = plr->vlct.x;
+	dy = plr->vlct.y;
+	(*sc)->vert = (*sc)[plr->sector].vertex;
+	s = -1;
+	while (++s < (*sc)[plr->sector].npoints)
+	{
+		if (IntersectBox(px, py, px + dx, py + dy, (*sc)->vert[s + 0].x,
+			(*sc)->vert[s + 0].y, (*sc)->vert[s + 1].x, (*sc)->vert[s + 1].y)
+			&& PointSide(px + dx, py + dy, (*sc)->vert[s + 0].x,
+			(*sc)->vert[s + 0].y, (*sc)->vert[s + 1].x, (*sc)->vert[s + 1].y) < 0)
+			chholebump(sc, (*sc)[plr->sector], &s, plr, &(*sc)->vert, &dx, &dy);
+	}
+	MovePlayer(plr, sc, dx, dy);
+	plr->falling = 1;
+}
+
+void		events(SDL_Event ev, t_sector **sectors, t_player *plr)
+{
+	if (ev.type)
+	{
+		if (ev.key.keysym.sym == 'w')
+			plr->key.w = ev.type == SDL_KEYDOWN;
+		else if (ev.key.keysym.sym == 'a')
+			plr->key.a = ev.type == SDL_KEYDOWN;
+		else if (ev.key.keysym.sym == 's')
+			plr->key.s = ev.type == SDL_KEYDOWN;
+		else if (ev.key.keysym.sym == 'd')
+			plr->key.d = ev.type == SDL_KEYDOWN;
+		else if (ev.key.keysym.sym == ' ' && plr->ground)
+		{
+				plr->vlct.z += 0.5;
+				plr->falling = 1;
+		}
+		else if (ev.key.keysym.sym == 'q')
+			exit_doom(sectors, plr);
+		else if (ev.key.keysym.sym == SDLK_LCTRL)
+		{
+			plr->ducking = ev.type == SDL_KEYDOWN;
+			plr->falling = 1;
+		}
+		else if (ev.type == SDL_QUIT)
+			exit_doom(sectors, plr);
+	}
+}
+
+int 		main()
+{
+	t_player	plr;
+	t_sector	*sectors;
+
+
+	sectors = NULL;
+	plr.num_scts = 0;
+	plr = (t_player){ .ground = 0, .falling = 1, .moving = 0, .ducking = 0 };
+	plr.key = (t_keys){ .w = 0, .s = 0, .a = 0, .d = 0 };
+
+	LoadData(&plr, &sectors);
 
 	surface = SDL_SetVideoMode(W, H, 32, 0);
 
 	SDL_EnableKeyRepeat(150, 30);
 	SDL_ShowCursor(SDL_DISABLE);
 
-	int wsad[4] = {0, 0, 0, 0}, \
-	ground = 0, falling = 1, moving = 0, ducking = 0;
-
-	float yaw = 0;
-	for (;;)
+	plr.ms.yaw = 0;
+	while (1)
 	{
 		SDL_LockSurface(surface);
-		draw_screen(sectors, NumSectors);
+		draw_screen(sectors, plr);
 		SDL_UnlockSurface(surface);
 		SDL_Flip(surface);
-
-		/* Vertical collision detection */
-		float eyeheight = ducking ? DuckHeight : EyeHeight;
-		ground = !falling;
-		if (falling)
-		{
-			player.velocity.z -= 0.05f; /* Add gravity */
-			float nextz = player.where.z + player.velocity.z;
-			if (player.velocity.z < 0 && nextz < sectors[player.sector].floor +
-												 eyeheight) // When going down
-			{
-				/* Fix to ground */
-				player.where.z = sectors[player.sector].floor + eyeheight;
-				player.velocity.z = 0;
-				falling = 0;
-				ground = 1;
-			} else if (player.velocity.z > 0 &&
-					   nextz > sectors[player.sector].ceil) // When going up
-			{
-				/* Prevent jumping above ceiling */
-				player.velocity.z = 0;
-				falling = 1;
-			}
-			if (falling)
-			{
-				player.where.z += player.velocity.z;
-				moving = 1;
-			}
-		}
-		/* Horizontal collision detection */
-		if (moving)
-		{
-			float px = player.where.x, py = player.where.y;
-			float dx = player.velocity.x, dy = player.velocity.y;
-
-			const struct sector *const sect = &sectors[player.sector];
-			const struct xy *const vert = sect->vertex;
-			/* Check if the player is about to cross one of the sector's edges */
-			for (unsigned s = 0; s < sect->npoints; ++s)
-				if (IntersectBox(px, py, px + dx, py + dy, vert[s + 0].x,
-								 vert[s + 0].y, vert[s + 1].x, vert[s + 1].y)
-					&& PointSide(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
-								 vert[s + 1].x, vert[s + 1].y) < 0)
-				{
-					/* Check where the hole is. */
-					float hole_low =
-							sect->neighbors[s] < 0 ? 9e9 : max(sect->floor,
-															   sectors[sect->neighbors[s]].floor);
-					float hole_high =
-							sect->neighbors[s] < 0 ? -9e9 : min(sect->ceil,
-																sectors[sect->neighbors[s]].ceil);
-					/* Check whether we're bumping into a wall. */
-					if (hole_high < player.where.z + HeadMargin
-						|| hole_low > player.where.z - eyeheight + KneeHeight)
-					{
-						/* Bumps into a wall! Slide along the wall. */
-						/* This formula is from Wikipedia article "vector projection". */
-						float xd = vert[s + 1].x - vert[s + 0].x, yd =
-								vert[s + 1].y - vert[s + 0].y;
-						dx = xd * (dx * xd + yd * dy) / (xd * xd + yd * yd);
-						dy = yd * (dx * xd + yd * dy) / (xd * xd + yd * yd);
-						moving = 0;
-					}
-				}
-			MovePlayer(dx, dy);
-			falling = 1;
-		}
-
+		plr.eyeheight = plr.ducking ? DuckHeight : EyeHeight; /* Vertical collision detection */
+		plr.ground = !plr.falling;
+		if (plr.falling) //TODO: make ducking unreversable if стеля згори
+			do_fall(&plr, &sectors);
+		if (plr.moving) /* Horizontal collision detection */
+			do_move(&plr, &sectors);
 		SDL_Event ev;
 		while (SDL_PollEvent(&ev))
-			switch (ev.type)
-			{
-				case SDL_KEYDOWN:
-				case SDL_KEYUP:
-					switch (ev.key.keysym.sym)
-					{
-						case 'w':
-							wsad[0] = ev.type == SDL_KEYDOWN;
-							break;
-						case 's':
-							wsad[1] = ev.type == SDL_KEYDOWN;
-							break;
-						case 'a':
-							wsad[2] = ev.type == SDL_KEYDOWN;
-							break;
-						case 'd':
-							wsad[3] = ev.type == SDL_KEYDOWN;
-							break;
-						case 'q':
-							goto done;
-						case ' ': /* jump */
-							if (ground)
-							{
-								player.velocity.z += 0.5;
-								falling = 1;
-							}
-							break;
-						case SDLK_LCTRL: /* duck */
-						case SDLK_RCTRL:
-							ducking = ev.type == SDL_KEYDOWN;
-							falling = 1;
-							break;
-						default:
-							break;
-					}
-					break;
-				case SDL_QUIT:
-					goto done;
-			}
-
+			if (ev.type)
+				events(ev, &sectors, &plr); /* events(); */
 		/* mouse aiming */
-		int x, y;
-		SDL_GetRelativeMouseState(&x, &y);
-		player.angle += x * 0.03f;
-		yaw = clamp(yaw - y * 0.05f, -5, 5);
-		player.yaw = yaw - player.velocity.z * 0.5f;
-		MovePlayer(0, 0);
-
-		float move_vec[2] = {0.f, 0.f};
-		if (wsad[0])
-		{
-			move_vec[0] += player.anglecos * 0.2f;
-			move_vec[1] += player.anglesin * 0.2f;
-		}
-		if (wsad[1])
-		{
-			move_vec[0] -= player.anglecos * 0.2f;
-			move_vec[1] -= player.anglesin * 0.2f;
-		}
-		if (wsad[2])
-		{
-			move_vec[0] += player.anglesin * 0.2f;
-			move_vec[1] -= player.anglecos * 0.2f;
-		}
-		if (wsad[3])
-		{
-			move_vec[0] -= player.anglesin * 0.2f;
-			move_vec[1] += player.anglecos * 0.2f;
-		}
-		int pushing = wsad[0] || wsad[1] || wsad[2] || wsad[3];
-		float acceleration = pushing ? 0.4 : 0.2;
-
-		player.velocity.x = player.velocity.x * (1 - acceleration) +
-							move_vec[0] * acceleration;
-		player.velocity.y = player.velocity.y * (1 - acceleration) +
-							move_vec[1] * acceleration;
-
-		if (pushing) moving = 1;
-
+		plr.ms.x = 0;
+		plr.ms.y = 0;
+		SDL_GetRelativeMouseState(&plr.ms.x, &plr.ms.y);
+		plr.angle += plr.ms.x * 0.03f;
+		plr.ms.yaw = clamp(plr.ms.yaw - plr.ms.y * 0.05f, -5, 5);
+		plr.yaw = plr.ms.yaw - plr.vlct.z * 0.5f;
+		MovePlayer(&plr, &sectors, 0, 0);
+		plr.mv = (t_move_vec){.x = 0.f, .y = 0.f};
+		if (plr.key.w)
+			plr.mv = (t_move_vec){.x = plr.mv.x + plr.anglecos * 0.2f,
+						 			.y = plr.mv.y + plr.anglesin * 0.2f};
+		if (plr.key.s)
+			plr.mv = (t_move_vec){.x = plr.mv.x - plr.anglecos * 0.2f,
+						 			.y = plr.mv.y - plr.anglesin * 0.2f};
+		if (plr.key.a)
+			plr.mv = (t_move_vec){.x = plr.mv.x + plr.anglesin * 0.2f,
+						 			.y = plr.mv.y - plr.anglecos * 0.2f};
+		if (plr.key.d)
+			plr.mv = (t_move_vec){.x = plr.mv.x - plr.anglesin * 0.2f,
+						 			.y = plr.mv.y + plr.anglecos * 0.2f};
+		plr.pushing = plr.key.w || plr.key.s || plr.key.a || plr.key.d;
+		plr.aclrt = plr.pushing ? 0.4 : 0.2;
+		plr.vlct.x = plr.vlct.x * (1 - plr.aclrt) + plr.mv.x * plr.aclrt;
+		plr.vlct.y = plr.vlct.y * (1 - plr.aclrt) + plr.mv.y * plr.aclrt;
+		if (plr.pushing)
+			plr.moving = 1;
 		SDL_Delay(10);
 	}
-	done:
-	UnloadData();
-	SDL_Quit();
-	return 0;
 }
 /* IBOHUN (& somebody else) PART 2 END */
