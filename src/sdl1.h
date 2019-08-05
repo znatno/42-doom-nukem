@@ -75,7 +75,7 @@ typedef struct		s_move_vec
 typedef struct		s_player
 {
 	t_xyz			where;		// Current position
-	t_xyz			velocity;	// Current motion vector
+	t_xyz			vlct;		// velocity, Current motion vector
 	float			angle;
 	float			anglesin;
 	float			anglecos;
@@ -89,6 +89,8 @@ typedef struct		s_player
 	float			eyeheight;
 	t_keys			key;
 	t_move_vec		mv;
+	int 			pushing;
+	float			aclrt;		// acceleration
 }					t_player;
 
 // Utility functions. Because C doesn't have templates,

@@ -324,23 +324,23 @@ void	do_fall(t_player *plr, t_sector **sectors)
 {
 	float nextz;
 
-	plr->velocity.z -= 0.05f; /* Add gravity */
-	nextz = plr->where.z + plr->velocity.z;
-	if (plr->velocity.z < 0 && nextz < (*sectors)[plr->sector].floor + plr->eyeheight) // When going down
+	plr->vlct.z -= 0.05f; /* Add gravity */
+	nextz = plr->where.z + plr->vlct.z;
+	if (plr->vlct.z < 0 && nextz < (*sectors)[plr->sector].floor + plr->eyeheight) // When going down
 	{
 		plr->where.z = (*sectors)[plr->sector].floor + plr->eyeheight; /* Fix to ground */
-		plr->velocity.z = 0;
+		plr->vlct.z = 0;
 		plr->falling = 0;
 		plr->ground = 1;
 	}
-	else if (plr->velocity.z > 0 && nextz > (*sectors)[plr->sector].ceil) // When going up
+	else if (plr->vlct.z > 0 && nextz > (*sectors)[plr->sector].ceil) // When going up
 	{
-		plr->velocity.z = 0; /* Prevent jumping above ceiling */
+		plr->vlct.z = 0; /* Prevent jumping above ceiling */
 		plr->falling = 1;
 	}
 	if (plr->falling)
 	{
-		plr->where.z += plr->velocity.z;
+		plr->where.z += plr->vlct.z;
 		plr->moving = 1;
 	}
 }
@@ -381,8 +381,8 @@ void	do_move(t_player *plr, t_sector **sectors)
 
 	px = plr->where.x;
 	py = plr->where.y;
-	dx = plr->velocity.x;
-	dy = plr->velocity.y;
+	dx = plr->vlct.x;
+	dy = plr->vlct.y;
 	sect = (*sectors)[plr->sector];
 	vert = sect.vertex;
 	s = -1;
@@ -424,7 +424,7 @@ void	events(SDL_Event ev, t_sector **sectors, t_player *plr)
 				case ' ': /* jump */
 					if (plr->ground)
 					{
-						plr->velocity.z += 0.5;
+						plr->vlct.z += 0.5;
 						plr->falling = 1;
 					}
 					break;
@@ -489,35 +489,26 @@ int main()
 		SDL_GetRelativeMouseState(&x, &y);
 		plr.angle += x * 0.03f;
 		yaw = clamp(yaw - y * 0.05f, -5, 5);
-		plr.yaw = yaw - plr.velocity.z * 0.5f;
+		plr.yaw = yaw - plr.vlct.z * 0.5f;
 		MovePlayer(&plr, &sectors, 0, 0);
-
-		//float move_vec[2] = {0.f, 0.f};
 		plr.mv = (t_move_vec){ .x = 0.f, .y = 0.f};
 		if (plr.key.w)
-			plr.mv = (t_move_vec)
-					{.x = plr.mv.x + plr.anglecos * 0.2f,
-						 .y = plr.mv.y + plr.anglesin * 0.2f};
+			plr.mv = (t_move_vec){.x = plr.mv.x + plr.anglecos * 0.2f,
+						 			.y = plr.mv.y + plr.anglesin * 0.2f};
 		if (plr.key.s)
-			plr.mv = (t_move_vec)
-					{.x = plr.mv.x - plr.anglecos * 0.2f,
-						 .y = plr.mv.y - plr.anglesin * 0.2f};
+			plr.mv = (t_move_vec){.x = plr.mv.x - plr.anglecos * 0.2f,
+						 			.y = plr.mv.y - plr.anglesin * 0.2f};
 		if (plr.key.a)
-			plr.mv = (t_move_vec)
-					{.x = plr.mv.x + plr.anglesin * 0.2f,
-						 .y = plr.mv.y - plr.anglecos * 0.2f};
+			plr.mv = (t_move_vec){.x = plr.mv.x + plr.anglesin * 0.2f,
+						 			.y = plr.mv.y - plr.anglecos * 0.2f};
 		if (plr.key.d)
-			plr.mv = (t_move_vec)
-					{.x = plr.mv.x - plr.anglesin * 0.2f,
-						 .y = plr.mv.y + plr.anglecos * 0.2f};
-		int pushing;
-		pushing = plr.key.w || plr.key.s || plr.key.a || plr.key.d;
-
-		float acc; //acceleration
-		acc = pushing ? 0.4 : 0.2;
-		plr.velocity.x = plr.velocity.x * (1 - acc) + plr.mv.x * acc;
-		plr.velocity.y = plr.velocity.y * (1 - acc) + plr.mv.y * acc;
-		if (pushing)
+			plr.mv = (t_move_vec){.x = plr.mv.x - plr.anglesin * 0.2f,
+						 			.y = plr.mv.y + plr.anglecos * 0.2f};
+		plr.pushing = plr.key.w || plr.key.s || plr.key.a || plr.key.d;
+		plr.aclrt = plr.pushing ? 0.4 : 0.2;
+		plr.vlct.x = plr.vlct.x * (1 - plr.aclrt) + plr.mv.x * plr.aclrt;
+		plr.vlct.y = plr.vlct.y * (1 - plr.aclrt) + plr.mv.y * plr.aclrt;
+		if (plr.pushing)
 			plr.moving = 1;
 		SDL_Delay(10);
 	}
