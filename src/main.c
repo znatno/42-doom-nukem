@@ -400,46 +400,39 @@ void	do_move(t_player *plr, t_sector **sectors)
 
 void	events(SDL_Event ev, t_sector **sectors, t_player *plr)
 {
-	switch (ev.type)
+	if(ev.type)
 	{
-		case SDL_KEYDOWN:
-		case SDL_KEYUP:
-			switch (ev.key.keysym.sym)
+		if (ev.key.keysym.sym == 'w')
+			plr->key.w = ev.type == SDL_KEYDOWN;
+		else if (ev.key.keysym.sym == 'a')
+			plr->key.a = ev.type == SDL_KEYDOWN;
+		else if (ev.key.keysym.sym == 's')
+			plr->key.s = ev.type == SDL_KEYDOWN;
+		else if (ev.key.keysym.sym == 'd')
+			plr->key.d = ev.type == SDL_KEYDOWN;
+		else if (ev.key.keysym.sym == ' ')
+		{
+			if (plr->ground)
 			{
-				case 'w':
-					plr->key.w = ev.type == SDL_KEYDOWN;
-					break;
-				case 's':
-					plr->key.s = ev.type == SDL_KEYDOWN;
-					break;
-				case 'a':
-					plr->key.a = ev.type == SDL_KEYDOWN;
-					break;
-				case 'd':
-					plr->key.d = ev.type == SDL_KEYDOWN;
-					break;
-				case 'q':
-					exit_doom(sectors, plr);
-					exit(0);
-				case ' ': /* jump */
-					if (plr->ground)
-					{
-						plr->vlct.z += 0.5;
-						plr->falling = 1;
-					}
-					break;
-				case SDLK_LCTRL: /* duck */
-				case SDLK_RCTRL:
-					plr->ducking = ev.type == SDL_KEYDOWN;
-					plr->falling = 1;
-					break;
-				default:
-					break;
+				plr->vlct.z += 0.5;
+				plr->falling = 1;
 			}
-			break;
-		case SDL_QUIT:
+		}
+		else if (ev.key.keysym.sym == 'q')
+		{
 			exit_doom(sectors, plr);
 			exit(0);
+		}
+		else if (ev.key.keysym.sym == SDLK_LCTRL)
+		{
+			plr->ducking = ev.type == SDL_KEYDOWN;
+			plr->falling = 1;
+		}
+		else if (ev.type == SDL_QUIT)
+		{
+			exit_doom(sectors, plr);
+			exit(0);
+		}
 	}
 }
 
