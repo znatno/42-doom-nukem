@@ -459,7 +459,7 @@ int main()
 	SDL_EnableKeyRepeat(150, 30);
 	SDL_ShowCursor(SDL_DISABLE);
 
-	plr = (t_player){ .ground = 0, .falling = 1, .moving = 0, .ducking = 0 };
+	plr.ground = 0, plr.falling = 1, plr.moving = 0, plr.ducking = 0;
 	plr.key = (t_keys){ .w = 0, .s = 0, .a = 0, .d = 0 };
 
 	float yaw;
@@ -495,22 +495,28 @@ int main()
 		//float move_vec[2] = {0.f, 0.f};
 		plr.mv = (t_move_vec){ .x = 0.f, .y = 0.f};
 		if (plr.key.w)
-			plr.mv = (t_move_vec){.x = plr.mv.x + plr.anglecos * 0.2f, .y = plr
-						 .mv.y + plr.anglesin * 0.2f};
+			plr.mv = (t_move_vec)
+					{.x = plr.mv.x + plr.anglecos * 0.2f,
+						 .y = plr.mv.y + plr.anglesin * 0.2f};
 		if (plr.key.s)
-			plr.mv = (t_move_vec){.x = plr.mv.x - plr.anglecos * 0.2f, .y = plr
-						 .mv.y - plr.anglesin * 0.2f};
+			plr.mv = (t_move_vec)
+					{.x = plr.mv.x - plr.anglecos * 0.2f,
+						 .y = plr.mv.y - plr.anglesin * 0.2f};
 		if (plr.key.a)
-			plr.mv = (t_move_vec){.x = plr.mv.x + plr.anglesin * 0.2f, .y = plr.mv.y - plr.anglecos * 0.2f};
+			plr.mv = (t_move_vec)
+					{.x = plr.mv.x + plr.anglesin * 0.2f,
+						 .y = plr.mv.y - plr.anglecos * 0.2f};
 		if (plr.key.d)
-			plr.mv = (t_move_vec){.x = plr.mv.x - plr.anglesin * 0.2f, .y = plr.mv.y + plr.anglecos * 0.2f};
+			plr.mv = (t_move_vec)
+					{.x = plr.mv.x - plr.anglesin * 0.2f,
+						 .y = plr.mv.y + plr.anglecos * 0.2f};
 		int pushing;
 		pushing = plr.key.w || plr.key.s || plr.key.a || plr.key.d;
 
 		float acc; //acceleration
 		acc = pushing ? 0.4 : 0.2;
-		plr.velocity.x = plr.velocity.x * (1 - acc) + plr.key.w * acc;
-		plr.velocity.y = plr.velocity.y * (1 - acc) + plr.key.s * acc;
+		plr.velocity.x = plr.velocity.x * (1 - acc) + plr.mv.x * acc;
+		plr.velocity.y = plr.velocity.y * (1 - acc) + plr.mv.y * acc;
 		if (pushing)
 			plr.moving = 1;
 		SDL_Delay(10);
