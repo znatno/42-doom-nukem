@@ -19,7 +19,7 @@ typedef struct test_t {
   float x;
 } test_p;
 
-static struct sector
+static struct sector // TODO: Implement a angle collision
 {
 	float floor, ceil;
 	struct xy
@@ -73,19 +73,24 @@ int				check_file(int fd)
     return (1);
 }
 
-void *ft_realloc(void *ptr, size_t newsize)
+void	*ft_realloc(void *ptr, size_t size)
 {
-    char *newptr;
-    size_t cursize;
+    char	*newptr;
 
-    if (ptr == 0)
-        return (malloc(newsize));
-    cursize = sizeof(ptr);
-    if (newsize <= cursize)
-        return (ptr);
-    newptr = malloc(newsize);
-    ft_memcpy(ptr, newptr, cursize);
-    free(ptr);
+    if (!size && ptr)
+    {
+        if (!(newptr = (char *)malloc(1)))
+            return (NULL);
+        ft_memdel(&ptr);
+        return (newptr);
+    }
+    if (!(newptr = (char *)malloc(size)))
+        return (NULL);
+    if (ptr)
+    {
+        ft_memcpy(newptr, ptr, size);
+        ft_memdel(&ptr);
+    }
     return (newptr);
 }
 
@@ -198,6 +203,41 @@ double atof(const char *s)
     return a * sign;
 }
 
+//struct posf_t     atoi_posf(char *str, struct posf_t posf) {
+//    long int	res;
+//    long int	znk;
+//
+//    res = 0;
+//    znk = 1;
+//
+//    str = (str + posf.pos);
+//    while (*(str + posf.pos) == 32 || (*(str + posf.pos) <= 13 && *(str + posf.pos) >= 9))
+//    {
+//        str++;
+//    }
+//    if (*(str + posf.pos) == '-' || *(str + posf.pos) == '+')
+//    {
+//        if (*(str + posf.pos) == '-')
+//            znk = -1;
+//        str++;
+//    }
+//    while (*(str + posf.pos))
+//    {
+//        if (*(str + posf.pos) < '0' || *(str + posf.pos) > '9')
+//        {
+//            posf.value = (float)(res * znk);
+//            posf.pos = *(str + posf.pos);
+//            return posf;
+//        }
+//        else
+//            res = res * 10 + (long int)((*str + posf.pos) - '0');
+//        str++;
+//    }
+//    posf.pos = *(str + posf.pos);
+//    posf.value = (float)(res * znk);
+//    return posf;
+//}
+
 struct posf_t atof_posf(const char *s, struct posf_t posf)
 {
     int exp = 0;
@@ -237,7 +277,7 @@ void			reader(char *line, int fd)
     struct posf_t       posf;
     struct xy *vert = NULL, v;
     int n, m, NumVertices = 0;
-
+    struct sector *sectors = NULL;
     posf.pos = 0;
     posf.value = 0;
     posf.is_y = 0;
@@ -245,13 +285,23 @@ void			reader(char *line, int fd)
     while (get_next_line(fd, &line) > 0) {
         posf.pos = 0;
         posf.value = 0;
-        if ((posf.is_y = 1) && *line == 'v') {
+        /*
+         * СЧИТЫВАНИЕ VERTEX и запись в VERT[]
+         */
 
+        if ((posf.is_y = 1) && *line == 'v') {
             while (line[posf.pos]) {
                 while (!ft_isdigit(line[posf.pos])) {
                     posf.pos++ ;
                 }
                 vert = ft_realloc(vert, ++NumVertices * sizeof(*vert));
+
+                /*
+                 * Если это первая позиция после слова вертекс
+                 * То мы 'y' сохраняем в постоянную а
+                 * 'x' записываем следующие зачения
+                 */
+
                 if (posf.is_y) {
                     posf = atof_posf(line,posf);
                     vert[NumVertices - 1].y = posf.value;
@@ -269,16 +319,118 @@ void			reader(char *line, int fd)
                     vert[NumVertices - 1].x = posf.value;
                     vert[NumVertices - 1].y = posf.y;
                 }
-                posf.pos--;
-                printf("%f %f\n", vert[NumVertices - 1].y, vert[NumVertices - 1].x);
+                /*
+                 * Костыль, т.к pos перепрыгивает \n
+                 */
 
+                posf.pos--;
+//                printf("%f %f\n", vert[NumVertices - 1].y, vert[NumVertices - 1].x);
             }
+        }
+        if (*line == 's') {
+            /*
+		 *  SECTORS -> floor ceil {vertex}
+		 *  массив делится
+		 */
+				sectors = realloc(sectors, ++NumSectors * sizeof(*sectors));
+				/*
+				 *  sectors -> является массивом структур sector
+				 *  каждая строка sector будет индексом sectors[индекс.сектора(начиная с нуля)]
+				 */
+				struct sector *sect =
+				        &sectors[NumSectors - 1];
+
+				/*
+				* num хранит в себе остаток чисел после ceil и flooг
+                */
+				int *num = NULL;
+
+				/*
+				 * Скипаем слово sector
+				 */
+                while (!ft_isdigit(line[posf.pos])) {
+                    posf.pos++ ;
+                }
+                /*
+                 *  Считываем высоту потолка и пола
+                 *  floor, ceil -> флоты
+                 *  Однако, они не будут иметь плавающих значений
+                 */
+                posf = atof_posf(line, posf);
+                sect->floor = posf.value;
+
+                //                printf("%f",sect->floor);
+
+                while (!ft_isdigit(line[posf.pos])) {
+                    posf.pos++ ;
+                }
+                posf = atof_posf(line, posf);
+                sect->ceil = (int)posf.value;
+                //                printf(" %f\n",sect->ceil);
+
+
+                /*
+                 * Вайл которым мы проходит по вертексовым значениям
+                 * all все значения что после ceil и floor
+                 * записываем в num[all]
+                 */
+                int all = 0;
+                while (line[posf.pos]) {
+                    while (!ft_isdigit(line[posf.pos])) {
+                        posf.pos++;
+                    }
+                    if (line[posf.pos - 1] == '-')
+                        posf.pos--;
+                    num = realloc(num, ++all * sizeof(*num));
+                    posf = atof_posf(line, posf);
+                    num[all - 1] = (int)posf.value;
+//                    printf("%d ",num[all - 1]);
+                }
+//                printf("\n");
+//            for (m = 0; sscanf(ptr += n, "%32s%n", word, &n) == 1 &&
+//
+//				/*
+//				 *  Общее количество точек в вертексе делим на два
+//				 *  это будут наши соединения ( npoints )
+//				 */
+//
+				sect->npoints = all /= 2;
+//                printf("%d\n", sect->npoints);
+                //
+//				/*
+//                 *  размер *neighbors = 1 byte
+//                 *  размер npoints = m\2;
+//                 *  (m \ 2) * 1 byte = наше выделение под neighors
+//                 *  тоже самое под vertex, но на 1 больше,
+//                 *  т.к последняя связь ведёт к первому элементу вертекса
+//                 */
+//
+				sect->neighbors = malloc((sect->npoints) * sizeof(*sect->neighbors));
+				sect->vertex = malloc((all + 1) * sizeof(*sect->vertex));
+//
+//				/*
+//				 *
+//				 */
+//
+                n = 0;
+
+//                printf("%d\n",num[all + 1]);
+//                exit(1);
+				while (n < all)
+				{
+                    sect->neighbors[n] =(num[all + n++]);
+//                    printf("%d  ", sect->neighbors[n]);
+				}
+				printf("\n");
+			// sect->neighbors[n] = num[m + n];
+            //				for (n = 0; n < m; ++n)
+//					sect->vertex[n + 1] = vert[num[n]]; // TODO: Range checking
+//				sect->vertex[0] = sect->vertex[m]; // Ensure the vertexes form a loop
+//				free(num);
+//				break;
 
         }
     }
-//        print_rr()
-    exit (1);
-return ;
 }
 
 static void LoadData() {
@@ -290,6 +442,8 @@ static void LoadData() {
     struct xy *vert = NULL, v;
     int n, m, NumVertices = 0;
     int fd;
+    FILE* fp = fopen("map-clear.txt", "rt");
+    if(!fp) { perror("map-clear.txt"); exit(1); }
     char *line;
 
     line = ft_strnew(1);
@@ -298,112 +452,116 @@ static void LoadData() {
         exit (-1);
     }
 //     map = reader(map, line, fd);
+
+
     reader(line, fd);
-//    (map) ? writer(map, av, fd) : ft_putstr("err\n");
+    exit(1);
+
+    //    (map) ? writer(map, av, fd) : ft_putstr("err\n");
 //    writer(FILE_NAME, fd);
-    exit(0);
-	//	while (fgets(Buf, sizeof Buf, fp))
-//		switch (sscanf(ptr = Buf, "%32s%n", word, &n) == 1 ? word[0] : '\0')
-//		{
-//	    /*
-//	     *  VERTEX -> y {x}
-//	     *  Сохраняет таким образом vert[индекс одного вектора].x|y
-//	     *  Если в вертексе больше одного 'x', то значение 'y' не меняем
-//	     *
-//	     *  vertex 'y0' {x0 x1 x2}
-//	     *  vertex 'y1' {x3 x4 x6}
-//	     *
-//	     */
-//			case 'v': // vertex
-//			   j += 1;
-//				for (sscanf(ptr += n, "%f%n", &v.y, &n); sscanf(ptr += n, "%f%n", &v.x, &n) == 1;)
-//				{
-//
-//					vert = realloc(vert, ++NumVertices * sizeof(*vert));
-//					vert[NumVertices - 1] = v;
-//					i++;
-//				}
-//				break;
-//		/*
-//		 *  SECTORS -> floor ceil {vertex}
-//		 *  массив делится
-//		 */
-//			case 's':
-//				sectors = realloc(sectors, ++NumSectors * sizeof(*sectors));
-//				/*
-//				 *  sectors -> является массивом структур sector
-//				 *  каждая строка sector будет индексом sectors[индекс.сектора(начиная с нуля)]
-//				 */
-//				struct sector *sect =
-//				        &sectors[NumSectors - 1];
-//				int *num = NULL;
-//				/*
-//				 *
-//				 * Считываем высоту потолка и пола
-//				 *
-//				 */
-//				sscanf(ptr += n, "%f%f%n", &sect->floor, &sect->ceil, &n);
-//
-//				/*
-//				 * num хранит в себе остаток чисел после ceil и flooг
-//				 */
-//
-//				for (m = 0; sscanf(ptr += n, "%32s%n", word, &n) == 1 &&
-//							word[0] != '#';)
-//				{
-//					num = realloc(num, ++m * sizeof(*num));
-//					num[m - 1] = word[0] == 'x' ? -1 : atoi(word);
-//				}
-//
-//				/*
-//				 *  Общее количество точек в вертексе делим на два
-//				 *  это будут наши соединения ( npoints )
-//				 */
-//
-//				sect->npoints = m /= 2;
-//
-//				/*
-//                 *  размер *neighbors = 1 byte
-//                 *  размер npoints = m\2;
-//                 *  (m \ 2) * 1 byte = наше выделение под neighors
-//                 *  тоже самое под vertex, но на 1 больше,
-//                 *  т.к последняя связь ведёт к первому элементу вертекса
-//                 */
-//
-//				sect->neighbors = malloc((sect->npoints) * sizeof(*sect->neighbors));
-//				sect->vertex = malloc((m + 1) * sizeof(*sect->vertex));
-//
-//				/*
-//				 *
-//				 */
-//				k++;
-//                if (k == 8) {printf("m = %d\n", m);}
-//				for (n = 0; n < m; ++n)
-//				{
-//                    sect->neighbors[n] = num[m + n];
-//                    if (k == 8) {
-//                        printf("n = %d num = %d\n", n, num[m + n]);
-//                    };
-//                }
-//
-//				for (n = 0; n < m; ++n)
-//					sect->vertex[n + 1] = vert[num[n]]; // TODO: Range checking
-//				sect->vertex[0] = sect->vertex[m]; // Ensure the vertexes form a loop
-//				free(num);
-//				break;
-//			case 'p':;
-//			/*
-//			 *	player
-//			*/
-//				float angle;
-//				sscanf(ptr += n, "%f %f %f %d", &v.x, &v.y, &angle, &n);
-//				player = (struct player) {{v.x, v.y, 0}, {0, 0, 0}, angle, 0, 0,
-//										  0, n}; // TODO: Range checking
-//				player.where.z = sectors[player.sector].floor + EyeHeight;
-//		}
-//	fclose(fp);
+//    exit(0);
+    while (fgets(Buf, sizeof Buf, fp))
+        switch (sscanf(ptr = Buf, "%32s%n", word, &n) == 1 ? word[0] : '\0')
+        {
+            /*
+             *  VERTEX -> y {x}
+             *  Сохраняет таким образом vert[индекс одного вектора].x|y
+             *  Если в вертексе больше одного 'x', то значение 'y' не меняем
+             *
+             *  vertex 'y0' {x0 x1 x2}
+             *  vertex 'y1' {x3 x4 x6}
+             *
+             */
+            case 'v': // vertex
+                j += 1;
+                for (sscanf(ptr += n, "%f%n", &v.y, &n); sscanf(ptr += n, "%f%n", &v.x, &n) == 1;)
+                {
+
+                    vert = realloc(vert, ++NumVertices * sizeof(*vert));
+                    vert[NumVertices - 1] = v;
+                    i++;
+                }
+                break;
+                /*
+                 *  SECTORS -> floor ceil {vertex}
+                 *  массив делится
+                 */
+            case 's':
+                sectors = realloc(sectors, ++NumSectors * sizeof(*sectors));
+                /*
+                 *  sectors -> является массивом структур sector
+                 *  каждая строка sector будет индексом sectors[индекс.сектора(начиная с нуля)]
+                 */
+                struct sector *sect =
+                        &sectors[NumSectors - 1];
+                int *num = NULL;
+                /*
+                 *
+                 * Считываем высоту потолка и пола
+                 *
+                 */
+                sscanf(ptr += n, "%f%f%n", &sect->floor, &sect->ceil, &n);
+
+                /*
+                 * num хранит в себе остаток чисел после ceil и flooг
+                 */
+
+                for (m = 0; sscanf(ptr += n, "%32s%n", word, &n) == 1 &&
+                            word[0] != '#';)
+                {
+                    num = realloc(num, ++m * sizeof(*num));
+                    num[m - 1] = word[0] == 'x' ? -1 : atoi(word);
+                }
+
+                /*
+                 *  Общее количество точек в вертексе делим на два
+                 *  это будут наши соединения ( npoints )
+                 */
+
+                sect->npoints = m /= 2;
+
+                /*
+                 *  размер *neighbors = 1 byte
+                 *  размер npoints = m\2;
+                 *  (m \ 2) * 1 byte = наше выделение под neighors
+                 *  тоже самое под vertex, но на 1 больше,
+                 *  т.к последняя связь ведёт к первому элементу вертекса
+                 */
+
+                sect->neighbors = malloc((sect->npoints) * sizeof(*sect->neighbors));
+                sect->vertex = malloc((m + 1) * sizeof(*sect->vertex));
+
+                /*
+                 *
+                 */
+                k++;
+                for (n = 0; n < m; ++n)
+                {
+                    sect->neighbors[n] = num[m + n];
+                    printf("%d ", sect->neighbors[n]);
+                }
+                printf("\n");
+                for (n = 0; n < m; ++n)
+                    sect->vertex[n + 1] = vert[num[n]]; // TODO: Range checking
+                sect->vertex[0] = sect->vertex[m]; // Ensure the vertexes form a loop
+                free(num);
+                break;
+            case 'p':;
+                /*
+                 *	player
+                */
+                float angle;
+                sscanf(ptr += n, "%f %f %f %d", &v.x, &v.y, &angle, &n);
+                player = (struct player) {{v.x, v.y, 0}, {0, 0, 0}, angle, 0, 0,
+                                          0, n}; // TODO: Range checking
+                player.where.z = sectors[player.sector].floor + EyeHeight;
+        }
+    exit(1);
+    fclose(fp);
 //	free(vert);
 }
+
+
 
 static void UnloadData()
 {
