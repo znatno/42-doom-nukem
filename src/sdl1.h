@@ -221,5 +221,7 @@ void		draw_screen(t_sector *sector, t_player plr);
 char		*ft_itof(long double k);
 void		vline(int x, int y1, int y2, int color);
 //void		vertex(struct xy *vertex, int num_vertex);
+t_xy Intersect(float x1, float y1, float x2, float y2, float x3, float y3,
+		float x4, float y4);
 
 #endif
