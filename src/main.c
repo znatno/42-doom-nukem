@@ -33,10 +33,10 @@ static void LoadData(t_player *plr, t_sector **sectors)
 				}
 				break;
 			case 's': // sector
-				*sectors = realloc(*sectors, ++plr->NumSectors * sizeof
+				*sectors = realloc(*sectors, ++plr->num_scts * sizeof
 				(**sectors));
 				t_sector *sect;
-				sect = &(*sectors)[plr->NumSectors - 1];
+				sect = &(*sectors)[plr->num_scts - 1];
 				int *num = NULL;
 				sscanf(ptr += n, "%f%f%n", &sect->floor, &sect->ceil, &n);
 				for (m = 0; sscanf(ptr += n, "%32s%n", word, &n) == 1 &&
@@ -59,7 +59,7 @@ static void LoadData(t_player *plr, t_sector **sectors)
 				float angle;
 				sscanf(ptr += n, "%f %f %f %d", &v.x, &v.y, &angle, &n);
 				*plr = (t_player){{v.x, v.y, 0}, {0, 0, 0}, \
-						angle, 0, 0, 0, n, plr->NumSectors};
+						angle, 0, 0, 0, n, plr->num_scts};
 				// T0D0: Range checking
 				plr->where.z = sectors[plr->sector]->floor + EyeHeight;
 		}
@@ -69,13 +69,13 @@ static void LoadData(t_player *plr, t_sector **sectors)
 
 static void UnloadData(t_sector **sectors, t_player *plr)
 {
-	for (unsigned a = 0; a < plr->NumSectors; ++a)
+	for (unsigned a = 0; a < plr->num_scts; ++a)
 		free((*sectors)[a].vertex);
-	for (unsigned a = 0; a < plr->NumSectors; ++a)
+	for (unsigned a = 0; a < plr->num_scts; ++a)
 		free((*sectors)[a].neighbors);
 	free(*sectors);
 	*sectors = NULL;
-	plr->NumSectors = 0;
+	plr->num_scts = 0;
 }
 /* VOPOLONC PART END */
 
@@ -254,7 +254,7 @@ int 		main()
 
 
 	sectors = NULL;
-	plr.NumSectors = 0;
+	plr.num_scts = 0;
 	plr = (t_player){ .ground = 0, .falling = 1, .moving = 0, .ducking = 0 };
 	plr.key = (t_keys){ .w = 0, .s = 0, .a = 0, .d = 0 };
 
@@ -265,13 +265,11 @@ int 		main()
 	SDL_EnableKeyRepeat(150, 30);
 	SDL_ShowCursor(SDL_DISABLE);
 
-	//float yaw;
-	//yaw = 0;
 	plr.ms.yaw = 0;
 	while (1)
 	{
 		SDL_LockSurface(surface);
-		DrawScreen(&plr, &sectors);
+		draw_screen(sectors, plr);
 		SDL_UnlockSurface(surface);
 		SDL_Flip(surface);
 		plr.eyeheight = plr.ducking ? DuckHeight : EyeHeight; /* Vertical collision detection */

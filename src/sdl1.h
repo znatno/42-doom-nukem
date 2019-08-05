@@ -20,10 +20,12 @@
 #include <stdlib.h>
 #include <math.h>
 #include "libft.h"
+#include <stdbool.h>
+
 /* Define window size */
 #define W 608
 #define H 320
-#define Yaw(y, z) (y + z*player.yaw)
+#define Yaw(y, z) (y + z * plr.yaw)
 #define MaxQue	32
 #define EyeHeight  6    // Camera height from floor when standing
 #define DuckHeight 2.5  // And when crouching
@@ -89,7 +91,7 @@ typedef struct		s_player
 	float			anglecos;
 	float			yaw;		// Looking towards (and sin() and cos() thereof)
 	unsigned		sector;		// Which sector the player is currently in
-	unsigned int	NumSectors;
+	unsigned int	num_scts;	// Number of Sectors
 	int				ground;
 	int				falling;
 	int				moving;
@@ -117,7 +119,7 @@ typedef struct		s_player
 // PointSide: Determine which side of a line the point is on. Return value: <0, =0 or >0.
 #define PointSide(px, py, x0, y0, x1, y1) vxs((x1)-(x0), (y1)-(y0), (px)-(x0), (py)-(y0))
 // Intersect: Calculate the point of intersection between two lines.
-#define Intersect(x1, y1, x2, y2, x3, y3, x4, y4) ((struct s_xy) { \
+#define Intersect(x1, y1, x2, y2, x3, y3, x4, y4) ((t_xy) { \
     vxs(vxs(x1,y1, x2,y2), (x1)-(x2), vxs(x3,y3, x4,y4), (x3)-(x4)) \
     / vxs((x1)-(x2), (y1)-(y2), (x3)-(x4), (y3)-(y4)), \
     vxs(vxs(x1,y1, x2,y2), (y1)-(y2), vxs(x3,y3, x4,y4), (y3)-(y4)) \
@@ -201,13 +203,13 @@ typedef struct	s_item
 typedef struct		s_calc_tmp_struct
 {
 	t_item				now;
-	const struct sector *sect;
-	struct sector		*sectors;
-	struct xy			i1;
-	struct xy			i2;
+	const t_sector 		*sect;
+	t_sector			*sectors;
+	t_xy				i1;
+	t_xy				i2;
 	t_item				*head;
 	t_item				*tail;
-	struct sector		*sectore;
+	t_sector			*sectore;
 }					t_cacl_tmp_struct;
 
 typedef struct		s_draw_sreen_calc
@@ -225,9 +227,9 @@ typedef struct		s_draw_sreen_calc
 #define SEC_COLOR 0x0000ff00
 #define BLACK_COLOR 0x00
 
-void		draw_screen();
+void		draw_screen(t_sector *sector, t_player plr);
 char		*ft_itof(long double k);
 void		vline(int x, int y1, int y2, int color);
-void		vertex(struct xy *vertex, int num_vertex);
+//void		vertex(struct xy *vertex, int num_vertex);
 
 #endif
