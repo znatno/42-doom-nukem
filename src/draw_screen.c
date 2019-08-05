@@ -49,7 +49,7 @@ void	init_draw(t_draw_screen_calc *ds, unsigned int num_sectors)
 	*ds->s->head = (t_item) { player.sector, 0, W-1 };
 }
 
-void	simple_calc0(t_draw_screen_calc *ds)
+void	pick_sector_slice(t_draw_screen_calc *ds)
 {
 	/* Pick a sector & slice from the queue to draw */
 	ds->s->now = *ds->s->tail;
@@ -57,7 +57,7 @@ void	simple_calc0(t_draw_screen_calc *ds)
 		ds->s->tail = ds->que;
 }
 
-void	easy_calc1(t_draw_screen_calc *ds)
+void	rotate_view_(t_draw_screen_calc *ds)
 {
 	/* Acquire the x,y coordinates of the two endpoints (vertices) of this edge of the sector */
 	ds->f->vx1 = ds->s->sect->vertex[ds->it->s + 0].x - player.where.x;
@@ -245,7 +245,7 @@ void	draw_screen(struct sector *sectore, unsigned int num_sectors)
 		ds.s->head = ds.que;
 	while (main_loop_condition(&ds))
 	{
-		simple_calc0(&ds);
+		pick_sector_slice(&ds);
 		if (ds.i->renderedsectors[ds.s->now.sectorno] & 0x21)
 			continue; // Odd = still rendering, 0x20 = give up
 		++ds.i->renderedsectors[ds.s->now.sectorno];
@@ -253,7 +253,7 @@ void	draw_screen(struct sector *sectore, unsigned int num_sectors)
 		/* Render each wall of this sector that is facing towards player. */
 		for (ds.it->s = 0; ds.it->s < ds.s->sect->npoints; ++ds.it->s)
 		{
-			easy_calc1(&ds);
+			rotate_view_(&ds);
 			/* Is the wall at least partially in front of the player? */
 			if (ds.f->tz1 <= 0 && ds.f->tz2 <= 0)
 				continue;

@@ -52,7 +52,4 @@ void	vertex(struct xy *vertex, int num_vertex)
 		i++;
 	}
 	close(fd);
-
 }
-
-
