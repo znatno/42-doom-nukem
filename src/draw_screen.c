@@ -231,7 +231,7 @@ void	draw_screen(t_sector *sector, t_player plr)
 	t_item				qe[MaxQue];
 	t_calc_tmp_int		i;
 	t_calc_tmp_float	f;
-	t_cacl_tmp_struct	s;
+	t_calc_tmp_struct	s;
 	t_draw_screen_calc	ds;
 
 	ds.i = &i;

@@ -200,13 +200,13 @@ typedef struct		s_calc_tmp_struct
 	t_item				*head;
 	t_item				*tail;
 	t_sector			*sectore;
-}					t_cacl_tmp_struct;
+}					t_calc_tmp_struct;
 
 typedef struct		s_draw_sreen_calc
 {
 	t_calc_tmp_int		*i;
 	t_calc_tmp_float	*f;
-	t_cacl_tmp_struct	*s;
+	t_calc_tmp_struct	*s;
 	t_tmp_iter			*it;
 	t_item				*que;
 }					t_draw_screen_calc;
