@@ -54,6 +54,7 @@ typedef struct		s_sector
 	t_xy			*vertex;
 	signed char		*neighbors;       // Each edge may have a corresponding neighboring sector
 	unsigned		npoints;          // How many vertexes there are
+	t_xy		*vert;
 }					t_sector;
 
 typedef struct		s_keys
@@ -112,7 +113,7 @@ typedef struct		s_player
     vxs(vxs(x1,y1, x2,y2), (x1)-(x2), vxs(x3,y3, x4,y4), (x3)-(x4)) \
     / vxs((x1)-(x2), (y1)-(y2), (x3)-(x4), (y3)-(y4)), \
     vxs(vxs(x1,y1, x2,y2), (y1)-(y2), vxs(x3,y3, x4,y4), (y3)-(y4)) \
-    / vxs((x1)-(x2), (y1)-(y2), (x3)-(x4), (y3)-(y4))}) \
+    / vxs((x1)-(x2), (y1)-(y2), (x3)-(x4), (y3)-(y4))})
 
 static SDL_Surface *surface = NULL;
 
