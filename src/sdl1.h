@@ -168,7 +168,7 @@ typedef struct	s_calc_tmp_int
 	int 		ny2b;
 	int 		beginx;
 	int 		endx;
-	int 		z;
+	int			z;
 	int 		ya;
 	int 		cya;
 	int 		yb;
@@ -194,7 +194,6 @@ typedef struct		s_calc_tmp_struct
 {
 	t_item				now;
 	const t_sector 		*sect;
-	t_sector			*sectors;
 	t_xy				i1;
 	t_xy				i2;
 	t_item				*head;
