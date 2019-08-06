@@ -12,7 +12,6 @@
 
 #include "sdl1.h"
 
-
 char	*trim_itof(char *flt)
 {
 	int		i;
@@ -26,21 +25,27 @@ char	*trim_itof(char *flt)
 	return (flt);
 }
 
-/*void	vertex(t_xy *vertex, int num_vertex)
+int		open_create_map()
 {
-	int fd;
-	int i;
-	char *tmp;
+	int 	fd;
 
-	i = 0;
 	fd = open("../maps/ya_karta.doom", O_WRONLY);
-	tmp = (char *)malloc(sizeof(char) * 256);
-	ft_bzero(tmp, 256);
 	if (fd == -1)
 	{
 		system("touch ../maps/ya_karta.doom");
 		fd = open("../maps/ya_karta.doom", O_WRONLY);
 	}
+	return (fd);
+}
+
+void	vertex_record(t_xy *vertex, int num_vertex, int fd)
+{
+	int i;
+	char *tmp;
+
+	i = 0;
+	tmp = (char *)malloc(sizeof(char) * 256);
+	ft_bzero(tmp, 256);
 	while (i < num_vertex)
 	{
 		tmp = ft_strcpy(tmp, "vertex ");
@@ -49,13 +54,44 @@ char	*trim_itof(char *flt)
 		tmp = ft_strcat(tmp, trim_itof(ft_itof(vertex[i].x)));
 		tmp = ft_strcat(tmp, "\n");
 		write(fd, tmp, ft_strlen(tmp));
+		ft_bzero(tmp, 256);
 		i++;
 	}
-	close(fd);
-<<<<<<< HEAD
 }
-=======
-}*/
 
+void	sector_record(t_sector *sectors, int num_sectors, int fd)
+{
+	int		i;
+	char 	*tmp;
 
->>>>>>> ibohun-engine
+	i = 0;
+	tmp = (char *)malloc(sizeof(char) * 256);
+	ft_bzero(tmp, 256);
+	while (i < num_sectors)
+	{
+		tmp = ft_strcpy(tmp, "sector ");
+		tmp = ft_strcat(tmp, trim_itof((ft_itof(sectors->floor))));
+		tmp = ft_strcat(tmp, " ");
+		tmp = ft_strcat(tmp, trim_itof((ft_itof(sectors->ceil))));
+		tmp = ft_strcat(tmp, " ");
+		write(fd, tmp, ft_strlen(tmp));
+		ft_bzero(tmp, 256);
+		i++;
+	}
+}
+
+void	player_record()
+{
+	//record player to file
+}
+
+void	record_data(t_xy *vertex, int num_vertex, t_sector *sectors, int num_sectors)
+{
+	int fd;
+
+	fd = open_create_map();
+	vertex_record(vertex, num_vertex, fd);
+	sector_record(sectors, num_sectors, fd);
+	player_record(player, fd);
+	close(fd);
+}
