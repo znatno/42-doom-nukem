@@ -85,13 +85,13 @@ void	player_record()
 	//record player to file
 }
 
-void	record_data(t_xy *vertex, int num_vertex, t_sector *sectors, int num_sectors)
-{
-	int fd;
-
-	fd = open_create_map();
-	vertex_record(vertex, num_vertex, fd);
-	sector_record(sectors, num_sectors, fd);
-	player_record(player, fd);
-	close(fd);
-}
+//void	record_data(t_xy *vertex, int num_vertex, t_sector *sectors, int num_sectors)
+//{
+//	int fd;
+//
+//	fd = open_create_map();
+//	vertex_record(vertex, num_vertex, fd);
+//	sector_record(sectors, num_sectors, fd);
+//	player_record(player, fd);
+//	close(fd);
+//}

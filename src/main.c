@@ -37,7 +37,7 @@ t_xy Intersect(float x1, float y1, float x2, float y2, float x3, float y3, float
 
 static void LoadData(t_player *plr, t_sector **sectors)
 {
-	FILE *fp = fopen("map-clear.txt", "rt");
+	FILE *fp = fopen("test.txt", "rt");
 	if (!fp)
 	{
 		perror("map-clear.txt");

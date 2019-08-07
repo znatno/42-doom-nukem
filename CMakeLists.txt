@@ -44,6 +44,7 @@ include_directories(~/.brew/include/SDL libft/include/)
 link_directories(~/.brew/lib libft/)
 
 add_executable(doom-nukem   src/main.c
+#                            src/record_data.c
                             src/sdl1.h
                             src/draw_screen.c)
 

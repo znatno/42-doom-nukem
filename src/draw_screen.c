@@ -160,8 +160,7 @@ void	render_walls(t_draw_screen_calc *ds, t_sector *sector, t_player plr)
 void	ceil_floor_light(t_draw_screen_calc *ds)
 {
 	/* Calculate the Z coordinate for this point. (Only used for lighting.) */
-	ds->i->z = (int)roundf(((ds->it->x - ds->i->x1) * (ds->f->tz2 - ds->f->tz1) /
-			(ds->i->x2 - ds->i->x1) + ds->f->tz1) * 8);//Maybe delete this?
+	ds->i->z = 0xffff1f;//Maybe delete this?
 	/* Acquire the Y coordinates for our ceiling & floor for this X coordinate-> Clamp them-> */
 	ds->i->ya = (ds->it->x - ds->i->x1) * (ds->i->y2a - ds->i->y1a) / (ds->i->x2 - ds->i->x1) + ds->i->y1a;
 	ds->i->cya = clamp(ds->i->ya, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // top
