@@ -43,47 +43,7 @@ void	*ft_realloc(void *ptr, size_t size)
 	return (newptr);
 }
 
-#define isdigit(c) (c >= '0' && c <= '9')
-
-struct posf_t {
-	int     pos;
-	bool    is_y;
-	float   value;
-	float   y;
-};
-double atof(const char *s)
-{
-	double a = 0.0;
-	int exp = 0;
-	int c;
-	int sign = 1;
-	int i = 0;
-
-	if (s[0] == '-') {
-		sign = -1;
-		s++;
-	}
-	while ((c = *s++) != '\0' && isdigit(c)) {
-		a = a*10.0 + (c - '0');
-	}
-	if (c == '.') {
-		while ((c = *s++) != '\0' && isdigit(c)) {
-			a = a*10.0 + (c - '0');
-			exp = exp-1;
-		}
-	}
-	while (isdigit(c)) {
-		i = i*10 + (c - '0');
-		c = *s++;
-	}
-	while (exp < 0) {
-		a *= 0.1;
-		exp++;
-	}
-	return a * sign;
-}
-
-struct posf_t atof_posf(const char *s, struct posf_t posf)
+t_posf atof_posf(const char *s, t_posf posf)
 {
 	int exp = 0;
 	int c;
@@ -118,7 +78,7 @@ struct posf_t atof_posf(const char *s, struct posf_t posf)
 }
 
 void			reader(char *line, int fd, t_player *p, t_sector **sectors) {
-	struct posf_t posf;
+	t_posf posf;
 	t_xy *vert = NULL, v;
 	int n, NumVertices = 0;
 	posf.pos = 0;

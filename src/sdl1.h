@@ -33,6 +33,7 @@
 #define KneeHeight 2    // How tall obstacles the player can simply walk over without jumping
 #define hfov (0.73f * H)  // Affects the horizontal field of vision
 #define vfov (.2f * H)    // Affects the vertical field of vision
+#define isdigit(c) (c >= '0' && c <= '9')
 
 //Coordinates
 typedef struct	s_xyz
@@ -41,6 +42,14 @@ typedef struct	s_xyz
 	float	y;
 	float	z;
 }				t_xyz;
+
+typedef struct s_posf_t {
+	int     pos;
+	bool    is_y;
+	float   value;
+	float   y;
+}				t_posf;
+
 
 typedef struct	s_xy1
 {
