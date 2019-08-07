@@ -37,7 +37,7 @@ t_xy Intersect(float x1, float y1, float x2, float y2, float x3, float y3, float
 
 static void LoadData(t_player *plr, t_sector **sectors)
 {
-	FILE *fp = fopen("map-clear.txt", "rt");
+	FILE *fp = fopen("test.txt", "rt");
 	if (!fp)
 	{
 		perror("map-clear.txt");
@@ -155,7 +155,6 @@ static void MovePlayer(t_player *plr, t_sector **sectors, float dx, float dy)
 		 	PointSide(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
 					  vert[s + 1].x, vert[s + 1].y) < 0)
 		{
-			printf("%f", PointSide(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y, vert[s + 1].x, vert[s + 1].y));
 			plr->sector = sect->neighbors[s];
 			break;
 		}
