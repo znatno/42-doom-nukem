@@ -23,8 +23,8 @@
 #include <stdbool.h>
 
 /* Define window size */
-#define W 608
-#define H 320
+#define W 640
+#define H 480
 #define Yaw(y, z) (y + z * plr.yaw)
 #define MaxQue	32
 #define EyeHeight  6    // Camera height from floor when standing
@@ -215,8 +215,10 @@ typedef struct		s_draw_sreen_calc
 
 #define SEC_COLOR 0x0000ff00
 #define BLACK_COLOR 0x00
+#define FILE_NAME "map-clear.txt"
 
 void		draw_screen(t_sector *sector, t_player plr);
+void 		load_data(t_player *player, t_sector **sectors);
 char		*ft_itof(long double k);
 void		vline(int x, int y1, int y2, int color);
 t_xy Intersect(float x1, float y1, float x2, float y2, float x3, float y3,

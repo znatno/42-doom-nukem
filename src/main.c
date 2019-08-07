@@ -289,7 +289,7 @@ int 		main()
 	plr = (t_player){ .ground = 0, .falling = 1, .moving = 0, .ducking = 0 };
 	plr.key = (t_keys){ .w = 0, .s = 0, .a = 0, .d = 0 };
 
-	LoadData(&plr, &sectors);
+	load_data(&plr, &sectors);
 
 	surface = SDL_SetVideoMode(W, H, 32, 0);
 
