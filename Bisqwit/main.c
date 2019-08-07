@@ -86,6 +86,9 @@ static void LoadData()
 				for(sscanf(ptr += n, "%f%n", &v.y, &n); sscanf(ptr += n, "%f%n", &v.x, &n) == 1; )
 				{ vert = realloc(vert, ++NumVertices * sizeof(*vert)); vert[NumVertices-1] = v; }
 				break;
+
+
+
 			case 's': // sector
 				sectors = realloc(sectors, ++NumSectors * sizeof(*sectors));
 				struct sector* sect = &sectors[NumSectors-1];
@@ -101,6 +104,10 @@ static void LoadData()
 				sect->vertex[0] = sect->vertex[m]; // Ensure the vertexes form a loop
 				free(num);
 				break;
+
+
+
+
 			case 'p':; // player
 				float angle;
 				sscanf(ptr += n, "%f %f %f %d", &v.x, &v.y, &angle,&n);
