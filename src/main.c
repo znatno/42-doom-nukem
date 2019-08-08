@@ -288,9 +288,9 @@ void	game(t_sdl_main *sdl, t_player	*plr, t_sector	*sectors)
 
 	keyboard_state = SDL_GetKeyboardState(NULL);
 	quit = false;
+	SDL_ShowCursor(SDL_DISABLE);
 	while(!quit)
 	{
-		draw_screen(sectors, *plr);
 		while (SDL_PollEvent(&ev))
 		{
 			if (keyboard_state[SDL_SCANCODE_ESCAPE] || event.type == SDL_QUIT)
@@ -300,45 +300,46 @@ void	game(t_sdl_main *sdl, t_player	*plr, t_sector	*sectors)
 			//		SDL_LockSurface(surface);
 //			SDL_UnlockSurface(surface); SDL1
 //			SDL_Flip(surface);			SDL1
-			plr->eyeheight = plr->ducking ? DuckHeight : EyeHeight; /* Vertical collision detection */
-			plr->ground = !plr->falling;
-			if (plr->falling) //TODO: make ducking unreversable if стеля згори
-				do_fall(plr, &sectors);
-			if (plr->moving) /* Horizontal collision detection */
-				do_move(plr, &sectors);
-			/* mouse aiming */
-			plr->ms.x = 0;
-			plr->ms.y = 0;
-			SDL_GetRelativeMouseState(&plr->ms.x, &plr->ms.y);
-			plr->angle += plr->ms.x * 0.03f;
-			plr->ms.yaw = clamp(plr->ms.yaw - plr->ms.y * 0.05f, -5, 5);
-			plr->yaw = plr->ms.yaw - plr->vlct.z * 0.5f;
-			MovePlayer(plr, &sectors, 0, 0);
-			plr->mv = (t_move_vec){.x = 0.f, .y = 0.f};
-			if (plr->key.w)
-				plr->mv = (t_move_vec){.x = plr->mv.x + plr->anglecos * 0.2f,
-						.y = plr->mv.y + plr->anglesin * 0.2f};
-			if (plr->key.s)
-				plr->mv = (t_move_vec){.x = plr->mv.x - plr->anglecos * 0.2f,
-						.y = plr->mv.y - plr->anglesin * 0.2f};
-			if (plr->key.a)
-				plr->mv = (t_move_vec){.x = plr->mv.x + plr->anglesin * 0.2f,
-						.y = plr->mv.y - plr->anglecos * 0.2f};
-			if (plr->key.d)
-				plr->mv = (t_move_vec){.x = plr->mv.x - plr->anglesin * 0.2f,
-						.y = plr->mv.y + plr->anglecos * 0.2f};
-			plr->pushing = plr->key.w || plr->key.s || plr->key.a || plr->key.d;
-			plr->aclrt = plr->pushing ? 0.4 : 0.2;
-			plr->vlct.x = plr->vlct.x * (1 - plr->aclrt) + plr->mv.x * plr->aclrt;
-			plr->vlct.y = plr->vlct.y * (1 - plr->aclrt) + plr->mv.y * plr->aclrt;
-			if (plr->pushing)
-				plr->moving = 1;
 			SDL_PumpEvents(); // обработчик событий
 		}
+		plr->eyeheight = plr->ducking ? DuckHeight : EyeHeight; /* Vertical collision detection */
+		plr->ground = !plr->falling;
+		if (plr->falling) //TODO: make ducking unreversable if стеля згори
+			do_fall(plr, &sectors);
+		if (plr->moving) /* Horizontal collision detection */
+			do_move(plr, &sectors);
+		/* mouse aiming */
+		plr->ms.x = 0;
+		plr->ms.y = 0;
+		SDL_GetRelativeMouseState(&plr->ms.x, &plr->ms.y);
+		plr->angle += plr->ms.x * 0.03f;
+		plr->ms.yaw = clamp(plr->ms.yaw - plr->ms.y * 0.05f, -5, 5);
+		plr->yaw = plr->ms.yaw - plr->vlct.z * 0.5f;
+		MovePlayer(plr, &sectors, 0, 0);
+		plr->mv = (t_move_vec){.x = 0.f, .y = 0.f};
+		if (plr->key.w)
+			plr->mv = (t_move_vec){.x = plr->mv.x + plr->anglecos * 0.2f,
+					.y = plr->mv.y + plr->anglesin * 0.2f};
+		if (plr->key.s)
+			plr->mv = (t_move_vec){.x = plr->mv.x - plr->anglecos * 0.2f,
+					.y = plr->mv.y - plr->anglesin * 0.2f};
+		if (plr->key.a)
+			plr->mv = (t_move_vec){.x = plr->mv.x + plr->anglesin * 0.2f,
+					.y = plr->mv.y - plr->anglecos * 0.2f};
+		if (plr->key.d)
+			plr->mv = (t_move_vec){.x = plr->mv.x - plr->anglesin * 0.2f,
+					.y = plr->mv.y + plr->anglecos * 0.2f};
+		plr->pushing = plr->key.w || plr->key.s || plr->key.a || plr->key.d;
+		plr->aclrt = plr->pushing ? 0.4 : 0.2;
+		plr->vlct.x = plr->vlct.x * (1 - plr->aclrt) + plr->mv.x * plr->aclrt;
+		plr->vlct.y = plr->vlct.y * (1 - plr->aclrt) + plr->mv.y * plr->aclrt;
+		if (plr->pushing)
+			plr->moving = 1;
 		draw_screen(sectors, *plr);
 		SDL_UpdateTexture(sdl->texture, NULL, sdl->buffer,W *(sizeof(int)));
 		SDL_RenderCopy(sdl->renderer, sdl->texture, NULL, NULL);
 		SDL_RenderPresent(sdl->renderer);
+		SDL_Delay(10);
 	}
 }
 
