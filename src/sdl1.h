@@ -23,8 +23,8 @@
 #include <stdbool.h>
 
 /* Define window size */
-#define W 608
-#define H 320
+#define W 640
+#define H 480
 #define Yaw(y, z) (y + z * plr.yaw)
 #define MaxQue	32
 #define EyeHeight  6    // Camera height from floor when standing
@@ -33,6 +33,7 @@
 #define KneeHeight 2    // How tall obstacles the player can simply walk over without jumping
 #define hfov (0.73f * H)  // Affects the horizontal field of vision
 #define vfov (.2f * H)    // Affects the vertical field of vision
+#define isdigit(c) (c >= '0' && c <= '9')
 
 //Coordinates
 typedef struct	s_xyz
@@ -41,6 +42,14 @@ typedef struct	s_xyz
 	float	y;
 	float	z;
 }				t_xyz;
+
+typedef struct s_posf_t {
+	int     pos;
+	bool    is_y;
+	float   value;
+	float   y;
+}				t_posf;
+
 
 typedef struct	s_xy1
 {
@@ -168,7 +177,7 @@ typedef struct	s_calc_tmp_int
 	int 		ny2b;
 	int 		beginx;
 	int 		endx;
-	int 		z;
+	int			z;
 	int 		ya;
 	int 		cya;
 	int 		yb;
@@ -194,7 +203,6 @@ typedef struct		s_calc_tmp_struct
 {
 	t_item				now;
 	const t_sector 		*sect;
-	t_sector			*sectors;
 	t_xy				i1;
 	t_xy				i2;
 	t_item				*head;
@@ -216,11 +224,12 @@ typedef struct		s_draw_sreen_calc
 
 #define SEC_COLOR 0x0000ff00
 #define BLACK_COLOR 0x00
+#define FILE_NAME "map-clear.txt"
 
 void		draw_screen(t_sector *sector, t_player plr);
+void 		load_data(t_player *player, t_sector **sectors);
 char		*ft_itof(long double k);
 void		vline(int x, int y1, int y2, int color);
-//void		vertex(struct xy *vertex, int num_vertex);
 t_xy Intersect(float x1, float y1, float x2, float y2, float x3, float y3,
 		float x4, float y4);
 
