@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "sdl1.h"
+#include "doom_nukem.h"
 
 int		main_loop_condition(t_draw_screen_calc *ds)
 {
@@ -157,7 +157,7 @@ void	render_walls(t_draw_screen_calc *ds, t_sector *sector, t_player plr)
 	ds->it->x = ds->i->beginx;
 }
 
-void	ceil_floor_light(t_draw_screen_calc *ds)
+void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p)
 {
 	/* Calculate the Z coordinate for this point. (Only used for lighting.) */
 	ds->i->z = (int)roundf(((ds->it->x - ds->i->x1) * (ds->f->tz2-ds->f->tz1) / (ds->i->x2-ds->i->x1) + ds->f->tz1) * 8);
@@ -170,12 +170,12 @@ void	ceil_floor_light(t_draw_screen_calc *ds)
 	ds->i->cyb = clamp(ds->i->yb, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // bottom
 
 	/* Render ceiling: everything above this sector's ceiling height-> */
-	vline(ds->it->x, ds->i->y_top[ds->it->x], ds->i->cya - 1, 0x222222);
+	vline(ds->it->x, ds->i->y_top[ds->it->x], ds->i->cya - 1, 0x222222, p);
 	/* Render floor: everything below this sector's floor height-> */
-	vline(ds->it->x, ds->i->cyb + 1, ds->i->y_bottom[ds->it->x], 0x0000AA);
+	vline(ds->it->x, ds->i->cyb + 1, ds->i->y_bottom[ds->it->x], 0x0000AA, p);
 }
 
-void	render_ceil_floor(t_draw_screen_calc *ds)
+void	render_ceil_floor(t_draw_screen_calc *ds, t_player *p)
 {
 	/* Same for _their_ floor and ceiling */
 	ds->i->nya = (ds->it->x - ds->i->x1) * (ds->i->ny2a - ds->i->ny1a) / (ds->i->x2 - ds->i->x1) + ds->i->ny1a;
@@ -188,35 +188,35 @@ void	render_ceil_floor(t_draw_screen_calc *ds)
 	ds->i->r1 = 0x010101 * (255 - ds->i->z);
 	ds->i->r2 = 0x040007 * (31 - ds->i->z / 8);
 
-	vline(ds->it->x, ds->i->cya, ds->i->cnya - 1, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r1)); // Between our and their ceiling
+	vline(ds->it->x, ds->i->cya, ds->i->cnya - 1, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r1), p); // Between our and their ceiling
 
 	ds->i->y_top[ds->it->x] = clamp(max(ds->i->cya, ds->i->cnya), ds->i->y_top[ds->it->x], H - 1); // Shrink the remaining window below these ceilings
 	/* If our floor is lower than their floor, render bottom wall */
-	vline(ds->it->x, ds->i->cnyb + 1, ds->i->cyb, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r2)); // Between their and our floor
+	vline(ds->it->x, ds->i->cnyb + 1, ds->i->cyb, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r2), p); // Between their and our floor
 
 	ds->i->y_bottom[ds->it->x] = clamp(min(ds->i->cyb, ds->i->cnyb), 0, ds->i->y_bottom[ds->it->x]); // Shrink the remaining window above these floors
 }
 
-void	render_sector(t_draw_screen_calc *ds)
+void	render_sector(t_draw_screen_calc *ds, t_player *p)
 {
-	ceil_floor_light(ds);
+	ceil_floor_light(ds, p);
 	/* Is there another sector behind this edge? */
 	if (ds->i->neightbor >= 0)
-		render_ceil_floor(ds);
+		render_ceil_floor(ds, p);
 	else
 	{
 		/* There's no neighbor. Render wall from top (cya = ceiling level) to bottom (cyb = floor level). */
 		ds->i->r = 0x010101 * (255 - ds->i->z);
-		vline(ds->it->x, ds->i->cya, ds->i->cyb, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r));
+		vline(ds->it->x, ds->i->cya, ds->i->cyb, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r), p);
 	}
 }
 
 void	render_sector_walls(t_draw_screen_calc *ds , t_sector *sectore,
-							t_item queue[MaxQue], t_player plr)
+							t_item queue[MaxQue], t_player *plr)
 {
-	render_walls(ds, sectore, plr);
+	render_walls(ds, sectore, *plr);
 	for (ds->it->x = ds->i->beginx; ds->it->x <= ds->i->endx; ++ds->it->x)
-		render_sector(ds);
+		render_sector(ds, plr);
 	/* Schedule the neighboring sector for rendering within the window formed by this wall-> */
 	if (ds->i->neightbor >= 0 && ds->i->endx >= ds->i->beginx && (ds->s->head  + MaxQue + 1 - ds->s->tail) % MaxQue)
 	{
@@ -268,7 +268,7 @@ void	draw_screen(t_sector *sector, t_player plr)
 			if (ds.i->x1 >= ds.i->x2 || ds.i->x2 < ds.s->now.sx1 || ds.i->x1 > ds.s->now.sx2)
 				continue; // Only render if it's visible
 			/* Acquire the floor and ceiling heights, relative to where the player's view is */
-			render_sector_walls(&ds, sector, ds.que, plr);
+			render_sector_walls(&ds, sector, ds.que, &plr);
 		} // for s in sector's edges
 		++ds.i->renderedsectors[ds.s->now.sectorno];
 	}
