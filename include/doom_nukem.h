@@ -124,6 +124,7 @@ typedef struct		s_player
 	float			eyeheight;
 	t_keys			key;
 	t_move_vec		mv;
+	float 			speed;
 	int 			pushing;
 	float			aclrt;		// acceleration
 	t_xy_i			ms;			// mouse aiming

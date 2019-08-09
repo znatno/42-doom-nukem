@@ -101,6 +101,7 @@ static void MovePlayer(t_player *plr, t_sector **sectors, float dx, float dy)
 int 		exit_doom(t_sector **sectors, t_player *plr)
 {
 	printf("NO-NO-NO-NO\n");
+	printf("%d NO-NO-NO-NO\n", plr->num_scts);
 	UnloadData(&(*sectors), &(*plr));
 	SDL_Quit();
 	exit(0);
@@ -183,59 +184,53 @@ void		do_move(t_player *plr, t_sector **sc)
 	plr->falling = 1;
 }
 
-void		events(SDL_Event ev, t_sector **sectors, t_player *plr)
+int g_x = 0;
+
+void		events(t_sector **sectors, t_player *plr, bool *quit)
 {
-	if (ev.type)
+	const Uint8		*kstate; // array of keyboard keys states
+	SDL_Event		ev;
+
+	kstate = SDL_GetKeyboardState(NULL);
+	while (SDL_PollEvent(&ev))
 	{
-		if (ev.key.keysym.sym == 'w')
-			plr->key.w = ev.type == SDL_KEYDOWN;
-		else if (ev.key.keysym.sym == 'a')
-			plr->key.a = ev.type == SDL_KEYDOWN;
-		else if (ev.key.keysym.sym == 's')
-			plr->key.s = ev.type == SDL_KEYDOWN;
-		else if (ev.key.keysym.sym == 'd')
-			plr->key.d = ev.type == SDL_KEYDOWN;
-		else if (ev.key.keysym.sym == ' ' && plr->ground)
+		if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
+			exit_doom(sectors, plr);
+			plr->key.w = kstate[SDL_SCANCODE_W];
+			plr->key.a = kstate[SDL_SCANCODE_A];
+			plr->key.s = kstate[SDL_SCANCODE_S];
+			plr->key.d = kstate[SDL_SCANCODE_D];
+		if (ev.type == SDL_KEYDOWN)
 		{
+			if (ev.key.keysym.sym == SDLK_SPACE && plr->ground)
+			{
 				plr->vlct.z += 0.5;
 				plr->falling = 1;
+			}
 		}
-		else if (ev.key.keysym.sym == SDLK_ESCAPE)
-			exit_doom(sectors, plr);
-		else if (ev.key.keysym.sym == SDLK_LCTRL)
-		{
-			plr->ducking = ev.type == SDL_KEYDOWN;
+//		if (kstate[SDL_SCANCODE_SPACE] && plr->ground)
+//		{
+//			printf("%d SPACE CODE: %d\n", ++g_x, kstate[SDL_SCANCODE_SPACE]);
+//			plr->vlct.z += 0.25;
+//			plr->falling = 1;
+//		}
+		plr->ducking = kstate[SDL_SCANCODE_LCTRL];
+		if (plr->ducking)
 			plr->falling = 1;
-		}
-		/*else if (ev.type == SDL_QUIT)
-			exit_doom(sectors, plr);*/
+		SDL_PumpEvents(); // обработчик событий
 	}
 }
 
 void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 {
-	SDL_Event 		event;
 	bool 			quit;
-	const Uint8		*keyboard_state;
-	SDL_Event		ev;
 
-	keyboard_state = SDL_GetKeyboardState(NULL);
 	quit = false;
 	SDL_ShowCursor(SDL_DISABLE);
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 	while(!quit)
 	{
-		while (SDL_PollEvent(&ev))
-		{
-			if (keyboard_state[SDL_SCANCODE_ESCAPE] || event.type == SDL_QUIT)
-				quit = true;
-			if (ev.type)
-				events(ev, &sectors, plr);
-			//		SDL_LockSurface(surface);
-//			SDL_UnlockSurface(surface); SDL1
-//			SDL_Flip(surface);			SDL1
-			SDL_PumpEvents(); // обработчик событий
-		}
+		events(&sectors, plr, &quit);
 		plr->eyeheight = plr->ducking ? DuckHeight : EyeHeight; /* Vertical collision detection */
 		plr->ground = !plr->falling;
 		if (plr->falling) //TODO: make ducking unreversable if стеля згори
@@ -249,20 +244,23 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 		plr->angle += plr->ms.x * 0.03f;
 		plr->ms.yaw = clamp(plr->ms.yaw - plr->ms.y * 0.05f, -5, 5);
 		plr->yaw = plr->ms.yaw - plr->vlct.z * 0.5f;
-		MovePlayer(plr, &sectors, 0, 0);
 		plr->mv = (t_move_vec){.x = 0.f, .y = 0.f};
+		MovePlayer(plr, &sectors, 0, 0);
+		plr->speed = 0.2f;
+		if (plr->ducking)
+			plr->speed /= 2;
 		if (plr->key.w)
-			plr->mv = (t_move_vec){.x = plr->mv.x + plr->anglecos * 0.2f,
-					.y = plr->mv.y + plr->anglesin * 0.2f};
+			plr->mv = (t_move_vec){.x = plr->mv.x + plr->anglecos * plr->speed,
+					.y = plr->mv.y + plr->anglesin * plr->speed};
 		if (plr->key.s)
-			plr->mv = (t_move_vec){.x = plr->mv.x - plr->anglecos * 0.2f,
-					.y = plr->mv.y - plr->anglesin * 0.2f};
+			plr->mv = (t_move_vec){.x = plr->mv.x - plr->anglecos * plr->speed,
+					.y = plr->mv.y - plr->anglesin * plr->speed};
 		if (plr->key.a)
-			plr->mv = (t_move_vec){.x = plr->mv.x + plr->anglesin * 0.2f,
-					.y = plr->mv.y - plr->anglecos * 0.2f};
+			plr->mv = (t_move_vec){.x = plr->mv.x + plr->anglesin * plr->speed,
+					.y = plr->mv.y - plr->anglecos * plr->speed};
 		if (plr->key.d)
-			plr->mv = (t_move_vec){.x = plr->mv.x - plr->anglesin * 0.2f,
-					.y = plr->mv.y + plr->anglecos * 0.2f};
+			plr->mv = (t_move_vec){.x = plr->mv.x - plr->anglesin * plr->speed,
+					.y = plr->mv.y + plr->anglecos * plr->speed};
 		plr->pushing = plr->key.w || plr->key.s || plr->key.a || plr->key.d;
 		plr->aclrt = plr->pushing ? 0.4 : 0.2;
 		plr->vlct.x = plr->vlct.x * (1 - plr->aclrt) + plr->mv.x * plr->aclrt;
@@ -273,7 +271,7 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 		SDL_UpdateTexture(sdl->texture, NULL, sdl->buffer,W *(sizeof(int)));
 		SDL_RenderCopy(sdl->renderer, sdl->texture, NULL, NULL);
 		SDL_RenderPresent(sdl->renderer);
-		//SDL_Delay(25);
+		SDL_Delay(15);
 	}
 }
 
@@ -297,7 +295,8 @@ int 		main(void)
 	if (SDL_Init(SDL_INIT_EVERYTHING != 0))
 		printf("init");
 	int request = SDL_GetDesktopDisplayMode(0, &sdl.display_mode);
-	sdl.window = SDL_CreateWindow("Gena_test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, W, H,  SDL_WINDOW_SHOWN);
+	sdl.window = SDL_CreateWindow("Doom Nukem", SDL_WINDOWPOS_CENTERED,
+			SDL_WINDOWPOS_CENTERED, W, H,  SDL_WINDOW_SHOWN);
 	if (!sdl.window)
 		printf("win");
 	sdl.renderer = SDL_CreateRenderer(sdl.window, -1, SDL_RENDERER_ACCELERATED);
