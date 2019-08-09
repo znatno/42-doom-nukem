@@ -17,8 +17,10 @@
 # include "SDL_mixer.h"
 # include "SDL_image.h"
 
-#define W_WIDTH 900
-#define W_HEIGHT 600
+#define W_WIDTH 1600
+#define W_HEIGHT 950
+#define W_DRAW 1400
+#define H_DRAW 800
 
 #define NONE 0
 #define LOOP_START 1

@@ -4,6 +4,27 @@ void set_pixel(t_env *env, int x, int y, Uint32 pixel)
     env->buffer[ ( y * W_WIDTH ) + x ] = pixel;
 }
 
+void    draw_desk(t_env *env) {
+    t_xy pos;
+    int sum;
+    int coef;
+
+    sum = 0;
+    coef = 1;
+    pos.y = 0;
+    while ((pos.y += 20) < H_DRAW)
+    {
+        pos.x = 0;
+        while ((pos.x += 20) < W_DRAW){
+            set_pixel(env, pos.x, pos.y, 0xFF00FF);
+            printf("%d ",pos.x);
+            sum += pos.x;
+        }
+        coef += 1;
+        printf("[%d[ \n",pos.y);
+    }
+}
+
 t_env           *sdl_main_loop(t_env *env)
 {
 	t_xy	p[2];
@@ -14,6 +35,8 @@ t_env           *sdl_main_loop(t_env *env)
     p[1].x = 500;
     p[1].y = 500;
 
+
+    draw_desk(env);
     while (LOOP_START && env->sdl_error == NONE)
     {
         if (SDL_PollEvent(&env->window_e))
@@ -28,7 +51,7 @@ t_env           *sdl_main_loop(t_env *env)
         {
             set_pixel(env, x, y, 0xFF00FF);
         }
-        line(p[0], p[1], env);
+//        line(p[0], p[1], env);
         SDL_UpdateTexture(env->texture, NULL, env->buffer, W_WIDTH *(sizeof(int)));
         SDL_RenderCopy(env->renderer, env->texture, NULL, NULL);
         SDL_RenderPresent(env->renderer);
