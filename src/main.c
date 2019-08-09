@@ -1,5 +1,5 @@
 #include <AppleTextureEncoder.h>
-#include "sdl1.h"
+#include "doom_nukem.h"
 
 bool Overlap(float a0, float a1, float b0, float b1)
 {
@@ -45,9 +45,9 @@ static void UnloadData(t_sector **sectors, t_player *plr)
 }
 
 /* vline: Draw a vertical line on screen, with a different color pixel in top & bottom */
-void vline(int x, int y1, int y2, int color)
+void vline(int x, int y1, int y2, int color, t_player *player)
 {
-	int *pix = (int *) surface->pixels;
+	int *pix = (int *)player->sdl->buffer;
 	y1 = clamp(y1, 0, H - 1);
 	y2 = clamp(y2, 0, H - 1);
 	if (y2 == y1)
@@ -100,6 +100,7 @@ static void MovePlayer(t_player *plr, t_sector **sectors, float dx, float dy)
 
 int 		exit_doom(t_sector **sectors, t_player *plr)
 {
+	printf("NO-NO-NO-NO\n");
 	UnloadData(&(*sectors), &(*plr));
 	SDL_Quit();
 	exit(0);
@@ -211,69 +212,101 @@ void		events(SDL_Event ev, t_sector **sectors, t_player *plr)
 	}
 }
 
+void	game(t_sdl_main *sdl, t_player	*plr, t_sector	*sectors)
+{
+	SDL_Event 		event;
+	bool 			quit;
+	const Uint8		*keyboard_state;
+	SDL_Event		ev;
+
+	keyboard_state = SDL_GetKeyboardState(NULL);
+	quit = false;
+	SDL_ShowCursor(SDL_DISABLE);
+	while(!quit)
+	{
+		while (SDL_PollEvent(&ev))
+		{
+			if (keyboard_state[SDL_SCANCODE_ESCAPE] || event.type == SDL_QUIT)
+				quit = true;
+			if (ev.type)
+				events(ev, &sectors, plr);
+			//		SDL_LockSurface(surface);
+//			SDL_UnlockSurface(surface); SDL1
+//			SDL_Flip(surface);			SDL1
+			SDL_PumpEvents(); // обработчик событий
+		}
+		plr->eyeheight = plr->ducking ? DuckHeight : EyeHeight; /* Vertical collision detection */
+		plr->ground = !plr->falling;
+		if (plr->falling) //TODO: make ducking unreversable if стеля згори
+			do_fall(plr, &sectors);
+		if (plr->moving) /* Horizontal collision detection */
+			do_move(plr, &sectors);
+		/* mouse aiming */
+		plr->ms.x = 0;
+		plr->ms.y = 0;
+		SDL_GetRelativeMouseState(&plr->ms.x, &plr->ms.y);
+		plr->angle += plr->ms.x * 0.03f;
+		plr->ms.yaw = clamp(plr->ms.yaw - plr->ms.y * 0.05f, -5, 5);
+		plr->yaw = plr->ms.yaw - plr->vlct.z * 0.5f;
+		MovePlayer(plr, &sectors, 0, 0);
+		plr->mv = (t_move_vec){.x = 0.f, .y = 0.f};
+		if (plr->key.w)
+			plr->mv = (t_move_vec){.x = plr->mv.x + plr->anglecos * 0.2f,
+					.y = plr->mv.y + plr->anglesin * 0.2f};
+		if (plr->key.s)
+			plr->mv = (t_move_vec){.x = plr->mv.x - plr->anglecos * 0.2f,
+					.y = plr->mv.y - plr->anglesin * 0.2f};
+		if (plr->key.a)
+			plr->mv = (t_move_vec){.x = plr->mv.x + plr->anglesin * 0.2f,
+					.y = plr->mv.y - plr->anglecos * 0.2f};
+		if (plr->key.d)
+			plr->mv = (t_move_vec){.x = plr->mv.x - plr->anglesin * 0.2f,
+					.y = plr->mv.y + plr->anglecos * 0.2f};
+		plr->pushing = plr->key.w || plr->key.s || plr->key.a || plr->key.d;
+		plr->aclrt = plr->pushing ? 0.4 : 0.2;
+		plr->vlct.x = plr->vlct.x * (1 - plr->aclrt) + plr->mv.x * plr->aclrt;
+		plr->vlct.y = plr->vlct.y * (1 - plr->aclrt) + plr->mv.y * plr->aclrt;
+		if (plr->pushing)
+			plr->moving = 1;
+		draw_screen(sectors, *plr);
+		SDL_UpdateTexture(sdl->texture, NULL, sdl->buffer,W *(sizeof(int)));
+		SDL_RenderCopy(sdl->renderer, sdl->texture, NULL, NULL);
+		SDL_RenderPresent(sdl->renderer);
+		SDL_Delay(10);
+	}
+}
+
 int 		main()
 {
-	t_player	plr;
+	t_player		plr;
+	t_sdl_main		sdl;
 	t_sector	*sectors;
-
+	int 		*buffer;
 
 	sectors = NULL;
-	plr.num_scts = 0;
+	buffer = (int *)malloc(sizeof(int) * W * H);
 	plr = (t_player){ .ground = 0, .falling = 1, .moving = 0, .ducking = 0 };
 	plr.key = (t_keys){ .w = 0, .s = 0, .a = 0, .d = 0 };
+	sdl.buffer = buffer;
+	plr.sdl = &sdl;
+	plr.num_scts = 0;
 
 	load_data(&plr, &sectors);
 
-	surface = SDL_SetVideoMode(W, H, 32, 0);
-
-	SDL_EnableKeyRepeat(150, 30);
-	SDL_ShowCursor(SDL_DISABLE);
-
+	if (SDL_Init(SDL_INIT_EVERYTHING != 0))
+		printf("init");
+	int request = SDL_GetDesktopDisplayMode(0, &sdl.display_mode);
+	sdl.window = SDL_CreateWindow("Gena_test",0,0,W, H,  SDL_WINDOW_SHOWN);
+	if (!sdl.window)
+		printf("win");
+	sdl.renderer = SDL_CreateRenderer(sdl.window, -1, SDL_RENDERER_ACCELERATED);
+	if (!sdl.renderer)
+		printf("renderer");
+	sdl.texture = SDL_CreateTexture(sdl.renderer, SDL_PIXELFORMAT_ARGB32, SDL_TEXTUREACCESS_STREAMING, W, H);
 	plr.ms.yaw = 0;
-	while (1)
-	{
-		SDL_LockSurface(surface);
-		draw_screen(sectors, plr);
-		SDL_UnlockSurface(surface);
-		SDL_Flip(surface);
-		plr.eyeheight = plr.ducking ? DuckHeight : EyeHeight; /* Vertical collision detection */
-		plr.ground = !plr.falling;
-		if (plr.falling) //TODO: make ducking unreversable if стеля згори
-			do_fall(&plr, &sectors);
-		if (plr.moving) /* Horizontal collision detection */
-			do_move(&plr, &sectors);
-		SDL_Event ev;
-		while (SDL_PollEvent(&ev))
-			if (ev.type)
-				events(ev, &sectors, &plr); /* events(); */
-		/* mouse aiming */
-		plr.ms.x = 0;
-		plr.ms.y = 0;
-		SDL_GetRelativeMouseState(&plr.ms.x, &plr.ms.y);
-		plr.angle += plr.ms.x * 0.03f;
-		plr.ms.yaw = clamp(plr.ms.yaw - plr.ms.y * 0.05f, -5, 5);
-		plr.yaw = plr.ms.yaw - plr.vlct.z * 0.5f;
-		MovePlayer(&plr, &sectors, 0, 0);
-		plr.mv = (t_move_vec){.x = 0.f, .y = 0.f};
-		if (plr.key.w)
-			plr.mv = (t_move_vec){.x = plr.mv.x + plr.anglecos * 0.2f,
-						 			.y = plr.mv.y + plr.anglesin * 0.2f};
-		if (plr.key.s)
-			plr.mv = (t_move_vec){.x = plr.mv.x - plr.anglecos * 0.2f,
-						 			.y = plr.mv.y - plr.anglesin * 0.2f};
-		if (plr.key.a)
-			plr.mv = (t_move_vec){.x = plr.mv.x + plr.anglesin * 0.2f,
-						 			.y = plr.mv.y - plr.anglecos * 0.2f};
-		if (plr.key.d)
-			plr.mv = (t_move_vec){.x = plr.mv.x - plr.anglesin * 0.2f,
-						 			.y = plr.mv.y + plr.anglecos * 0.2f};
-		plr.pushing = plr.key.w || plr.key.s || plr.key.a || plr.key.d;
-		plr.aclrt = plr.pushing ? 0.4 : 0.2;
-		plr.vlct.x = plr.vlct.x * (1 - plr.aclrt) + plr.mv.x * plr.aclrt;
-		plr.vlct.y = plr.vlct.y * (1 - plr.aclrt) + plr.mv.y * plr.aclrt;
-		if (plr.pushing)
-			plr.moving = 1;
-		SDL_Delay(10);
-	}
+	game(&sdl, &plr, sectors);
+	SDL_DestroyWindow(sdl.window);
+	SDL_Quit();
+	return (0);
 }
 wint_t kek;
