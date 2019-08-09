@@ -3,7 +3,6 @@ project(doom-nukem C)
 
 set(CMAKE_C_STANDARD 99)
 
-
 set(SDL2_INCLUDE_DIR ~/.brew/Cellar/sdl2/2.0.9_1/include/SDL2/)
 set(SDL2_LIBRARY ~/.brew/Cellar/sdl2/2.0.9_1/lib/)
 
@@ -32,15 +31,25 @@ link_directories(${SDL2_LIBRARY}
                  ${LIBFT_LIBRARY}
                  ${SOURCE})
 
-file(GLOB all
-        "${INCLUDE}*.h"
-        "${SOURCE}*.c")
+
+#
+#file(GLOB all
+#        "${INCLUDE}*.h"
+#        "${SOURCE}*.c")
 
 #include_directories(~/.brew/Cellar/sdl/1.2.15_1/include/SDL/)
+#include_directories(~/.brew/include/SDL libft/include/)
 
 #link_directories(~/.brew/Cellar/sdl/1.2.15_1/lib/)
+#link_directories(~/.brew/lib libft/)
 
-add_executable(doom-nukem ${all} src/sdl1.h)
+add_executable(doom-nukem   src/main.c
+                            src/float_to_str.c
+                            src/draw_line.c
+                            src/record_data.c)
+
 
 #target_link_libraries(doom-nukem -lSDL)
 target_link_libraries(doom-nukem -lft -lSDL2 -lSDL2_image -lSDL2_mixer)
+#target_link_libraries(doom-nukem "-D_GNU_SOURCE=1" "-D_THREAD_SAFE" "-lSDLmain"
+#"-lSDL -Wl,-framework,Cocoa" "-lft")

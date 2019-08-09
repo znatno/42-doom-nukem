@@ -1,41 +1,19 @@
-#include "../include/duke_nukem_editor.h"
-//#include "SDL.h"
-void set_pixel(p_env *env, int x, int y, Uint32 pixel)
+#include "duke_nukem_editor.h"
+void set_pixel(t_env *env, int x, int y, Uint32 pixel)
 {
     env->buffer[ ( y * W_WIDTH ) + x ] = pixel;
 }
 
-void    draw_desk(p_env *env) {
-    po_xyi pos;
-    int sum;
-    int coef;
-
-    sum = 0;
-    coef = 1;
-    pos.y = 0;
-    while ((pos.y += 20) < H_DRAW)
-    {
-        pos.x = 0;
-        while ((pos.x += 20) < W_DRAW){
-            set_pixel(env, pos.x, pos.y, 0xFF00FF);
-            printf("%d ",pos.x);
-            sum += pos.x;
-        }
-        coef += 1;
-        printf("[%d[ \n",pos.y);
-    }
-}
-
-//SDL_WarpMouseInWindow(SDL_Window* window,
-//                           int         x,
-//                           int         y)
-
-p_env           *sdl_main_loop(p_env *env)
+t_env           *sdl_main_loop(t_env *env)
 {
+	t_xy	p[2];
     int x, y = 0;
-    int x2, y2 = 0;
 
-    draw_desk(env);
+    p[0].x = 0;
+    p[0].y = 0;
+    p[1].x = 500;
+    p[1].y = 500;
+
     while (LOOP_START && env->sdl_error == NONE)
     {
         if (SDL_PollEvent(&env->window_e))
@@ -44,16 +22,13 @@ p_env           *sdl_main_loop(p_env *env)
             {
                 break;
             }
-//            if (env->window_e.key.keysym.sym == 'w')
-//            {
-//                env->zoom += 1;
-//            }
         }
         SDL_PumpEvents();
-        if (SDL_GetMouseState(&x, &y) & SDL_BUTTON(SDL_BUTTON_LEFT)) {
+        if (SDL_GetMouseState(&x, &y) & SDL_BUTTON(SDL_BUTTON_LEFT))
+        {
             set_pixel(env, x, y, 0xFF00FF);
-
         }
+        line(p[0], p[1], env);
         SDL_UpdateTexture(env->texture, NULL, env->buffer, W_WIDTH *(sizeof(int)));
         SDL_RenderCopy(env->renderer, env->texture, NULL, NULL);
         SDL_RenderPresent(env->renderer);
@@ -62,13 +37,13 @@ p_env           *sdl_main_loop(p_env *env)
 }
 
 
-void            init_vars(p_env *env)
+void            init_vars(t_env *env)
 {
     env->sdl_error = NONE;
     env->zoom = 20;
 }
 
-p_env           *sdl_init(p_env   *env)
+t_env           *sdl_init(t_env   *env)
 {
     init_vars(env);
     env->window  = SDL_CreateWindow("doom-nukem-editor", 910, 510, W_WIDTH, W_HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
@@ -88,9 +63,9 @@ p_env           *sdl_init(p_env   *env)
 
 int             main()
 {
-    p_env       *env;
+    t_env       *env;
 
-    env = malloc(sizeof(p_env));
+    env = malloc(sizeof(t_env));
     if (!(SDL_Init(SDL_INIT_EVERYTHING) < 0))
     {
         env = sdl_main_loop(sdl_init(env));
