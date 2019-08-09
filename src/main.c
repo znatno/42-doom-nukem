@@ -200,7 +200,7 @@ void		events(SDL_Event ev, t_sector **sectors, t_player *plr)
 				plr->vlct.z += 0.5;
 				plr->falling = 1;
 		}
-		else if (ev.key.keysym.sym == 'q')
+		else if (ev.key.keysym.sym == SDLK_ESCAPE)
 			exit_doom(sectors, plr);
 		else if (ev.key.keysym.sym == SDLK_LCTRL)
 		{
@@ -272,7 +272,7 @@ void	game(t_sdl_main *sdl, t_player	*plr, t_sector	*sectors)
 		SDL_UpdateTexture(sdl->texture, NULL, sdl->buffer,W *(sizeof(int)));
 		SDL_RenderCopy(sdl->renderer, sdl->texture, NULL, NULL);
 		SDL_RenderPresent(sdl->renderer);
-		SDL_Delay(10);
+		SDL_Delay(25);
 	}
 }
 
