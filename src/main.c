@@ -12,21 +12,23 @@ void    draw_desk(p_env *env) {
 
     sum = 0;
     coef = 1;
-    pos.y = 20;
-    while (pos.y < W_DRAW)
+    pos.y = 0;
+    while ((pos.y += 20) < H_DRAW)
     {
-        pos.x = 10;
-        while (pos.x < H_DRAW){
+        pos.x = 0;
+        while ((pos.x += 20) < W_DRAW){
             set_pixel(env, pos.x, pos.y, 0xFF00FF);
             printf("%d ",pos.x);
-            pos.x += 20;
             sum += pos.x;
         }
         coef += 1;
         printf("[%d[ \n",pos.y);
-        pos.y += 20;
     }
 }
+
+//SDL_WarpMouseInWindow(SDL_Window* window,
+//                           int         x,
+//                           int         y)
 
 p_env           *sdl_main_loop(p_env *env)
 {
