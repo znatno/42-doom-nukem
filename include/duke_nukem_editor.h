@@ -36,8 +36,7 @@ typedef struct s_line
 {
 	int			start;
 	int			end;
-	int			p0_color;
-	int			p1_color;
+	u_int		p_color;
 	int			tmp_x;
 	int			tmp_y;
 	int			dx;
@@ -77,6 +76,6 @@ typedef struct s_env
 
 }				t_env;
 
-void	line(t_xy pt1, t_xy pt2, t_env *env);
+void	line(t_xy pt1, t_xy pt2, t_env *env, u_int color);
 
 #endif

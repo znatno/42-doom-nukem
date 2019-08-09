@@ -5,14 +5,13 @@ void	pixel_put(t_line line, t_env *env)
 	if (line.tmp_x < W_WIDTH && line.tmp_x >= 0 &&
 		line.tmp_y < W_HEIGHT && line.tmp_y >= 0)
 	{
-		env->buffer[line.tmp_y * W_WIDTH + line.tmp_x] = line.p0_color;
+		env->buffer[line.tmp_y * W_WIDTH + line.tmp_x] = line.p_color;
 	}
 }
 
-void	fill_line(t_line *line, t_xy xy0, t_xy xy1)
+void	fill_line(t_line *line, t_xy xy0, t_xy xy1, u_int color)
 {
-	line->p0_color = 0xfffff;
-	line->p1_color = 0xfffff;
+	line->p_color = color;
 	line->tmp_x = xy0.x;
 	line->tmp_y = xy0.y;
 	line->dx = abs(xy1.x - xy0.x);
@@ -59,12 +58,12 @@ void	draw_dy(t_line line, t_env *env, int i)
 	}
 }
 
-void	line(t_xy pt1, t_xy pt2, t_env *env)
+void	line(t_xy pt1, t_xy pt2, t_env *env, u_int color)
 {
 	t_line	line;
 	int		i;
 
-	fill_line(&line, pt1, pt2);
+	fill_line(&line, pt1, pt2, color);
 	i = MAX(line.dx, line.dy);
 	if (i == 0)
 		pixel_put(line, env);

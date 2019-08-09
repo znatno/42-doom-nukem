@@ -16,25 +16,31 @@ void    draw_desk(t_env *env) {
     {
         pos.x = 0;
         while ((pos.x += 20) < W_DRAW){
-            set_pixel(env, pos.x, pos.y, 0xFF00FF);
-            printf("%d ",pos.x);
+            set_pixel(env, pos.x, pos.y, 0xFFFFFF);
             sum += pos.x;
         }
         coef += 1;
-        printf("[%d[ \n",pos.y);
     }
 }
 
+void			draw_frame(t_env *env)
+{
+	t_xy	edge[2];
+
+	edge[0].x = W_DRAW;
+	edge[0].y = H_DRAW;
+	edge[1].x = W_DRAW;
+	edge[1].y = 0;
+	line(edge[0], edge[1], env, 0xffffff00);
+	edge[1].x = 0;
+	edge[1].y = H_DRAW;
+	line(edge[0], edge[1], env, 0xffffff00);
+}
+
+
 t_env           *sdl_main_loop(t_env *env)
 {
-	t_xy	p[2];
     int x, y = 0;
-
-    p[0].x = 0;
-    p[0].y = 0;
-    p[1].x = 500;
-    p[1].y = 500;
-
 
     draw_desk(env);
     while (LOOP_START && env->sdl_error == NONE)
@@ -51,7 +57,7 @@ t_env           *sdl_main_loop(t_env *env)
         {
             set_pixel(env, x, y, 0xFF00FF);
         }
-//        line(p[0], p[1], env);
+        draw_frame(env);
         SDL_UpdateTexture(env->texture, NULL, env->buffer, W_WIDTH *(sizeof(int)));
         SDL_RenderCopy(env->renderer, env->texture, NULL, NULL);
         SDL_RenderPresent(env->renderer);
