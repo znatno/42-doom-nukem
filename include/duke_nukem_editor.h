@@ -1,0 +1,8 @@
+//
+// Created by Vladislav OPOLONCHIK on 2019-08-09.
+//
+
+#ifndef DOOM_NUKEM_DUKE_NUKEM_EDITOR_H
+#define DOOM_NUKEM_DUKE_NUKEM_EDITOR_H
+
+#endif //DOOM_NUKEM_DUKE_NUKEM_EDITOR_H

@@ -1,4 +1,4 @@
-#include "../include/doom_nukem_editor.h"
+#include "../include/duke_nukem_editor.h"
 //#include "SDL.h"
 void set_pixel(p_env *env, int x, int y, Uint32 pixel)
 {
