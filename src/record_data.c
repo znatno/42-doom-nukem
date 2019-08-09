@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "sdl1.h"
+#include "duke_nukem_editor.h"
 
 char	*trim_itof(char *flt)
 {
