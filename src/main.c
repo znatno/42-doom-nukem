@@ -9,7 +9,7 @@
 #define hfov (0.73f*H)  // Affects the horizontal field of vision
 #define vfov (.2f*H)    // Affects the vertical field of vision
 
-#define FILE_NAME "map-clear.txt"
+#define FILE_NAME "test2.map"
 
 /* Sectors: Floor and ceiling height; list of edge vertices and neighbors */
 
@@ -423,9 +423,9 @@ void			reader(char *line, int fd) {
              * Комментарий для дебага связей
              */
 
-            static int id = -1;
-            id++;
-            printf("[%d] all = %d\n",id,all);
+//            static int id = -1;
+//            id++;
+//            printf("[%d] all = %d\n",id,all);
             while (n < all) {
                 sect->neighbors[n] = num[all + n];
                 n++;
@@ -477,6 +477,8 @@ void			reader(char *line, int fd) {
     free(vert);
 }
 
+// FUNCTIONS FOR DEBUGGING //
+
 void print_vertex(int id)
 {
     for (int i = 0; i < sectors[id].npoints; ++i) {
@@ -499,17 +501,10 @@ void print_sector(int id)
     printf("------------------------------\n");
 }
 
+/////////////////////////////
+
 static void LoadData() {
-    // my defines
-//    int i;
-//    int j = 0;
-//    int k = 0;
-//    char Buf[256], word[256], *ptr;
-//    struct xy *vert = NULL, v;
-//    int n, m, NumVertices = 0;
     int fd;
-    FILE* fp = fopen("map-clear.txt", "rt");
-    if(!fp) { perror("map-clear.txt"); exit(1); }
     char *line;
 
     line = ft_strnew(1);
@@ -519,113 +514,7 @@ static void LoadData() {
     }
 //     map = reader(map, line, fd);
     reader(line, fd);
-//    fclose(fp);
     return;
-///*
-//
-////    (map) ? writer(map, av, fd) : ft_putstr("err\n");
-////    writer(FILE_NAME, fd);
-////    exit(0);
-//    while (fgets(Buf, sizeof Buf, fp))
-//        switch (sscanf(ptr = Buf, "%32s%n", word, &n) == 1 ? word[0] : '\0')
-//        {
-//            /*
-//             *  VERTEX -> y {x}
-//             *  Сохраняет таким образом vert[индекс одного вектора].x|y
-//             *  Если в вертексе больше одного 'x', то значение 'y' не меняем
-//             *
-//             *  vertex 'y0' {x0 x1 x2}
-//             *  vertex 'y1' {x3 x4 x6}
-//             *
-//             */
-//            case 'v': // vertex
-//                j += 1;
-//                for (sscanf(ptr += n, "%f%n", &v.y, &n); sscanf(ptr += n, "%f%n", &v.x, &n) == 1;)
-//                {
-//
-//                    vert = realloc(vert, ++NumVertices * sizeof(*vert));
-//                    vert[NumVertices - 1] = v;
-//                    i++;
-//                }
-//                break;
-//                /*
-//                 *  SECTORS -> floor ceil {vertex}
-//                 *  массив делится
-//                 */
-//            case 's':
-//                sectors = realloc(sectors, ++NumSectors * sizeof(*sectors));
-//                /*
-//                 *  sectors -> является массивом структур sector
-//                 *  каждая строка sector будет индексом sectors[индекс.сектора(начиная с нуля)]
-//                 */
-//                struct sector *sect =
-//                        &sectors[NumSectors - 1];
-//                int *num = NULL;
-//                /*
-//                 *
-//                 * Считываем высоту потолка и пола
-//                 *
-//                 */
-//                sscanf(ptr += n, "%f%f%n", &sect->floor, &sect->ceil, &n);
-//
-//                /*
-//                 * num хранит в себе остаток чисел после ceil и flooг
-//                 */
-//
-//                for (m = 0; sscanf(ptr += n, "%32s%n", word, &n) == 1 &&
-//                            word[0] != '#';)
-//                {
-//                    num = realloc(num, ++m * sizeof(*num));
-//                    num[m - 1] = word[0] == 'x' ? -1 : atoi(word);
-//                }
-//
-//                /*
-//                 *  Общее количество точек в вертексе делим на два
-//                 *  это будут наши соединения ( npoints )
-//                 */
-//
-//                sect->npoints = m /= 2;
-//
-//                /*
-//                 *  размер *neighbors = 1 byte
-//                 *  размер npoints = m\2;
-//                 *  (m \ 2) * 1 byte = наше выделение под neighors
-//                 *  тоже самое под vertex, но на 1 больше,
-//                 *  т.к последняя связь ведёт к первому элементу вертекса
-//                 */
-//
-//                sect->neighbors = malloc((sect->npoints) * sizeof(*sect->neighbors));
-//                sect->vertex = malloc((m + 1) * sizeof(*sect->vertex));
-//
-//                /*
-//                 *
-//                 */
-//                k++;
-//                for (n = 0; n < m; ++n)
-//                {
-//                    sect->neighbors[n] = num[m + n];
-//                    printf("%d ", sect->neighbors[n]);
-//                }
-//                printf("\n");
-//                for (n = 0; n < m; ++n)
-//                    sect->vertex[n + 1] = vert[num[n]]; // TODO: Range checking
-//                sect->vertex[0] = sect->vertex[m]; // Ensure the vertexes form a loop
-//                free(num);
-//                break;
-//            case 'p':;
-//                /*
-//                 *	player
-//                */
-//                float angle;
-//                sscanf(ptr += n, "%f %f %f %d", &v.x, &v.y, &angle, &n);
-//                player = (struct player) {{v.x, v.y, 0}, {0, 0, 0}, angle, 0, 0,
-//                                          0, n}; // TODO: Range checking
-//                player.where.z = sectors[player.sector].floor + EyeHeight;
-//        }
-//    exit(1);
-//    fclose(fp);
-////	free(vert);
-
 }
 
 
@@ -827,8 +716,8 @@ static void DrawScreen()
 					int nyb = (x - x1) * (ny2b - ny1b) / (x2 - x1) +
 							  ny1b, cnyb = clamp(nyb, ytop[x], ybottom[x]);
 					/* If our ceiling is higher than their ceiling, render upper wall */
-					unsigned r1 = 0x010101 * (255 - z), r2 =
-							0x040007 * (31 - z / 8);
+					unsigned r1 = 0x010101 * (255), r2 =
+							0x040007 * (33);
 					vline(x, cya, cnya - 1, 0, x == x1 || x == x2 ? 0 : r1,
 						  0); // Between our and their ceiling
 					ytop[x] = clamp(max(cya, cnya), ytop[x], H -
@@ -841,7 +730,7 @@ static void DrawScreen()
 				} else
 				{
 					/* There's no neighbor. Render wall from top (cya = ceiling level) to bottom (cyb = floor level). */
-					unsigned r = 0x010101 * (255 - z);
+					unsigned r = 0x010101 * (255);
 					vline(x, cya, cyb, 0, x == x1 || x == x2 ? 0 : r, 0);
 				}
 			}
