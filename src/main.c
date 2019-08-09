@@ -207,12 +207,12 @@ void		events(SDL_Event ev, t_sector **sectors, t_player *plr)
 			plr->ducking = ev.type == SDL_KEYDOWN;
 			plr->falling = 1;
 		}
-		else if (ev.type == SDL_QUIT)
-			exit_doom(sectors, plr);
+		/*else if (ev.type == SDL_QUIT)
+			exit_doom(sectors, plr);*/
 	}
 }
 
-void	game(t_sdl_main *sdl, t_player	*plr, t_sector	*sectors)
+void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 {
 	SDL_Event 		event;
 	bool 			quit;
@@ -273,11 +273,11 @@ void	game(t_sdl_main *sdl, t_player	*plr, t_sector	*sectors)
 		SDL_UpdateTexture(sdl->texture, NULL, sdl->buffer,W *(sizeof(int)));
 		SDL_RenderCopy(sdl->renderer, sdl->texture, NULL, NULL);
 		SDL_RenderPresent(sdl->renderer);
-		SDL_Delay(25);
+		//SDL_Delay(25);
 	}
 }
 
-int 		main()
+int 		main(void)
 {
 	t_player		plr;
 	t_sdl_main		sdl;
@@ -297,7 +297,7 @@ int 		main()
 	if (SDL_Init(SDL_INIT_EVERYTHING != 0))
 		printf("init");
 	int request = SDL_GetDesktopDisplayMode(0, &sdl.display_mode);
-	sdl.window = SDL_CreateWindow("Gena_test",0,0,W, H,  SDL_WINDOW_SHOWN);
+	sdl.window = SDL_CreateWindow("Gena_test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, W, H,  SDL_WINDOW_SHOWN);
 	if (!sdl.window)
 		printf("win");
 	sdl.renderer = SDL_CreateRenderer(sdl.window, -1, SDL_RENDERER_ACCELERATED);
@@ -305,9 +305,8 @@ int 		main()
 		printf("renderer");
 	sdl.texture = SDL_CreateTexture(sdl.renderer, SDL_PIXELFORMAT_ARGB32, SDL_TEXTUREACCESS_STREAMING, W, H);
 	plr.ms.yaw = 0;
-	game(&sdl, &plr, sectors);
+	game_loop(&sdl, &plr, sectors);
 	SDL_DestroyWindow(sdl.window);
 	SDL_Quit();
 	return (0);
 }
-wint_t kek;
