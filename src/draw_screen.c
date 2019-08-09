@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "sdl1.h"
-
 int		main_loop_condition(t_draw_screen_calc *ds)
 {
 	if (ds->it->start_do == 1)
@@ -254,7 +253,7 @@ void	draw_screen(t_sector *sector, t_player plr)
 			continue; // Odd = still rendering, 0x20 = give up
 		++ds.i->renderedsectors[ds.s->now.sectorno];
 		ds.s->sect = &sector[ds.s->now.sectorno];
-		/* Render each wall of this sector that is facing towards player. */
+		/* Render each wall  of this sector that is facing towards player. */
 		for (ds.it->s = 0; ds.it->s < ds.s->sect->npoints; ++ds.it->s)
 		{
 			rotate_view(&ds, plr);

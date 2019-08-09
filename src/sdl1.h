@@ -43,7 +43,8 @@ typedef struct	s_xyz
 	float	z;
 }				t_xyz;
 
-typedef struct s_posf_t {
+typedef struct s_posf_t
+{
 	int     pos;
 	bool    is_y;
 	float   value;
@@ -72,7 +73,7 @@ typedef struct		s_sector
 	t_xy			*vertex;
 	signed char		*neighbors;       // Each edge may have a corresponding neighboring sector
 	unsigned		npoints;          // How many vertexes there are
-	t_xy		*vert;
+	t_xy			*vert;
 }					t_sector;
 
 typedef struct		s_keys
@@ -225,12 +226,13 @@ typedef struct		s_draw_sreen_calc
 #define SEC_COLOR 0x0000ff00
 #define BLACK_COLOR 0x00
 #define FILE_NAME "map-clear.txt"
+//#define FILE_NAME "../src/maps/simple.txt"
 
 void		draw_screen(t_sector *sector, t_player plr);
 void 		load_data(t_player *player, t_sector **sectors);
 char		*ft_itof(long double k);
 void		vline(int x, int y1, int y2, int color);
-t_xy Intersect(float x1, float y1, float x2, float y2, float x3, float y3,
-		float x4, float y4);
+t_xy 		Intersect(float x1, float y1, float x2, float y2,
+						float x3, float y3, float x4, float y4);
 
 #endif

@@ -32,72 +32,7 @@ t_xy Intersect(float x1, float y1, float x2, float y2, float x3, float y3, float
 	return (result);
 }
 
-/* VOPOLONC PART START */
 /* Define various vision related constants */
-
-static void LoadData(t_player *plr, t_sector **sectors)
-{
-	FILE *fp = fopen("test.txt", "rt");
-	if (!fp)
-	{
-		perror("map-clear.txt");
-		exit(1);
-	}
-	char Buf[256], word[256], *ptr;
-
-	t_xy *vert;
-	t_xy v;
-
-	vert = NULL;
-
-	int n, m, NumVertices = 0;
-
-	while (fgets(Buf, sizeof Buf, fp))
-		switch (sscanf(ptr = Buf, "%32s%n", word, &n) == 1 ? word[0] : '\0')
-		{
-			case 'v': // vertex
-				for (sscanf(ptr += n, "%f%n", &v.y, &n);
-					 sscanf(ptr += n, "%f%n", &v.x, &n) == 1;)
-				{
-					vert = realloc(vert, ++NumVertices * sizeof(*vert));
-					vert[NumVertices - 1] = v;
-				}
-				break;
-			case 's': // sector
-				*sectors = realloc(*sectors, ++plr->num_scts * sizeof
-				(**sectors));
-				t_sector *sect;
-				sect = &(*sectors)[plr->num_scts - 1];
-				int *num = NULL;
-				sscanf(ptr += n, "%f%f%n", &sect->floor, &sect->ceil, &n);
-				for (m = 0; sscanf(ptr += n, "%32s%n", word, &n) == 1 &&
-							word[0] != '#';)
-				{
-					num = realloc(num, ++m * sizeof(*num));
-					num[m - 1] = word[0] == 'x' ? -1 : atoi(word);
-				}
-				sect->npoints = m /= 2;
-				sect->neighbors = malloc((m) * sizeof(*sect->neighbors));
-				sect->vertex = malloc((m + 1) * sizeof(*sect->vertex));
-				for (n = 0; n < m; ++n) sect->neighbors[n] = num[m + n];
-				for (n = 0; n < m; ++n)
-					sect->vertex[n + 1] = vert[num[n]]; // T0D0: Range checking
-				sect->vertex[0] = sect->vertex[m]; // Ensure the vertexes form a
-				// loop
-				free(num);
-				break;
-			case 'p':; // player
-				float angle;
-				sscanf(ptr += n, "%f %f %f %d", &v.x, &v.y, &angle, &n);
-				*plr = (t_player){{v.x, v.y, 0}, {0, 0, 0}, \
-						angle, 0, 0, 0, n, plr->num_scts};
-				// T0D0: Range checking
-				plr->where.z = sectors[plr->sector]->floor + EyeHeight;
-		}
-	fclose(fp);
-	free(vert);
-}
-
 static void UnloadData(t_sector **sectors, t_player *plr)
 {
 	for (unsigned a = 0; a < plr->num_scts; ++a)
@@ -108,9 +43,7 @@ static void UnloadData(t_sector **sectors, t_player *plr)
 	*sectors = NULL;
 	plr->num_scts = 0;
 }
-/* VOPOLONC PART END */
 
-/* IBOHUN PART 1 START */
 /* vline: Draw a vertical line on screen, with a different color pixel in top & bottom */
 void vline(int x, int y1, int y2, int color)
 {
@@ -129,8 +62,7 @@ void vline(int x, int y1, int y2, int color)
 		pix[y2 * W + x] = color;
 	}
 }
-/* IBOHUN PART 1 END */
-/* IBOHUN (& somebody else) PART 2 START */
+
 /* MovePlayer(dx,dy): Moves the player by (dx,dy) in the map, and
  * also updates their anglesin/anglecos/sector properties properly.
  */
@@ -198,10 +130,11 @@ void		do_fall(t_player *plr, t_sector **sectors)
 	}
 }
 
-void		chholebump(t_sector **sectors, t_sector sect, unsigned int *s,
+void		chholebump(t_sector **sectors, t_sector sect, const unsigned int *s,
 					   t_player *plr, t_xy **vert, float *dx, float *dy)
 {
-	float hole_low; /* Check where the hole is. */
+	/* Check where the hole is. */
+	float hole_low;
 	float hole_high;
 
 	hole_low = sect.neighbors[*s] < 0 ?
@@ -343,4 +276,4 @@ int 		main()
 		SDL_Delay(10);
 	}
 }
-/* IBOHUN (& somebody else) PART 2 END */
+wint_t kek;

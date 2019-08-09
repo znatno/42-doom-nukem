@@ -12,7 +12,7 @@
 
 #include "sdl1.h"
 
-int				check_file(int fd)
+int		check_file(int fd)
 {
 	if (fd == -1 || read(fd, 0, 0) < 0)
 	{
@@ -43,7 +43,7 @@ void	*ft_realloc(void *ptr, size_t size)
 	return (newptr);
 }
 
-t_posf atof_posf(const char *s, t_posf posf)
+t_posf	atof_posf(const char *s, t_posf posf)
 {
 	int exp = 0;
 	int c;
@@ -77,7 +77,7 @@ t_posf atof_posf(const char *s, t_posf posf)
 	return posf;
 }
 
-void			reader(char *line, int fd, t_player *p, t_sector **sectors) {
+void	reader(char *line, int fd, t_player *p, t_sector **sectors) {
 	t_posf posf;
 	t_xy *vert = NULL, v;
 	int n, NumVertices = 0;
@@ -195,7 +195,7 @@ void			reader(char *line, int fd, t_player *p, t_sector **sectors) {
 	free(vert);
 }
 
-void load_data(t_player *player, t_sector **sectors)
+void 	load_data(t_player *player, t_sector **sectors)
 {
 	int fd;
 	char *line;
