@@ -38,12 +38,12 @@ void	init_draw(t_draw_screen_calc *ds, t_player plr)
 		ds->i->y_top[i] = 0;
 		i++;
 	}
-	i = 0;
+	i = -1;
 	ds->i->renderedsectors = (int *)malloc(sizeof(int) * plr.num_scts);
-	while (i < plr.num_scts)
+	while (++i < plr.num_scts)
 	{
 		ds->i->renderedsectors[i] = 0;
-		i++;
+//		i++;
 	}
 	/* Begin whole-screen rendering from where the player is. */
 	*ds->s->head = (t_item){plr.sector, 0, W-1};
@@ -185,8 +185,8 @@ void	render_ceil_floor(t_draw_screen_calc *ds, t_player *p)
 	ds->i->cnyb = clamp(ds->i->nyb, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]);
 
 	/* If our ceiling is higher than their ceiling, render upper wall */
-	ds->i->r1 = 0xff0000 * (255);// top portal wall color
-	ds->i->r2 = 0xff0000 * (255);// bottom portal wall color
+	ds->i->r1 = 0x010101 * (255 - ds->i->z);// top portal wall color
+	ds->i->r2 = 0x010101 * (255 - ds->i->z);// bottom portal wall color
 
 	vline(ds->it->x, ds->i->cya, ds->i->cnya - 1, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r1), p); // Between our and their ceiling
 
@@ -206,7 +206,7 @@ void	render_sector(t_draw_screen_calc *ds, t_player *p)
 	else
 	{
 		/* There's no neighbor. Render wall from top (cya = ceiling level) to bottom (cyb = floor level). */
-		ds->i->r = 0xff0000 * (255);//wall color 255 - ds->i->z
+		ds->i->r = 0x010101 * (255 - ds->i->z);//wall color 255 - ds->i->z
 		vline(ds->it->x, ds->i->cya, ds->i->cyb, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r), p);
 	}
 }
@@ -250,7 +250,7 @@ void	draw_screen(t_sector *sector, t_player plr)
 	while (main_loop_condition(&ds))
 	{
 		pick_sector_slice(&ds);
-		if ((unsigned)ds.i->renderedsectors[ds.s->now.sectorno] & 0x21u)
+		if ((unsigned)ds.i->renderedsectors[ds.s->now.sectorno] & (MaxQue + 1))
 			continue; // Odd = still rendering, 0x20 = give up
 		++ds.i->renderedsectors[ds.s->now.sectorno];
 		ds.s->sect = &sector[ds.s->now.sectorno];
