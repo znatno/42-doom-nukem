@@ -41,22 +41,45 @@ void			draw_frame(t_env *env)
 t_env           *sdl_main_loop(t_env *env)
 {
     int x, y = 0;
-
+    int cur_x = 0;
+    int cur_y = 0;
+    int flag = 0;
+    t_xy xy1;
+    t_xy xy2;
     draw_desk(env);
     while (LOOP_START && env->sdl_error == NONE)
     {
-        if (SDL_PollEvent(&env->window_e))
+        while (SDL_PollEvent(&env->window_e))
         {
-            if (SDL_QUIT == env->window_e.type)
+            SDL_PumpEvents();
+            if (SDL_QUIT == env->window_e.type ||
+                    env->window_e.key.keysym.sym == 'q' )
             {
-                break;
+//                break;
+                exit(1);
             }
+
+            if (SDL_GetMouseState(&xy2.x, &xy2.y)) //& SDL_BUTTON(SDL_BUTTON_LEFT))
+            {
+                if (flag == 0)
+                {
+                    printf("%d %d IM HERE\n",xy1.x,xy1.y);
+                    xy1.x = ROUND(xy2.x);
+                    xy1.y = ROUND(xy2.y);
+                    flag = 1;
+                }
+                else if (flag != 0) {
+                    xy2.x = ROUND(xy2.x);
+                    xy2.y = ROUND(xy2.y);
+                    line(xy1, xy2, env, 0xFF00FF);
+                    flag = 0;
+                }
+                SDL_WarpMouseInWindow(env->window, ROUND(xy2.x),ROUND(xy2.y));
+            }
+
+
         }
-        SDL_PumpEvents();
-        if (SDL_GetMouseState(&x, &y) & SDL_BUTTON(SDL_BUTTON_LEFT))
-        {
-            set_pixel(env, x, y, 0xFF00FF);
-        }
+
         draw_frame(env);
         SDL_UpdateTexture(env->texture, NULL, env->buffer, W_WIDTH *(sizeof(int)));
         SDL_RenderCopy(env->renderer, env->texture, NULL, NULL);
