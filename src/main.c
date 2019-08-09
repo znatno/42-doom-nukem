@@ -287,6 +287,7 @@ void	game(t_sdl_main *sdl, t_player	*plr, t_sector	*sectors)
 	keyboard_state = SDL_GetKeyboardState(NULL);
 	quit = false;
 	SDL_ShowCursor(SDL_DISABLE);
+	SDL_SetRelativeMouseMode(SDL_TRUE);
 	while(!quit)
 	{
 		while (SDL_PollEvent(&ev))
