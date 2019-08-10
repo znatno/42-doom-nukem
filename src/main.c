@@ -135,14 +135,13 @@ void		do_fall(t_player *plr, t_sector **sectors)
 void		chholebump(t_sector **sectors, t_sector sect, const unsigned int *s,
 					   t_player *plr, t_xy **vert, float *dx, float *dy)
 {
-	/* Check where the hole is. */
-	float hole_low;
+	float hole_low; /* Check where the hole is. */
 	float hole_high;
 
-	hole_low = sect.neighbors[*s] < 0 ?
-			   9e9 : max(sect.floor, (*sectors)[sect.neighbors[*s]].floor);
-	hole_high = sect.neighbors[*s] < 0 ?
-				-9e9 : min(sect.ceil, (*sectors)[sect.neighbors[*s]].ceil);
+	printf("Check Bump. ");
+	hole_low = sect.neighbors[*s] < 0 ? 9e9 : max(sect.floor, (*sectors)[sect.neighbors[*s]].floor);
+	hole_high = sect.neighbors[*s] < 0 ? -9e9 : min(sect.ceil, (*sectors)[sect.neighbors[*s]].ceil);
+	printf("hHigh: %f, hLow: %f\n\n", hole_high, hole_low);
 	/* Check whether we're bumping into a wall. */
 	if (hole_high < plr->where.z + HeadMargin || hole_low > plr->where.z - plr->eyeheight + KneeHeight)
 	{
@@ -154,9 +153,12 @@ void		chholebump(t_sector **sectors, t_sector sect, const unsigned int *s,
 
 		*dx = xd * (*dx * xd + yd * *dy) / (xd * xd + yd * yd);
 		*dy = yd * (*dx * xd + yd * *dy) / (xd * xd + yd * yd);
+		printf("xd %f, yd %f, dx %f, dy %f\n\n", xd, yd, *dx, *dy);
 		plr->moving = 0;
 	}
 }
+
+int g_x = 0;
 
 void		do_move(t_player *plr, t_sector **sc)
 {
@@ -180,11 +182,12 @@ void		do_move(t_player *plr, t_sector **sc)
 			(*sc)->vert[s + 0].y, (*sc)->vert[s + 1].x, (*sc)->vert[s + 1].y) < 0)
 			chholebump(sc, (*sc)[plr->sector], &s, plr, &(*sc)->vert, &dx, &dy);
 	}
+	//if ((g_x % 10) == 7)
+	//	printf("px: %f, py: %f, dx: %f, dy: %f\n", px, py, dx, dy);
 	MovePlayer(plr, sc, dx, dy);
 	plr->falling = 1;
+	g_x++;
 }
-
-int g_x = 0;
 
 void		events(t_sector **sectors, t_player *plr, bool *quit)
 {
