@@ -52,17 +52,12 @@ void			draw_frame(t_env *env)
 
 t_env           *sdl_main_loop(t_env *env)
 {
-    int x, y = 0;
-    int cur_x = 0;
-    int cur_y = 0;
-    int flag = 0;
     int counter = 0;
 
     const Uint8 *kstate;
     SDL_Event ev;
-    t_xy xy1;
     t_xy xy2;
-    t_xy f_p[5];
+    t_xy f_p[256];
     draw_desk(env);
     while (LOOP_START && env->sdl_error == NONE) {
         kstate = SDL_GetKeyboardState(NULL);
@@ -72,18 +67,22 @@ t_env           *sdl_main_loop(t_env *env)
             else if (ev.type == SDL_MOUSEBUTTONDOWN) {
                 if (ev.button.clicks == SDL_BUTTON_LEFT) {
                     SDL_GetMouseState(&xy2.x, &xy2.y);
-                    if ((xy1.x != xy2.x && xy2.y != xy1.y) && flag){
+                    if (counter == 6){
+                        line(f_p[counter - 1], f_p[0], env, 0xFF00FF);
+                        counter = -1;
+                    }
+                    else if (counter){
                         xy2.x = ROUND(xy2.x);
                         xy2.y = ROUND(xy2.y);
-                        line(xy1, xy2, env, 0xFF00FF);
-                        printf("%d %d IM HERE2\n", xy1.x, xy1.y);
-                        flag = 0;
-                    } else {
-                        xy1.x =
-                        xy1.y = ROUND(xy2.y);
-                        flag = 1;
+                        line(f_p[counter - 1], xy2, env, 0xFF00FF);
+                        f_p[counter].x = xy2.x;
+                        f_p[counter].y = xy2.y;
+                    } else if (!counter){
+                        f_p[counter].x = ROUND(xy2.x);
+                        f_p[counter].y = ROUND(xy2.y);
                     }
-                    printf("flag = %d\n",flag);
+
+                    counter++;
                     SDL_WarpMouseInWindow(env->window, ROUND(xy2.x), ROUND(xy2.y));
 
                 }
