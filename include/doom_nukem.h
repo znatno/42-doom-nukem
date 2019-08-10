@@ -48,7 +48,8 @@ typedef struct	s_xyz
 	float	z;
 }				t_xyz;
 
-typedef struct s_posf_t {
+typedef struct s_posf_t
+{
 	int     pos;
 	bool    is_y;
 	float   value;

@@ -196,10 +196,10 @@ void		events(t_sector **sectors, t_player *plr, bool *quit)
 	{
 		if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
 			exit_doom(sectors, plr);
-			plr->key.w = kstate[SDL_SCANCODE_W];
-			plr->key.a = kstate[SDL_SCANCODE_A];
-			plr->key.s = kstate[SDL_SCANCODE_S];
-			plr->key.d = kstate[SDL_SCANCODE_D];
+		plr->key.w = kstate[SDL_SCANCODE_W];
+		plr->key.a = kstate[SDL_SCANCODE_A];
+		plr->key.s = kstate[SDL_SCANCODE_S];
+		plr->key.d = kstate[SDL_SCANCODE_D];
 		if (ev.type == SDL_KEYDOWN)
 		{
 			if (ev.key.keysym.sym == SDLK_SPACE && plr->ground)
@@ -208,12 +208,6 @@ void		events(t_sector **sectors, t_player *plr, bool *quit)
 				plr->falling = 1;
 			}
 		}
-//		if (kstate[SDL_SCANCODE_SPACE] && plr->ground)
-//		{
-//			printf("%d SPACE CODE: %d\n", ++g_x, kstate[SDL_SCANCODE_SPACE]);
-//			plr->vlct.z += 0.25;
-//			plr->falling = 1;
-//		}
 		plr->ducking = kstate[SDL_SCANCODE_LCTRL];
 		if (plr->ducking)
 			plr->falling = 1;
@@ -237,8 +231,7 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 			do_fall(plr, &sectors);
 		if (plr->moving) /* Horizontal collision detection */
 			do_move(plr, &sectors);
-		/* mouse aiming */
-		plr->ms.x = 0;
+		plr->ms.x = 0; /* mouse aiming */
 		plr->ms.y = 0;
 		SDL_GetRelativeMouseState(&plr->ms.x, &plr->ms.y);
 		plr->angle += plr->ms.x * 0.03f;
