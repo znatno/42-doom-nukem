@@ -85,9 +85,9 @@ void	find_intersect(t_draw_screen_calc *ds)
 	ds->f->farside = 20.f;
 	// Find an intersection between the wall and the approximate edges of player's view
 	ds->s->i1 = Intersect(ds->f->tx1, ds->f->tz1, ds->f->tx2, ds->f->tz2,
-			-ds->f->nearside, ds->f->nearz,-ds->f->farside, ds->f->farz);
+						  -ds->f->nearside, ds->f->nearz,-ds->f->farside, ds->f->farz);
 	ds->s->i2 = Intersect(ds->f->tx1, ds->f->tz1, ds->f->tx2, ds->f->tz2,
-			ds->f->nearside, ds->f->nearz,ds->f->farside, ds->f->farz);
+						  ds->f->nearside, ds->f->nearz,ds->f->farside, ds->f->farz);
 	if (ds->f->tz1 < ds->f->nearz)
 	{
 		if (ds->s->i1.y > 0)
@@ -106,7 +106,8 @@ void	find_intersect(t_draw_screen_calc *ds)
 		{
 			ds->f->tx2 = ds->s->i1.x;
 			ds->f->tz2 = ds->s->i1.y;
-		} else
+		}
+		else
 		{
 			ds->f->tx2 = ds->s->i2.x;
 			ds->f->tz2 = ds->s->i2.y;
