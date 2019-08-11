@@ -88,4 +88,12 @@ typedef struct s_env
 
 void	line(t_xy pt1, t_xy pt2, t_env *env, u_int color);
 
+/*
+ * env_display.c
+ */
+
+void    set_pixel(t_env *env, int x, int y, Uint32 pixel);
+void	draw_frame(t_env *env);
+void    draw_desk(t_env *env);
+
 #endif

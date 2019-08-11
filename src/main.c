@@ -1,41 +1,6 @@
 #include "duke_nukem_editor.h"
-void set_pixel(t_env *env, int x, int y, Uint32 pixel)
-{
-    env->buffer[ ( y * W_WIDTH ) + x ] = pixel;
-}
 
-void    draw_desk(t_env *env) {
-    t_xy pos;
-    int sum;
-    int coef;
 
-    sum = 0;
-    coef = 1;
-    pos.y = 0;
-    while ((pos.y += 20) < H_DRAW)
-    {
-        pos.x = 0;
-        while ((pos.x += 20) < W_DRAW){
-            set_pixel(env, pos.x, pos.y, 0xFFFFFF);
-            sum += pos.x;
-        }
-        coef += 1;
-    }
-}
-
-void			draw_frame(t_env *env)
-{
-	t_xy	edge[2];
-
-	edge[0].x = W_DRAW;
-	edge[0].y = H_DRAW;
-	edge[1].x = W_DRAW;
-	edge[1].y = 0;
-	line(edge[0], edge[1], env, 0xffffff00);
-	edge[1].x = 0;
-	edge[1].y = H_DRAW;
-	line(edge[0], edge[1], env, 0xffffff00);
-}
 
 
 void            save_sector(t_env *env, t_draw *draw)
@@ -43,18 +8,28 @@ void            save_sector(t_env *env, t_draw *draw)
     //
 }
 
-void             draw_vertex(t_env *env, t_draw *draw)
+t_draw          *init_draw(t_draw *draw)
 {
+    if (!(draw = (t_draw*)malloc(sizeof(t_draw))))
+    {
+        exit(13);
+    }
+    draw->counter = 0;
     draw->temp.x = 0;
     draw->temp.y = 0;
+    return (draw);
+}
+
+void             draw_vertex(t_env *env, t_draw *draw)
+{
+
+
     SDL_GetMouseState(&draw->temp.x, &draw->temp.y);
-    if (ROUND(draw->temp.x) == draw->f_p[draw->counter - 1].x && ROUND(draw->temp.y) == draw->f_p[draw->counter - 1].y)
-        return ;
     if (draw->key == SPACE && draw->f_p[0].y != 0 && draw->f_p[0].x != 0 && draw->counter > 2)
     {
         line(draw->f_p[draw->counter - 1], draw->f_p[0], env, 0xFF00FF);
         draw->counter = -1;
-        save_sector(env, draw);
+        //        save_sector(env, draw);
     }
     else if (draw->counter && draw->key != SPACE)
     {
@@ -63,7 +38,9 @@ void             draw_vertex(t_env *env, t_draw *draw)
         line(draw->f_p[draw->counter - 1], draw->temp, env, 0xFF00FF);
         draw->f_p[draw->counter].x = draw->temp.x;
         draw->f_p[draw->counter].y = draw->temp.y;
-    } else if (!draw->counter && draw->key != SPACE){
+    }
+    else if (!draw->counter && draw->key != SPACE)
+    {
         draw->f_p[draw->counter].x = ROUND(draw->temp.x);
         draw->f_p[draw->counter].y = ROUND(draw->temp.y);
     }
@@ -77,10 +54,9 @@ t_env           *sdl_main_loop(t_env *env)
     t_draw      *draw;
     SDL_Event   ev;
 
-    if (!(draw = (t_draw*)malloc(sizeof(t_draw))))
-    {
-        exit(13);
-    }
+
+
+    draw = init_draw(draw);
     draw_desk(env);
     while (LOOP_START && env->sdl_error == NONE) {
         kstate = SDL_GetKeyboardState(NULL);
