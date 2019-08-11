@@ -114,7 +114,7 @@ static void UnloadData(t_sector **sectors, t_player *plr)
 /* vline: Draw a vertical line on screen, with a different color pixel in top & bottom */
 void vline(int x, int y1, int y2, int color, t_player *player)
 {
-	int *pix = (int *)player->sdl->buffer;
+  	int *pix = (int *)player->sdl->w_surface->pixels;
 	y1 = clamp(y1, 0, H - 1);
 	y2 = clamp(y2, 0, H - 1);
 	if (y2 == y1)
@@ -334,9 +334,7 @@ void	game(t_sdl_main *sdl, t_player	*plr, t_sector	*sectors)
 		if (plr->pushing)
 			plr->moving = 1;
 		draw_screen(sectors, *plr);
-		SDL_UpdateTexture(sdl->texture, NULL, sdl->buffer,W *(sizeof(int)));
-		SDL_RenderCopy(sdl->renderer, sdl->texture, NULL, NULL);
-		SDL_RenderPresent(sdl->renderer);
+		SDL_UpdateWindowSurface(sdl->window);
 		SDL_Delay(10);
 	}
 }
@@ -346,13 +344,10 @@ int 		main()
 	t_player		plr;
 	t_sdl_main		sdl;
 	t_sector	*sectors;
-	int 		*buffer;
 
 	sectors = NULL;
-	buffer = (int *)malloc(sizeof(int) * W * H);
 	plr = (t_player){ .ground = 0, .falling = 1, .moving = 0, .ducking = 0 };
 	plr.key = (t_keys){ .w = 0, .s = 0, .a = 0, .d = 0 };
-	sdl.buffer = buffer;
 	plr.sdl = &sdl;
 	plr.num_scts = 0;
 
@@ -364,10 +359,7 @@ int 		main()
 	sdl.window = SDL_CreateWindow("Gena_test",0,0,W, H,  SDL_WINDOW_SHOWN);
 	if (!sdl.window)
 		printf("win");
-	sdl.renderer = SDL_CreateRenderer(sdl.window, -1, SDL_RENDERER_ACCELERATED);
-	if (!sdl.renderer)
-		printf("renderer");
-	sdl.texture = SDL_CreateTexture(sdl.renderer, SDL_PIXELFORMAT_ARGB32, SDL_TEXTUREACCESS_STREAMING, W, H);
+	sdl.w_surface = SDL_GetWindowSurface(sdl.window);
 	plr.ms.yaw = 0;
 	game(&sdl, &plr, sectors);
 	SDL_DestroyWindow(sdl.window);

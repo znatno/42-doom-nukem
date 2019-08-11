@@ -38,7 +38,7 @@
 #define isdigit(c) (c >= '0' && c <= '9')
 #define SEC_COLOR 0x0000ff00
 #define BLACK_COLOR 0x00
-#define FILE_NAME "map-clear.txt"
+#define FILE_NAME "test.txt"
 
 //Coordinates
 typedef struct	s_xyz
@@ -99,11 +99,7 @@ typedef struct			s_sdl_main
 	SDL_DisplayMode		display_mode;
 	SDL_Window			*window;
 	SDL_Renderer		*renderer;
-	SDL_Surface			*surface;
-	SDL_Texture			*texture;
-	SDL_Rect			src_rect;
-	SDL_Rect			dst_rect;
-	int					*buffer;
+	SDL_Surface			*w_surface;
 }						t_sdl_main;
 
 // Player: location
@@ -140,8 +136,6 @@ typedef struct		s_player
 #define vxs(x0, y0, x1, y1)    ((x0)*(y1) - (x1)*(y0))   // vxs: Vector cross product
 // Overlap:  Determine whether the two number ranges overlap.
 //#define Overlap(a0, a1, b0, b1) (min(a0,a1) <= max(b0,b1) && min(b0,b1) <= max(a0,a1))
-
-static SDL_Surface *surface = NULL;
 
 typedef struct	s_tmp_iter
 {
