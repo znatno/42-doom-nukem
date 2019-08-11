@@ -38,53 +38,55 @@ void			draw_frame(t_env *env)
 }
 
 
-//int            event_loop(t_env *env, int flag) {
-//    const Uint8 *kstate;
-//    SDL_Event ev;
-//    t_xy xy1;
-//    t_xy xy2;
-//
-//
-//    return (flag);
-//}
-//
-//        SDL_PumpEvents();
+int             draw_vertex(t_env *env, t_draw *draw)
+{
+    SDL_GetMouseState(&draw->temp.x, &draw->temp.y);
+    if (draw->counter == 6)
+    {
+        line(draw->f_p[draw->counter - 1], draw->f_p[0], env, 0xFF00FF);
+        draw->counter = -1;
+    }
+    else if (draw->counter)
+    {
+        draw->temp.x = ROUND(draw->temp.x);
+        draw->temp.y = ROUND(draw->temp.y);
+        line(draw->f_p[draw->counter - 1], draw->temp, env, 0xFF00FF);
+        draw->f_p[draw->counter].x = draw->temp.x;
+        draw->f_p[draw->counter].y = draw->temp.y;
+    } else if (!draw->counter){
+        draw->f_p[draw->counter].x = ROUND(draw->temp.x);
+        draw->f_p[draw->counter].y = ROUND(draw->temp.y);
+    }
+    draw->counter++;
+    SDL_WarpMouseInWindow(env->window, ROUND(draw->temp.x), ROUND(draw->temp.y));
+}
 
 t_env           *sdl_main_loop(t_env *env)
 {
-    int counter = 0;
-
     const Uint8 *kstate;
-    SDL_Event ev;
-    t_xy xy2;
-    t_xy f_p[256];
+    t_draw      *draw;
+    SDL_Event   ev;
+
+    if (!(draw = (t_draw*)malloc(sizeof(t_draw))))
+    {
+        exit(13);
+    }
     draw_desk(env);
     while (LOOP_START && env->sdl_error == NONE) {
         kstate = SDL_GetKeyboardState(NULL);
-        while (SDL_PollEvent(&ev)) {
+        while (SDL_PollEvent(&ev))
+        {
             if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
                 exit(1);
-            else if (ev.type == SDL_MOUSEBUTTONDOWN) {
-                if (ev.button.clicks == SDL_BUTTON_LEFT) {
-                    SDL_GetMouseState(&xy2.x, &xy2.y);
-                    if (counter == 6){
-                        line(f_p[counter - 1], f_p[0], env, 0xFF00FF);
-                        counter = -1;
-                    }
-                    else if (counter){
-                        xy2.x = ROUND(xy2.x);
-                        xy2.y = ROUND(xy2.y);
-                        line(f_p[counter - 1], xy2, env, 0xFF00FF);
-                        f_p[counter].x = xy2.x;
-                        f_p[counter].y = xy2.y;
-                    } else if (!counter){
-                        f_p[counter].x = ROUND(xy2.x);
-                        f_p[counter].y = ROUND(xy2.y);
-                    }
-
-                    counter++;
-                    SDL_WarpMouseInWindow(env->window, ROUND(xy2.x), ROUND(xy2.y));
-
+//            else if (kstate[SDL_SCANCODE_SPACE])
+//            {
+//                printf("printed\n");
+//            }
+            else if (ev.type == SDL_MOUSEBUTTONDOWN)
+            {
+                if (ev.button.clicks)
+                {
+                    draw_vertex(env, draw);
                 }
             }
         }

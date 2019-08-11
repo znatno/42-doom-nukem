@@ -65,8 +65,16 @@ typedef struct		s_sector
 	t_xy			*vert;
 }					t_sector;
 
+typedef struct      s_draw
+{
+    t_xy            f_p[256];
+    t_xy            temp;
+    int             counter;
+}                   t_draw;
+
 typedef struct s_env
 {
+
 	SDL_Window      *window;
 	SDL_Event       window_e;
 	SDL_Renderer    *renderer;
@@ -75,8 +83,6 @@ typedef struct s_env
 	int             *buffer;
 	int             zoom;
 	int             sdl_error;
-
-
 }				t_env;
 
 void	line(t_xy pt1, t_xy pt2, t_env *env, u_int color);
