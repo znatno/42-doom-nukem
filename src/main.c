@@ -38,22 +38,32 @@ void			draw_frame(t_env *env)
 }
 
 
-int             draw_vertex(t_env *env, t_draw *draw)
+void            save_sector(t_env *env, t_draw *draw)
 {
+    //
+}
+
+void             draw_vertex(t_env *env, t_draw *draw)
+{
+    draw->temp.x = 0;
+    draw->temp.y = 0;
     SDL_GetMouseState(&draw->temp.x, &draw->temp.y);
-    if (draw->counter == 6)
+    if (ROUND(draw->temp.x) == draw->f_p[draw->counter - 1].x && ROUND(draw->temp.y) == draw->f_p[draw->counter - 1].y)
+        return ;
+    if (draw->key == SPACE && draw->f_p[0].y != 0 && draw->f_p[0].x != 0 && draw->counter > 2)
     {
         line(draw->f_p[draw->counter - 1], draw->f_p[0], env, 0xFF00FF);
         draw->counter = -1;
+        save_sector(env, draw);
     }
-    else if (draw->counter)
+    else if (draw->counter && draw->key != SPACE)
     {
         draw->temp.x = ROUND(draw->temp.x);
         draw->temp.y = ROUND(draw->temp.y);
         line(draw->f_p[draw->counter - 1], draw->temp, env, 0xFF00FF);
         draw->f_p[draw->counter].x = draw->temp.x;
         draw->f_p[draw->counter].y = draw->temp.y;
-    } else if (!draw->counter){
+    } else if (!draw->counter && draw->key != SPACE){
         draw->f_p[draw->counter].x = ROUND(draw->temp.x);
         draw->f_p[draw->counter].y = ROUND(draw->temp.y);
     }
@@ -78,10 +88,13 @@ t_env           *sdl_main_loop(t_env *env)
         {
             if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
                 exit(1);
-//            else if (kstate[SDL_SCANCODE_SPACE])
-//            {
-//                printf("printed\n");
-//            }
+            else if (kstate[SDL_SCANCODE_SPACE])
+            {
+                SDL_Delay(100);
+                draw->key = SPACE; // space pressed
+                draw_vertex(env, draw);
+                draw->key = 0;
+            }
             else if (ev.type == SDL_MOUSEBUTTONDOWN)
             {
                 if (ev.button.clicks)

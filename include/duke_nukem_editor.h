@@ -28,7 +28,7 @@
 #define LOOP_START 1
 # define MAX(x, y) (x >= y) ? (x) : (y)
 # define ROUND(x) ((int)(round((double)x/20.0)))*20
-
+# define SPACE ' '
 typedef struct s_xy
 {
 	int x;
@@ -70,6 +70,7 @@ typedef struct      s_draw
     t_xy            f_p[256];
     t_xy            temp;
     int             counter;
+    char            key;
 }                   t_draw;
 
 typedef struct s_env
