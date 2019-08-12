@@ -112,4 +112,6 @@ void draw_frame(t_env *env);
 
 void draw_desk(t_env *env);
 
+void    clear_screen(t_env *env);
+
 #endif

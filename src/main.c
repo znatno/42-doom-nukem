@@ -21,7 +21,6 @@ void            print_all_sectors(t_draw *draw, t_sector *temp)
     cur_s = draw->head;
     while (cur_s)
     {
-        printf("NEXT SECTOR\n");
         cur_v = cur_s->vertexes;
         while (cur_v) {
             printf("x1 = %d y1 = %d \n x2 = %d y2 = %d\n\n",
@@ -30,8 +29,9 @@ void            print_all_sectors(t_draw *draw, t_sector *temp)
         }
         cur_s = cur_s->next;
     }
-    exit(1);
 }
+
+//void            clear_screen()
 
 void            add_sector_to_list(t_sector *temp, t_draw *draw) {
     int i;
@@ -68,6 +68,26 @@ void            add_sector_to_list(t_sector *temp, t_draw *draw) {
     temp->vertexes = head;
     temp->next = NULL;
 }
+
+void            delete_sector_from_list(t_draw *draw)
+{
+    t_sector *cur_s;
+    t_vertex *cur_v;
+    t_vertex *tmp;
+
+    cur_s = draw->head;
+    while (cur_s->next)
+        cur_s = cur_s->next;
+
+    cur_v = cur_s->vertexes;
+    while (cur_v->next) { // set curr to head, stop if list empty.
+        tmp = cur_v->next;          // advance head to next element.
+        free (cur_v);
+        //cur_v = tmp;// delete saved pointer.
+    }
+//    free(cur_s);
+}
+
 
 void            create_sectors_list(t_env *env, t_draw *draw, t_sector *temp)
 {
@@ -118,6 +138,27 @@ void            save_sector(t_env *env, t_draw *draw)
     }
 
     //free(temp);
+}
+
+void            redraw_screen(t_draw *draw, t_env *env)
+{
+    t_sector *cur_s;
+    t_vertex *cur_v;
+
+    cur_s = draw->head;
+    delete_sector_from_list(draw);
+    redraw_screen(draw, env);
+    clear_screen(env);
+    draw_desk(env);
+    while (cur_s)
+    {
+        cur_v = cur_s->vertexes;
+        while (cur_v) {
+            line(cur_v->xy1, cur_v->xy2, env, 0xFF00FF);
+            cur_v = cur_v->next;
+        }
+        cur_s = cur_s->next;
+    }
 }
 
 t_draw          *init_draw(t_draw *draw)
@@ -182,6 +223,12 @@ t_env           *sdl_main_loop(t_env *env)
                 draw->key = SPACE; // space pressed
                 draw_vertex(env, draw);
                 draw->key = 0;
+            }
+            else if (kstate[SDL_SCANCODE_BACKSPACE])
+            {
+                SDL_Delay(100);
+                redraw_screen(draw, env);
+                I = 0;
             }
             else if (ev.type == SDL_MOUSEBUTTONDOWN)
             {

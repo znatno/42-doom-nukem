@@ -24,6 +24,25 @@ void    draw_desk(t_env *env) {
     }
 }
 
+void    clear_screen(t_env *env) {
+    t_xy pos;
+    int sum;
+    int coef;
+
+    sum = 0;
+    coef = 1;
+    pos.y = -1;
+    while (++pos.y  < H_DRAW)
+    {
+        pos.x = -1;
+        while (++pos.x < W_DRAW)
+        {
+            set_pixel(env, pos.x, pos.y, 0x000);
+            sum += pos.x;
+        }
+    }
+}
+
 void			draw_frame(t_env *env)
 {
     t_xy	edge[2];
