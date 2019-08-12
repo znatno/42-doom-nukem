@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/12 16:07:41 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/12 18:57:03 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ void		events(t_sector **sectors, t_player *plr)
 		plr->ducking = kstate[SDL_SCANCODE_LCTRL];
 		if (plr->ducking)
 			plr->falling = 1;
+
 		SDL_PumpEvents(); // обработчик событий
 	}
 }
@@ -72,7 +73,6 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 		move_player(plr, &sectors, 0, 0);
 		plr->speed = 0.2f;
 		if (plr->ducking)
-
 			plr->speed /= 2;
 		if (plr->key.w)
 			plr->mv = (t_move_vec){.x = plr->mv.x + plr->anglecos * plr->speed,
@@ -92,6 +92,8 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 		plr->vlct.y = plr->vlct.y * (1 - plr->aclrt) + plr->mv.y * plr->aclrt;
 		if (plr->pushing)
 			plr->moving = 1;
+		//else
+		//	plr->moving = 0; // для рівномірного руху
 		draw_screen(sectors, *plr);
 		SDL_UpdateTexture(sdl->texture, NULL, sdl->buffer,W *(sizeof(int)));
 		SDL_RenderCopy(sdl->renderer, sdl->texture, NULL, NULL);

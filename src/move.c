@@ -6,15 +6,17 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:00:35 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/12 16:28:28 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/12 18:57:51 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "doom_nukem.h"
 
-/* MovePlayer(dx,dy): Moves the player by (dx,dy) in the map, and
- * also updates their anglesin/anglecos/sector properties properly.
- */
+/*
+**	MovePlayer(dx,dy): Moves the player by (dx,dy) in the map, and
+**	also updates their anglesin/anglecos/sector properties properly.
+*/
+
 void	move_player(t_player *plr, t_sector **sectors, float dx, float dy)
 {
 	t_sector	*sect;
@@ -38,8 +40,8 @@ void	move_player(t_player *plr, t_sector **sectors, float dx, float dy)
 		{
 			//printf("prev sec: %d\n",plr->sector);
 			plr->sector = sect->neighbors[s];
-			printf("Moved to another sector\n");
-			//printf("curr sec: %d\n",plr->sector);
+			printf("Moved to another sector ");
+			printf("curr sec: %d\n",plr->sector);
 			break;
 		}
 		s++;
@@ -59,7 +61,6 @@ void		chholebump(t_sector **sectors, t_sector sect, const unsigned int *s,
 	printf("Check Bump. ");
 	hole_low = sect.neighbors[*s] < 0 ? 9e9 : max(sect.floor, (*sectors)[sect.neighbors[*s]].floor);
 	hole_high = sect.neighbors[*s] < 0 ? -9e9 : min(sect.ceil, (*sectors)[sect.neighbors[*s]].ceil);
-	//printf("hHigh: %f, hLow: %f\n\n", hole_high, hole_low);
 	/* Check whether we're bumping into a wall. */
 	if (hole_high < plr->where.z + HeadMargin || hole_low > plr->where.z - plr->eyeheight + KneeHeight)
 	{
@@ -71,7 +72,6 @@ void		chholebump(t_sector **sectors, t_sector sect, const unsigned int *s,
 
 		*dx = xd * (*dx * xd + yd * *dy) / (xd * xd + yd * yd);
 		*dy = yd * (*dx * xd + yd * *dy) / (xd * xd + yd * yd);
-		//printf("[] xd %f, yd %f, dx %f, dy %f\n\n", xd, yd, *dx, *dy);
 		plr->moving = 0;
 	}
 }
@@ -90,8 +90,6 @@ void		do_move(t_player *plr, t_sector **sc)
 	dx = plr->vlct.x;
 	dy = plr->vlct.y;
 	(*sc)->vert = (*sc)[plr->sector].vertex;
-	/*if ((g_x % 10) == 7)
-		printf("px: %f, py: %f, dx: %f, dy: %f\n", px, py, dx, dy);*/
 	s = -1;
 	while (++s < (*sc)[plr->sector].npoints)
 	{
@@ -109,23 +107,12 @@ void		do_move(t_player *plr, t_sector **sc)
 						  (*sc)->vert[s + 1].x,
 						  (*sc)->vert[s + 1].y) < 0)
 		{
+			// перевірка, чи вміщаємось ми туди, куди ліземо, по висоті
 			chholebump(sc, (*sc)[plr->sector], &s, plr, &(*sc)->vert, &dx, &dy);
-			/*printf("v[s+0] x: %f\nv[s+0] y: %f\nv[s+1] x: %f\nv[s+1] y: "
-		   "%f\n\n",
-				   (*sc)->vert[s + 0].x + 1,
-				   (*sc)->vert[s + 0].y + 1,
-				   (*sc)->vert[s + 1].x + 1,
-				   (*sc)->vert[s + 1].y + 1);
-			printf("player\n");
-			printf("x: %f\ny: %f\nz: %f\n",
-				   plr->where.x, plr->where.y, plr->where.z);*/
 		}
 	}
-	//printf("prev sec: %d\n",plr->sector);
 	move_player(plr, sc, dx, dy);
-	//printf("curr sec: %d\n",plr->sector);
 	plr->falling = 1;
-	//g_x++;
 }
 
 void		do_fall(t_player *plr, t_sector **sectors)

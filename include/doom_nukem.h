@@ -284,6 +284,6 @@ int				exit_doom(t_sector **sectors, t_player *plr);
 //SDL_Texture	*load_texture(char *path, t_sdl_main *sdl);
 char			*ft_itof(long double k);
 
-int g_x = 0; //temp global iterator, delete it at the end
+int g_x; //temp global iterator, delete it at the end
 
 #endif

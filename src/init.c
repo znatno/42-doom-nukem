@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "doom_nukem.h"
-
+/*
 void	init_sdl(t_sdl_main *sdl)
 {
 	sdl->src_rect.x = 0;
@@ -33,5 +33,5 @@ void	init_sdl(t_sdl_main *sdl)
 	sdl->renderer = SDL_CreateRenderer(sdl->window, -1, SDL_RENDERER_ACCELERATED);
 	if (!sdl->renderer)
 		ERROR("renderer");
-}
+}*/
 
