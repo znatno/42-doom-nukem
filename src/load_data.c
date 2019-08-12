@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   load_data.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggavryly <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/07 19:06:01 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/07 19:06:02 by ggavryly         ###   ########.fr       */
+/*   Updated: 2019/08/11 21:55:10 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "doom_nukem.h"
 
-int check_file(int fd)
+int		check_file(int fd)
 {
 	if (fd == -1 || read(fd, 0, 0) < 0)
 	{
@@ -22,7 +22,7 @@ int check_file(int fd)
 	return (1);
 }
 
-void *ft_realloc(void *ptr, size_t size)
+void	*ft_realloc(void *ptr, size_t size)
 {
 	char *newptr;
 
@@ -43,7 +43,7 @@ void *ft_realloc(void *ptr, size_t size)
 	return (newptr);
 }
 
-t_posf atof_posf(const char *s, t_posf posf)
+t_posf	atof_posf(const char *s, t_posf posf)
 {
 	int exp = 0;
 	int c;
@@ -83,7 +83,7 @@ t_posf atof_posf(const char *s, t_posf posf)
 	return posf;
 }
 
-void reader(char *line, int fd, t_player *p, t_sector **sectors)
+void	reader(char *line, int fd, t_player *p, t_sector **sectors)
 {
 	t_posf posf;
 	t_xy *vert = NULL, v;
@@ -104,7 +104,6 @@ void reader(char *line, int fd, t_player *p, t_sector **sectors)
 					posf.pos++;
 				}
 				vert = ft_realloc(vert, ++NumVertices * sizeof(*vert));
-
 				if (posf.is_y)
 				{
 					posf = atof_posf(line, posf);
@@ -117,7 +116,8 @@ void reader(char *line, int fd, t_player *p, t_sector **sectors)
 					posf = atof_posf(line, posf);
 					vert[NumVertices - 1].x = posf.value;
 					posf.is_y = 0;
-				} else
+				}
+				else
 				{
 					posf = atof_posf(line, posf);
 					vert[NumVertices - 1].x = posf.value;
@@ -125,11 +125,9 @@ void reader(char *line, int fd, t_player *p, t_sector **sectors)
 				}
 				posf.pos--;
 			}
-
 		}
 		if (*line == 's')
 		{
-
 			*sectors = ft_realloc(*sectors, ++p->num_scts * sizeof(**sectors));
 			t_sector *sect = &(*sectors)[p->num_scts - 1];
 
@@ -161,21 +159,18 @@ void reader(char *line, int fd, t_player *p, t_sector **sectors)
 				{
 					num = ft_realloc(num, ++all * sizeof(*num));
 					posf = atof_posf(line, posf);
-					num[all - 1] = posf.value;
+					num[all - 1] = (int)posf.value;
 				}
 			}
 			sect->npoints = all /= 2;
 			sect->neighbors = malloc((all) * sizeof(*sect->neighbors));
 			sect->vertex = malloc((all + 1) * sizeof(*sect->vertex));
-
 			n = 0;
 			while (n < all)
 			{
 				sect->neighbors[n] = num[all + n];
 				n++;
 			}
-
-
 			n = 0;
 			while (n < all)
 			{
@@ -199,7 +194,7 @@ void reader(char *line, int fd, t_player *p, t_sector **sectors)
 			posf = atof_posf(line, posf);
 			angle = posf.value;
 			posf = atof_posf(line, posf);
-			n = posf.value;
+			n = (int)posf.value;
 			p->where.x = v.x;
 			p->where.y = v.y;
 			p->where.z = 0;
@@ -217,7 +212,7 @@ void reader(char *line, int fd, t_player *p, t_sector **sectors)
 	free(vert);
 }
 
-void load_data(t_player *player, t_sector **sectors)
+void	load_data(t_player *player, t_sector **sectors)
 {
 	int fd;
 	char *line;

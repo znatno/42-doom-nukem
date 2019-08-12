@@ -32,10 +32,10 @@ link_directories(${SDL2_LIBRARY}
                  ${SOURCE})
 
 
-#
-#file(GLOB all
-#        "${INCLUDE}*.h"
-#        "${SOURCE}*.c")
+
+file(GLOB all
+        "${INCLUDE}*.h"
+        "${SOURCE}*.c")
 
 #include_directories(~/.brew/Cellar/sdl/1.2.15_1/include/SDL/)
 #include_directories(~/.brew/include/SDL libft/include/)
@@ -43,11 +43,7 @@ link_directories(${SDL2_LIBRARY}
 #link_directories(~/.brew/Cellar/sdl/1.2.15_1/lib/)
 #link_directories(~/.brew/lib libft/)
 
-add_executable(doom-nukem   src/main.c
-                            src/load_data.c
-                            src/sdl1.h
-                            src/draw_screen.c
-                            src/load_data.c)
+add_executable(doom-nukem   ${all})
 
 #target_link_libraries(doom-nukem -lSDL)
 target_link_libraries(doom-nukem -lft -lSDL2 -lSDL2_image -lSDL2_mixer)
