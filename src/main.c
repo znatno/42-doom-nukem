@@ -12,31 +12,6 @@
 
 #include "doom_nukem.h"
 
-void		do_fall(t_player *plr, t_sector **sectors)
-{
-	float nextz;
-
-	plr->vlct.z -= 0.05f; /* Add gravity */
-	nextz = plr->where.z + plr->vlct.z;
-	if (plr->vlct.z < 0 && nextz < (*sectors)[plr->sector].floor + plr->eyeheight) // When going down
-	{
-		plr->where.z = (*sectors)[plr->sector].floor + plr->eyeheight; /* Fix to ground */
-		plr->vlct.z = 0;
-		plr->falling = 0;
-		plr->ground = 1;
-	}
-	else if (plr->vlct.z > 0 && nextz > (*sectors)[plr->sector].ceil) // When going up
-	{
-		plr->vlct.z = 0; /* Prevent jumping above ceiling */
-		plr->falling = 1;
-	}
-	if (plr->falling)
-	{
-		plr->where.z += plr->vlct.z;
-		plr->moving = 1;
-	}
-}
-
 void		events(t_sector **sectors, t_player *plr)
 {
 	const Uint8		*kstate;	//	array of keyboard keys states
@@ -131,7 +106,7 @@ int 		main(void)
 	t_sdl_main	sdl;
 	t_sector	*sectors;
 	int 		*buffer;
-	int			request;
+	//int		request;
 
 	sectors = NULL;
 	buffer = (int *)malloc(sizeof(int) * W * H);

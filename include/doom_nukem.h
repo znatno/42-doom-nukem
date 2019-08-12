@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/12 16:21:10 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/12 16:29:31 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,7 @@ typedef struct			s_sdl_main
 typedef struct		s_player
 {
 	t_xyz			where;		// Current position
-	t_xyz			vlct;		// velocity, Current motion vector
+	t_xyz			vlct;		// velocity, curr motion vector / швидкість
 	float			angle;
 	float			anglesin;
 	float			anglecos;
@@ -146,7 +146,7 @@ typedef struct		s_player
 	t_move_vec		mv;
 	float 			speed;
 	int 			pushing;
-	float			aclrt;		// acceleration
+	float			aclrt;		// acceleration / прискорення
 	t_xy_i			ms;			// mouse aiming
 	t_sdl_main		*sdl;
 }					t_player;
@@ -272,12 +272,13 @@ void			move_player(t_player *plr, t_sector **sectors,
 							float dx, float dy);
 
 void			do_move(t_player *plr, t_sector **sc);
+void			do_fall(t_player *plr, t_sector **sectors);
 
 /*
 **	Quit
 */
 
-int		exit_doom(t_sector **sectors, t_player *plr);
+int				exit_doom(t_sector **sectors, t_player *plr);
 
 //void			init_sdl(t_sdl_main *sdl);
 //SDL_Texture	*load_texture(char *path, t_sdl_main *sdl);

@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:00:35 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/12 16:02:11 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/12 16:28:28 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,4 +126,29 @@ void		do_move(t_player *plr, t_sector **sc)
 	//printf("curr sec: %d\n",plr->sector);
 	plr->falling = 1;
 	//g_x++;
+}
+
+void		do_fall(t_player *plr, t_sector **sectors)
+{
+	float	nextz;
+
+	plr->vlct.z -= 0.05f; /* Add gravity */
+	nextz = plr->where.z + plr->vlct.z;
+	if (plr->vlct.z < 0 && nextz < (*sectors)[plr->sector].floor + plr->eyeheight) // When going down
+	{
+		plr->where.z = (*sectors)[plr->sector].floor + plr->eyeheight; /* Fix to ground */
+		plr->vlct.z = 0;
+		plr->falling = 0;
+		plr->ground = 1;
+	}
+	else if (plr->vlct.z > 0 && nextz > (*sectors)[plr->sector].ceil) // When going up
+	{
+		plr->vlct.z = 0; /* Prevent jumping above ceiling */
+		plr->falling = 1;
+	}
+	if (plr->falling)
+	{
+		plr->where.z += plr->vlct.z;
+		plr->moving = 1;
+	}
 }
