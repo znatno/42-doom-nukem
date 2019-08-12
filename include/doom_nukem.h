@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/12 16:29:31 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/12 16:30:01 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -282,7 +282,7 @@ int				exit_doom(t_sector **sectors, t_player *plr);
 
 //void			init_sdl(t_sdl_main *sdl);
 //SDL_Texture	*load_texture(char *path, t_sdl_main *sdl);
-//char			*ft_itof(long double k);
+char			*ft_itof(long double k);
 
 int g_x = 0; //temp global iterator, delete it at the end
 
