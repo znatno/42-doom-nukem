@@ -221,6 +221,9 @@ void		events(t_sector **sectors, t_player *plr, bool *quit)
 void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 {
 	bool 			quit;
+	SDL_Surface *hud;
+	int iW;
+	int iH;
 
 	quit = false;
 	SDL_ShowCursor(SDL_DISABLE);
@@ -266,6 +269,9 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 		draw_screen(sectors, *plr);
 		SDL_UpdateTexture(sdl->texture, NULL, sdl->buffer,W *(sizeof(int)));
 		SDL_RenderCopy(sdl->renderer, sdl->texture, NULL, NULL);
+		hud  = SDL_LoadBMP("../doomhud.bmp");
+		SDL_Texture * texture = SDL_CreateTextureFromSurface(sdl->renderer, hud);
+		SDL_RenderCopy(sdl->renderer, texture, NULL, NULL);
 		SDL_RenderPresent(sdl->renderer);
 		SDL_Delay(15);
 	}
