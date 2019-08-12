@@ -23,77 +23,93 @@
 #define H_DRAW 800
 
 
-
 #define NONE 0
 #define LOOP_START 1
 # define MAX(x, y) (x >= y) ? (x) : (y)
 # define ROUND(x) ((int)(round((double)x/20.0)))*20
 # define SPACE ' '
-typedef struct s_xy
-{
-	int x;
-	int y;
-}				t_xy;
+# define I draw->counter
+typedef struct s_xy {
+    int x;
+    int y;
+} t_xy;
 
-typedef struct s_line
-{
-	int			start;
-	int			end;
-	u_int		p_color;
-	int			tmp_x;
-	int			tmp_y;
-	int			dx;
-	int			dy;
-	int			px;
-	int			py;
-}				t_line;
+typedef struct s_line {
+    int start;
+    int end;
+    u_int p_color;
+    int tmp_x;
+    int tmp_y;
+    int dx;
+    int dy;
+    int px;
+    int py;
+} t_line;
 
-typedef struct s_posf_t {
-	int     pos;
-	bool    is_y;
-	float   value;
-	float   y;
-}				t_posf;
 
-typedef struct		s_sector
+typedef struct s_vertex
 {
-	float			floor;
-	float			ceil;
-	t_xy			*vertex;
-	signed char		*neighbors;       // Each edge may have a corresponding neighboring sector
-	unsigned		npoints;          // How many vertexes there are
-	t_xy			*vert;
-}					t_sector;
+    t_xy xy1;
+    t_xy xy2;
+    struct t_vertex *next;
+} s_vertex;
 
-typedef struct      s_draw
+typedef struct s_sector
 {
-    t_xy            f_p[256];
-    t_xy            temp;
-    int             counter;
-    char            key;
-}                   t_draw;
+    s_vertex *vertexes;
+    struct s_sector *next;
+} t_sector;
+
+typedef struct s_posf_t
+{
+    int pos;
+    bool is_y;
+    float value;
+    float y;
+} t_posf;
+
+//typedef struct		s_sector
+//{
+//	float			floor;
+//	float			ceil;
+//	t_xy			*vertex;
+//	signed char		*neighbors;       // Each edge may have a corresponding neighboring sector
+//	unsigned		npoints;          // How many vertexes there are
+//	t_xy			*vert;
+//}					t_sector;
+
+typedef struct s_draw
+{
+    t_sector    *head;
+    t_xy f_p[256];
+    t_xy temp;
+    int counter;
+    char key;
+} t_draw;
 
 typedef struct s_env
 {
 
-	SDL_Window      *window;
-	SDL_Event       window_e;
-	SDL_Renderer    *renderer;
-	SDL_Texture     *texture;
+    SDL_Window *window;
+    SDL_Event window_e;
+    SDL_Renderer *renderer;
+    SDL_Texture *texture;
 //    SDL_Event       event;
-	int             *buffer;
-	int             zoom;
-	int             sdl_error;
-}				t_env;
+    int *buffer;
+    int zoom;
+    int sdl_error;
+} t_env;
 
-void	line(t_xy pt1, t_xy pt2, t_env *env, u_int color);
+void line(t_xy pt1, t_xy pt2, t_env *env, u_int color);
 
 /*
  * env_display.c
  */
 
-void    set_pixel(t_env *env, int x, int y, Uint32 pixel);
-void	draw_frame(t_env *env);
-void    draw_desk(t_env *env);
+void set_pixel(t_env *env, int x, int y, Uint32 pixel);
+
+void draw_frame(t_env *env);
+
+void draw_desk(t_env *env);
 
 #endif

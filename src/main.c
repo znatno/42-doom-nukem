@@ -1,11 +1,66 @@
 #include "duke_nukem_editor.h"
 
+void            print_sector(t_sector *temp)
+{
+    s_vertex *cur;
 
+    cur = temp->vertexes;
+    while (cur) {
+    printf("x1 = %d y1 = %d \n x2 = %d y2 = %d\n\n",
+            cur->xy1.x, cur->xy1.y, cur->xy2.x, cur->xy2.y);
+        cur = cur->next;
+    }
+   // free(cur);
+}
+void            first_sector(t_env *env, t_draw *draw, t_sector *temp)
+{
+    int i;
+    s_vertex *head;
 
+    head = NULL;
+    if (!(temp->vertexes = (s_vertex*)malloc(sizeof(s_vertex))))
+        exit(167);
+    head = temp->vertexes;
+    i = 0;
+    while (++i < I)
+    {
+        temp->vertexes->xy1.x = draw->f_p[i - 1].x;
+        temp->vertexes->xy1.y = draw->f_p[i - 1].y;
+        temp->vertexes->xy2.x = draw->f_p[i].x;
+        temp->vertexes->xy2.y = draw->f_p[i].y;
+//        printf("x1 = %d y1 = %d \n x2 = %d y2 = %d\n\n",
+//               temp->vertexes->xy1.x, temp->vertexes->xy1.y, temp->vertexes->xy2.x, temp->vertexes->xy2.y);
+        if (!(temp->vertexes->next = (s_vertex*)malloc(sizeof(s_vertex))))
+            exit(168);
+        temp->vertexes = temp->vertexes->next;
+    }
+//    temp->vertexes = temp->vertexes->next;
+//    if (!(temp->vertexes = (s_vertex*)malloc(sizeof(s_vertex))))
+//        exit(167);
+    temp->vertexes->xy1.x = draw->f_p[i - 1].x;
+    temp->vertexes->xy1.y = draw->f_p[i - 1].y;
+    temp->vertexes->xy2.x = draw->f_p[0].x;
+    temp->vertexes->xy2.y = draw->f_p[0].y;
+    temp->vertexes->next = NULL;
+    temp->vertexes = head;
+      //  free(head);
+}
 
 void            save_sector(t_env *env, t_draw *draw)
 {
-    //
+    t_sector *temp;
+
+
+    // Если это первый элемент листа
+    if (!(temp = draw->head))
+    {
+        if (!(temp = (t_sector *)malloc(sizeof(t_sector))))
+            exit(166);
+        first_sector(env, draw, temp);
+        print_sector(temp);
+    }
+
+    //free(temp);
 }
 
 t_draw          *init_draw(t_draw *draw)
@@ -14,37 +69,36 @@ t_draw          *init_draw(t_draw *draw)
     {
         exit(13);
     }
-    draw->counter = 0;
+    I = 0;
     draw->temp.x = 0;
     draw->temp.y = 0;
+    draw->head = NULL;
     return (draw);
 }
 
 void             draw_vertex(t_env *env, t_draw *draw)
 {
-
-
     SDL_GetMouseState(&draw->temp.x, &draw->temp.y);
-    if (draw->key == SPACE && draw->f_p[0].y != 0 && draw->f_p[0].x != 0 && draw->counter > 2)
+    if (draw->key == SPACE && draw->f_p[0].y != 0 && draw->f_p[0].x != 0 && I > 2)
     {
-        line(draw->f_p[draw->counter - 1], draw->f_p[0], env, 0xFF00FF);
-        draw->counter = -1;
-        //        save_sector(env, draw);
+        line(draw->f_p[I - 1], draw->f_p[0], env, 0xFF00FF);
+        save_sector(env, draw);
+        I = -1;
     }
-    else if (draw->counter && draw->key != SPACE)
+    else if (I && draw->key != SPACE)
     {
         draw->temp.x = ROUND(draw->temp.x);
         draw->temp.y = ROUND(draw->temp.y);
-        line(draw->f_p[draw->counter - 1], draw->temp, env, 0xFF00FF);
-        draw->f_p[draw->counter].x = draw->temp.x;
-        draw->f_p[draw->counter].y = draw->temp.y;
+        line(draw->f_p[I - 1], draw->temp, env, 0xFF00FF);
+        draw->f_p[I].x = draw->temp.x;
+        draw->f_p[I].y = draw->temp.y;
     }
-    else if (!draw->counter && draw->key != SPACE)
+    else if (!I && draw->key != SPACE)
     {
-        draw->f_p[draw->counter].x = ROUND(draw->temp.x);
-        draw->f_p[draw->counter].y = ROUND(draw->temp.y);
+        draw->f_p[I].x = ROUND(draw->temp.x);
+        draw->f_p[I].y = ROUND(draw->temp.y);
     }
-    draw->counter++;
+    I++;
     SDL_WarpMouseInWindow(env->window, ROUND(draw->temp.x), ROUND(draw->temp.y));
 }
 
@@ -53,17 +107,18 @@ t_env           *sdl_main_loop(t_env *env)
     const Uint8 *kstate;
     t_draw      *draw;
     SDL_Event   ev;
-
+    int         loop;
 
 
     draw = init_draw(draw);
     draw_desk(env);
-    while (LOOP_START && env->sdl_error == NONE) {
+    loop = 1;
+    while (loop && env->sdl_error == NONE) {
         kstate = SDL_GetKeyboardState(NULL);
         while (SDL_PollEvent(&ev))
         {
             if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
-                exit(1);
+                loop = 0;
             else if (kstate[SDL_SCANCODE_SPACE])
             {
                 SDL_Delay(100);
@@ -85,6 +140,7 @@ t_env           *sdl_main_loop(t_env *env)
         SDL_RenderPresent(env->renderer);
         SDL_Delay(10);
     }
+//    free(draw);
     return (env);
 }
 
@@ -128,5 +184,6 @@ int             main()
     }
     printf("IM HERE");
     SDL_Quit();
+    system("leaks doom-nukem");
     return (0);
 }
