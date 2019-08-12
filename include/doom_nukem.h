@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/12 16:11:26 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/12 16:21:10 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,11 @@
 
 #define min(a, b)             (((a) < (b)) ? (a) : (b))		// min: Choose smaller of two scalars.
 #define max(a, b)             (((a) > (b)) ? (a) : (b))		// max: Choose greater of two scalars.
+
+// мінімальне з {"ma", максимальне з {a, mi}}
 #define clamp(a, mi, ma)      min(max(a,mi),ma)				// clamp: Clamp value into set range.
+
+// Векторний добуток
 #define vxs(x0, y0, x1, y1)   ((x0)*(y1) - (x1)*(y0))		// vxs: Vector cross product
 
 //	Overlap:  Determine whether the two number ranges overlap.
@@ -72,7 +76,7 @@ typedef struct s_posf_t
 }				t_posf;
 
 
-typedef struct	s_xy1
+typedef struct	s_xy
 {
 	float	x;
 	float	y;
