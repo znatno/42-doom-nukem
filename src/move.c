@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:00:35 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/12 18:57:51 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/12 21:31:12 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,28 +23,68 @@ void	move_player(t_player *plr, t_sector **sectors, float dx, float dy)
 	t_xy		*vert;
 	float		px;
 	float		py;
-	unsigned	s;
+	unsigned	i;
+
+	unsigned	j;
+	t_sector	*tmp;
+	t_xy		*vt;
+
+	g_x = 0; // global
 
 	px = plr->where.x;
 	py = plr->where.y;
 	sect = &(*sectors)[plr->sector];
 	vert = sect->vertex;
-	s = 0;
-	while (s < sect->npoints)
+	i = 0;
+	while (i < sect->npoints)
 	{
-		if (sect->neighbors[s] >= 0 &&
-				intersect_box(px, py, px + dx, py + dy, vert[s + 0].x,
-							  vert[s + 0].y, vert[s + 1].x, vert[s + 1].y) &&
-				point_side(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
-						   vert[s + 1].x, vert[s + 1].y) < 0)
+		if (	sect->neighbors[i] >= 0
+				&&
+				intersect_box(px, py, px + dx, py + dy,
+						vert[i + 0].x,
+						vert[i + 0].y,
+						vert[i + 1].x,
+						vert[i + 1].y)
+				&&
+				point_side(px + dx, py + dy,
+						vert[i + 0].x,
+						vert[i + 0].y,
+						vert[i + 1].x,
+						vert[i + 1].y) < 0)
 		{
 			//printf("prev sec: %d\n",plr->sector);
-			plr->sector = sect->neighbors[s];
+			plr->sector = sect->neighbors[i];
 			printf("Moved to another sector ");
-			printf("curr sec: %d\n",plr->sector);
-			break;
+			printf("| curr sec: %d\n",plr->sector);
+			break ;
 		}
-		s++;
+		else if (sect->neighbors[i] != -1)
+		{
+			j = 0;
+			tmp = &(*sectors)[sect->neighbors[i]];
+			vt = tmp->vertex;
+			while (j < tmp->npoints)
+			{
+				//printf("%d %d\n", i, j);
+				if (tmp->neighbors[j] >= 0
+					&& intersect_box(px, py, px + dx, py + dy, vt[j + 0].x,
+									vt[j + 0].y, vt[j + 1].x, vt[j + 1].y)
+					&& point_side(px + dx, py + dy, vt[j + 0].x, vt[j + 0].y,
+									vt[j + 1].x, vt[j + 1].y) < 0
+					&& tmp->neighbors[j] != plr->sector)
+				{
+					plr->sector = tmp->neighbors[j];
+					printf("+++ Moved to another sector ");
+					printf("| curr sec: %d\n",plr->sector);
+					break ;
+				}
+				j++;
+			}
+		}
+		//if ((g_x % 2) == 0)
+		//	printf("ch n: %d\n", i);
+		i++;
+		g_x += 2;
 	}
 	plr->where.x += dx;
 	plr->where.y += dy;
@@ -58,7 +98,7 @@ void		chholebump(t_sector **sectors, t_sector sect, const unsigned int *s,
 	float hole_low; /* Check where the hole is. */
 	float hole_high;
 
-	printf("Check Bump. ");
+	printf("Check Bump.\n");
 	hole_low = sect.neighbors[*s] < 0 ? 9e9 : max(sect.floor, (*sectors)[sect.neighbors[*s]].floor);
 	hole_high = sect.neighbors[*s] < 0 ? -9e9 : min(sect.ceil, (*sectors)[sect.neighbors[*s]].ceil);
 	/* Check whether we're bumping into a wall. */
@@ -110,6 +150,7 @@ void		do_move(t_player *plr, t_sector **sc)
 			// перевірка, чи вміщаємось ми туди, куди ліземо, по висоті
 			chholebump(sc, (*sc)[plr->sector], &s, plr, &(*sc)->vert, &dx, &dy);
 		}
+
 	}
 	move_player(plr, sc, dx, dy);
 	plr->falling = 1;

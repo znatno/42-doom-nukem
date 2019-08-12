@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/12 16:30:01 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/12 21:07:16 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,9 @@
 #define hfov (0.73f * H)	// Affects the horizontal field of vision
 #define vfov (.2f * H)		// Affects the vertical field of vision
 #define isdigit(c) (c >= '0' && c <= '9')
-#define SEC_COLOR 0x0000ff00
-#define BLACK_COLOR 0x00
-#define FILE_NAME "map-clear.txt"
+#define SEC_COLOR	0x0000ff00
+#define BLACK_COLOR	0x00
+#define FILE_NAME "../test.txt"
 
 //	Utility functions. Because C doesn't have templates,
 //	we use the slightly less safe preprocessor macros to
@@ -95,7 +95,7 @@ typedef struct		s_sector
 	float			floor;
 	float			ceil;
 	t_xy			*vertex;
-	signed char		*neighbors;       // Each edge may have a corresponding neighboring sector
+	int				*neighbors;       // Each edge may have a corresponding neighboring sector
 	unsigned		npoints;          // How many vertexes there are
 	t_xy		*vert;
 }					t_sector;
@@ -131,7 +131,7 @@ typedef struct		s_player
 {
 	t_xyz			where;		// Current position
 	t_xyz			vlct;		// velocity, curr motion vector / швидкість
-	float			angle;
+	float			angle;		// камера по X-осі, yaw — по Y-осі
 	float			anglesin;
 	float			anglecos;
 	float			yaw;		// Looking towards (and sin() and cos() thereof)
@@ -140,11 +140,11 @@ typedef struct		s_player
 	int				ground;
 	int				falling;
 	int				moving;
-	int				ducking;
+	int				ducking;	// присяд
 	float			eyeheight;
-	t_keys			key;
-	t_move_vec		mv;
-	float 			speed;
+	t_keys			key;		// WASD провірка натиску клавіш
+	t_move_vec		mv;			// вектор руху
+	float 			speed;		// швидкість, менша для присяду, todo більша shift
 	int 			pushing;
 	float			aclrt;		// acceleration / прискорення
 	t_xy_i			ms;			// mouse aiming
@@ -232,7 +232,7 @@ typedef struct		s_calc_tmp_struct
 	t_xy				i2;
 	t_item				*head;
 	t_item				*tail;
-	t_sector			*sectore;
+	t_sector			*sector;
 }					t_calc_tmp_struct;
 
 typedef struct		s_draw_screen_calc

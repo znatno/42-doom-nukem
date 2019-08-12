@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/12 18:57:03 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/12 19:32:54 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,18 @@ void		events(t_sector **sectors, t_player *plr)
 				plr->vlct.z += 0.5;
 				plr->falling = 1;
 			}
+
 			if (ev.key.keysym.sym == 'p') //TODO: вивід корисної інфи для дебаґу
-				printf("p\n");
+			{
+				printf("\n\t---------------------------\n");
+				printf("\t\t\t[print msg]\n");
+				// поточний сектор
+				printf("\tcurr sec: %d\n",plr->sector);
+				// поточна позиція
+				printf("\tx: %f\t\ty: %f\t\tz: %f\n",
+						plr->where.x, plr->where.y, plr->where.z);
+				printf("\n\t---------------------------\n\n");
+			}
 		}
 		plr->ducking = kstate[SDL_SCANCODE_LCTRL];
 		if (plr->ducking)
@@ -54,26 +64,27 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 	while(!quit)
 	{
 		events(&sectors, plr);
-		if ((g_x++ % 10) == 7)
-			printf("x: %f\t\ty: %f\t\tz: %f\n",
-			   plr->where.x, plr->where.y, plr->where.z);
+
 		plr->eyeheight = plr->ducking ? DuckHeight : EyeHeight; /* Vertical collision detection */
 		plr->ground = !plr->falling;
 		if (plr->falling) //TODO: make ducking unreversable if стеля згори
 			do_fall(plr, &sectors);
 		if (plr->moving) /* Horizontal collision detection */
 			do_move(plr, &sectors);
+
 		plr->ms.x = 0; /* mouse aiming */
 		plr->ms.y = 0;
 		SDL_GetRelativeMouseState(&plr->ms.x, &plr->ms.y);
 		plr->angle += plr->ms.x * 0.03f;
 		plr->ms.yaw = clamp(plr->ms.yaw - plr->ms.y * 0.05f, -5, 5);
 		plr->yaw = plr->ms.yaw - plr->vlct.z * 0.5f;
+
 		plr->mv = (t_move_vec){.x = 0.f, .y = 0.f};
 		move_player(plr, &sectors, 0, 0);
 		plr->speed = 0.2f;
 		if (plr->ducking)
 			plr->speed /= 2;
+
 		if (plr->key.w)
 			plr->mv = (t_move_vec){.x = plr->mv.x + plr->anglecos * plr->speed,
 					.y = plr->mv.y + plr->anglesin * plr->speed};
@@ -86,14 +97,16 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 		if (plr->key.d)
 			plr->mv = (t_move_vec){.x = plr->mv.x - plr->anglesin * plr->speed,
 					.y = plr->mv.y + plr->anglecos * plr->speed};
+
 		plr->pushing = plr->key.w || plr->key.s || plr->key.a || plr->key.d;
 		plr->aclrt = plr->pushing ? 0.4 : 0.2;
 		plr->vlct.x = plr->vlct.x * (1 - plr->aclrt) + plr->mv.x * plr->aclrt;
 		plr->vlct.y = plr->vlct.y * (1 - plr->aclrt) + plr->mv.y * plr->aclrt;
 		if (plr->pushing)
 			plr->moving = 1;
-		//else
-		//	plr->moving = 0; // для рівномірного руху
+		else // для рівномірного руху
+			plr->moving = 0;
+
 		draw_screen(sectors, *plr);
 		SDL_UpdateTexture(sdl->texture, NULL, sdl->buffer,W *(sizeof(int)));
 		SDL_RenderCopy(sdl->renderer, sdl->texture, NULL, NULL);

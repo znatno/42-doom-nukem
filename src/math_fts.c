@@ -19,8 +19,8 @@ bool overlap(float a0, float a1, float b0, float b1)
 	return (false);
 }
 
-bool intersect_box(float x0, float y0, float x1, float y1, float x2, float y2,
-				   float x3, float y3)
+bool intersect_box(float x0, float y0, float x1, float y1,
+					float x2, float y2, float x3, float y3)
 {
 	//printf("intersect\n");
 	bool result;
@@ -35,8 +35,8 @@ float point_side(float px, float py, float x0, float y0, float x1, float y1)
 	return (result);
 }
 
-t_xy intersect(float x1, float y1, float x2, float y2, float x3, float y3,
-			   float x4, float y4)
+t_xy intersect(float x1, float y1, float x2, float y2,
+				float x3, float y3, float x4, float y4)
 {
 	t_xy result;
 
