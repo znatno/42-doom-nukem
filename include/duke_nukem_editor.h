@@ -51,12 +51,12 @@ typedef struct s_vertex
 {
     t_xy xy1;
     t_xy xy2;
-    struct t_vertex *next;
-} s_vertex;
+    struct s_vertex *next;
+} t_vertex;
 
 typedef struct s_sector
 {
-    s_vertex *vertexes;
+    t_vertex *vertexes;
     struct s_sector *next;
 } t_sector;
 
