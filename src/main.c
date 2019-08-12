@@ -160,10 +160,12 @@ static void MovePlayer(t_player *plr, t_sector **sectors, float dx, float dy)
 		}
 		s++;
 	}
-	plr->where.x += dx;
-	plr->where.y += dy;
 	plr->anglesin = sinf(plr->angle);
 	plr->anglecos = cosf(plr->angle);
+	if (move_or_not(plr, *sectors) == -1)
+		return;
+	plr->where.x += dx;
+	plr->where.y += dy;
 }
 
 int 		exit_doom(t_sector **sectors, t_player *plr)
@@ -337,6 +339,41 @@ void	game(t_sdl_main *sdl, t_player	*plr, t_sector	*sectors)
 		SDL_UpdateWindowSurface(sdl->window);
 		SDL_Delay(10);
 	}
+}
+
+void	print_all_edge(t_sector sector)
+{
+	for (int i = 0; i < sector.npoints; i++)
+	{
+		printf("edge[%i] x = %f | y = %f\n", i ,sector.vertex[i].x, sector.vertex[i].y);
+	}
+}
+
+int		move_or_not(t_player *p, t_sector *sectors)
+{
+	t_xy	xy[2];
+	int res = 0;
+	float sum_angles = 0;
+	float cur_angle = 0;
+	for (int i = 0; i < p->num_scts; i++)
+	{
+		sum_angles = 0;
+		for (int j = 0; j < sectors[i].npoints; j++)
+		{
+//			print_all_edge(sectors[i]);
+			xy[0] = vv_to_v(p->where.x, p->where.y,sectors[i].vertex[j].x, sectors[i].vertex[j].y);
+			xy[1] = vv_to_v(p->where.x, p->where.y, sectors[i].vertex[j + 1].x, sectors[i].vertex[j + 1].y);
+			cur_angle = ANGLE_V0_V1(xy[0], xy[1]);
+			if (vector_product(xy[0], xy[1]) > 0)
+				sum_angles += cur_angle;
+			else
+				sum_angles -= cur_angle;
+		}
+		if (sum_angles >= 359.0 && sum_angles <= 361.0)
+			return (i);
+//		printf("Angle_sum of sector[%d] = %f\n\n", i, sum_angles);
+	}
+	return (-1);
 }
 
 int 		main()

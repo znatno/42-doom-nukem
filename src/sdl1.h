@@ -34,6 +34,8 @@
 #define hfov (0.73f * H)  // Affects the horizontal field of vision
 #define vfov (.2f * H)    // Affects the vertical field of vision
 #define isdigit(c) (c >= '0' && c <= '9')
+#define vxs(x0, y0, x1, y1)   ((x0)*(y1) - (x1)*(y0))		// vxs: Vector cross product
+#define vlen(x0, y0, x1, y1)	sqrt(pow((x1 - x0), 2) - pow((y1 - y0), 2)))
 
 //Coordinates
 typedef struct	s_xyz

@@ -269,7 +269,6 @@ void	draw_screen(t_sector *sector, t_player plr)
 	ds.s->head = ds.que;
 	ds.s->tail = ds.que;
 
-	print_data_ds(&plr);
 	init_draw(&ds, plr);
 	if (++ds.s->head  == ds.que + MaxQue)
 		ds.s->head = ds.que;
@@ -300,6 +299,6 @@ void	draw_screen(t_sector *sector, t_player plr)
 		} // for s in sector's edges
 		++ds.i->renderedsectors[ds.s->now.sectorno];
 	}
-	print_data_ds(&plr);
-	printf("Render_Moment_Done");
+//	print_data_ds(&plr);
+//	printf("Render_Moment_Done");
 }
