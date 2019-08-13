@@ -39,7 +39,7 @@
 #define SEC_COLOR 0x0000ff00
 #define BLACK_COLOR 0x00
 #define ANGLE_V0_V1(xy0, xy1) (radian_to_grades(acosf(angle_vv(scalar_product(xy0, xy1), len_vector(xy0), len_vector(xy1)))))
-#define FILE_NAME "test.txt"
+#define FILE_NAME "map-clear.txt"
 
 //	Utility functions. Because C doesn't have templates,
 //	we use the slightly less safe preprocessor macros to
@@ -266,7 +266,7 @@ float	scalar_product(t_xy xy0, t_xy xy1);
 float	angle_vv(float scalar_product, float len0, float len1);
 float	radian_to_grades(float rad);
 float	vector_product(t_xy xy0, t_xy xy1);
-int		move_or_not(float p_x , float p_y, t_sector *sectors, unsigned int num_sect);
+int		move_or_not(t_xyz where ,t_sector sector, unsigned sect_num);
 
 /*
 **  "math_fts.c" Math functions for vectors and other things

@@ -194,10 +194,10 @@ void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p)
 
 	/* Render ceiling: everything above this sector's ceiling height-> */
 //	SDL_UpdateWindowSurface(p->sdl->window);
-	vline(ds->it->x, ds->i->y_top[ds->it->x], ds->i->cya - 1, 0x002AFF00, p);
+	vline(ds->it->x, ds->i->y_top[ds->it->x], ds->i->cya - 1, 0x00333333, p);
 //	SDL_UpdateWindowSurface(p->sdl->window);
 	/* Render floor: everything below this sector's floor height-> */
-	vline(ds->it->x, ds->i->cyb + 1, ds->i->y_bottom[ds->it->x], 0x00FF00A2, p);
+	vline(ds->it->x, ds->i->cyb + 1, ds->i->y_bottom[ds->it->x], 0x00663333, p);
 //	SDL_UpdateWindowSurface(p->sdl->window);
 }
 
@@ -301,6 +301,4 @@ void	draw_screen(t_sector *sector, t_player plr)
 		} // for s in sector's edges
 		++ds.i->renderedsectors[ds.s->now.sectorno];
 	}
-//	print_data_ds(&plr);
-//	printf("Render_Moment_Done");
 }
