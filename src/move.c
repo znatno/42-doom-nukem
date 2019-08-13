@@ -19,75 +19,16 @@
 
 void	move_player(t_player *plr, t_sector **sectors, float dx, float dy)
 {
-	t_sector	*sect;
-	t_xy		*vert;
-	float		px;
-	float		py;
-	unsigned	i;
+	int			flag;
 
-	unsigned	j;
-	t_sector	*tmp;
-	t_xy		*vt;
-
-	g_x = 0; // global
-
-	px = plr->where.x;
-	py = plr->where.y;
-	sect = &(*sectors)[plr->sector];
-	vert = sect->vertex;
-	i = 0;
-	while (i < sect->npoints)
+	flag = move_or_not(plr->where.x + dx, plr->where.y + dy, *sectors, plr->num_scts);
+	printf("%u\n", flag);
+	if (flag >= 0 && flag < plr->num_scts)
 	{
-		if (	sect->neighbors[i] >= 0
-				&&
-				intersect_box(px, py, px + dx, py + dy,
-						vert[i + 0].x,
-						vert[i + 0].y,
-						vert[i + 1].x,
-						vert[i + 1].y)
-				&&
-				point_side(px + dx, py + dy,
-						vert[i + 0].x,
-						vert[i + 0].y,
-						vert[i + 1].x,
-						vert[i + 1].y) < 0)
-		{
-			//printf("prev sec: %d\n",plr->sector);
-			plr->sector = sect->neighbors[i];
-			printf("Moved to another sector ");
-			printf("| curr sec: %d\n",plr->sector);
-			break ;
-		}
-		else if (sect->neighbors[i] != -1)
-		{
-			j = 0;
-			tmp = &(*sectors)[sect->neighbors[i]];
-			vt = tmp->vertex;
-			while (j < tmp->npoints)
-			{
-				//printf("%d %d\n", i, j);
-				if (tmp->neighbors[j] >= 0
-					&& intersect_box(px, py, px + dx, py + dy, vt[j + 0].x,
-									vt[j + 0].y, vt[j + 1].x, vt[j + 1].y)
-					&& point_side(px + dx, py + dy, vt[j + 0].x, vt[j + 0].y,
-									vt[j + 1].x, vt[j + 1].y) < 0
-					&& tmp->neighbors[j] != plr->sector)
-				{
-					plr->sector = tmp->neighbors[j];
-					printf("+++ Moved to another sector ");
-					printf("| curr sec: %d\n",plr->sector);
-					break ;
-				}
-				j++;
-			}
-		}
-		//if ((g_x % 2) == 0)
-		//	printf("ch n: %d\n", i);
-		i++;
-		g_x += 2;
+		plr->where.x += dx;
+		plr->where.y += dy;
+		plr->sector = flag;
 	}
-	plr->where.x += dx;
-	plr->where.y += dy;
 	plr->anglesin = sinf(plr->angle);
 	plr->anglecos = cosf(plr->angle);
 }
