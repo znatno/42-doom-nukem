@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "sdl1.h"
+#include "doom_nukem.h"
 
 static void	float_put_before(char **str, int *len, long double k, int *iter)
 {

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   doom-nukem.h                                       :+:      :+:    :+:   */
+/*   doom_nukem.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggavryly <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/07/31 19:21:09 by ggavryly         ###   ########.fr       */
+/*   Updated: 2019/08/12 21:07:16 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,17 +29,36 @@
 #define H 480
 #define Yaw(y, z) (y + z * plr.yaw)
 #define MaxQue	32
-#define EyeHeight  6    // Camera height from floor when standing
-#define DuckHeight 2.5  // And when crouching
-#define HeadMargin 1    // How much room there is above camera before the head hits the ceiling
-#define KneeHeight 2    // How tall obstacles the player can simply walk over without jumping
-#define hfov (0.73f * H)  // Affects the horizontal field of vision
-#define vfov (.2f * H)    // Affects the vertical field of vision
+#define EyeHeight  6		// Camera height from floor when standing
+#define DuckHeight 2.5		// And when crouching
+#define HeadMargin 1		// How much room there is above camera before the head hits the ceiling
+#define KneeHeight 2		// How tall obstacles the player can simply walk over without jumping
+#define hfov (0.73f * H)	// Affects the horizontal field of vision
+#define vfov (.2f * H)		// Affects the vertical field of vision
 #define isdigit(c) (c >= '0' && c <= '9')
-#define SEC_COLOR 0x0000ff00
-#define BLACK_COLOR 0x00
+#define SEC_COLOR	0x0000ff00
+#define BLACK_COLOR	0x00
+#define FILE_NAME "../test.txt"
 #define ANGLE_V0_V1(xy0, xy1) (radian_to_grades(acosf(angle_vv(scalar_product(xy0, xy1), len_vector(xy0), len_vector(xy1)))))
-#define FILE_NAME "test.txt"
+
+//	Utility functions. Because C doesn't have templates,
+//	we use the slightly less safe preprocessor macros to
+//	implement these functions that work with multiple types.
+//	TODO: DELETE ALL OF THESE — MAKE FUNCTIONS
+
+#define min(a, b)             (((a) < (b)) ? (a) : (b))		// min: Choose smaller of two scalars.
+#define max(a, b)             (((a) > (b)) ? (a) : (b))		// max: Choose greater of two scalars.
+
+// мінімальне з {"ma", максимальне з {a, mi}}
+#define clamp(a, mi, ma)      min(max(a,mi),ma)				// clamp: Clamp value into set range.
+
+// Векторний добуток
+#define vxs(x0, y0, x1, y1)   ((x0)*(y1) - (x1)*(y0))		// vxs: Vector cross product
+
+//	Overlap:  Determine whether the two number ranges overlap.
+//	Overlap(a0, a1, b0, b1) (min(a0,a1) <= max(b0,b1) && min(b0,b1) <= max(a0,a1))
+
+
 
 //Coordinates
 typedef struct	s_xyz
@@ -49,7 +68,8 @@ typedef struct	s_xyz
 	float	z;
 }				t_xyz;
 
-typedef struct s_posf_t {
+typedef struct s_posf_t
+{
 	int     pos;
 	bool    is_y;
 	float   value;
@@ -57,7 +77,7 @@ typedef struct s_posf_t {
 }				t_posf;
 
 
-typedef struct	s_xy1
+typedef struct	s_xy
 {
 	float	x;
 	float	y;
@@ -76,7 +96,7 @@ typedef struct		s_sector
 	float			floor;
 	float			ceil;
 	t_xy			*vertex;
-	signed char		*neighbors;       // Each edge may have a corresponding neighboring sector
+	int				*neighbors;       // Each edge may have a corresponding neighboring sector
 	unsigned		npoints;          // How many vertexes there are
 	t_xy		*vert;
 }					t_sector;
@@ -107,8 +127,8 @@ typedef struct			s_sdl_main
 typedef struct		s_player
 {
 	t_xyz			where;		// Current position
-	t_xyz			vlct;		// velocity, Current motion vector
-	float			angle;
+	t_xyz			vlct;		// velocity, curr motion vector / швидкість
+	float			angle;		// камера по X-осі, yaw — по Y-осі
 	float			anglesin;
 	float			anglecos;
 	float			yaw;		// Looking towards (and sin() and cos() thereof)
@@ -117,26 +137,16 @@ typedef struct		s_player
 	int				ground;
 	int				falling;
 	int				moving;
-	int				ducking;
+	int				ducking;	// присяд
 	float			eyeheight;
-	t_keys			key;
-	t_move_vec		mv;
+	t_keys			key;		// WASD провірка натиску клавіш
+	t_move_vec		mv;			// вектор руху
+	float 			speed;		// швидкість, менша для присяду, todo більша shift
 	int 			pushing;
-	float			aclrt;		// acceleration
+	float			aclrt;		// acceleration / прискорення
 	t_xy_i			ms;			// mouse aiming
 	t_sdl_main		*sdl;
 }					t_player;
-
-// Utility functions. Because C doesn't have templates,
-// we use the slightly less safe preprocessor macros to
-// implement these functions that work with multiple types.
-//TODO: DELETE ALL OF THESE — MAKE FUNCTIONS
-#define min(a, b)             (((a) < (b)) ? (a) : (b)) // min: Choose smaller of two scalars.
-#define max(a, b)             (((a) > (b)) ? (a) : (b)) // max: Choose greater of two scalars.
-#define clamp(a, mi, ma)      min(max(a,mi),ma)         // clamp: Clamp value into set range.
-#define vxs(x0, y0, x1, y1)    ((x0)*(y1) - (x1)*(y0))   // vxs: Vector cross product
-// Overlap:  Determine whether the two number ranges overlap.
-//#define Overlap(a0, a1, b0, b1) (min(a0,a1) <= max(b0,b1) && min(b0,b1) <= max(a0,a1))
 
 typedef struct	s_tmp_iter
 {
@@ -219,10 +229,10 @@ typedef struct		s_calc_tmp_struct
 	t_xy				i2;
 	t_item				*head;
 	t_item				*tail;
-	t_sector			*sectore;
+	t_sector			*sector;
 }					t_calc_tmp_struct;
 
-typedef struct		s_draw_sreen_calc
+typedef struct		s_draw_screen_calc
 {
 	t_calc_tmp_int		*i;
 	t_calc_tmp_float	*f;
@@ -231,14 +241,9 @@ typedef struct		s_draw_sreen_calc
 	t_item				*que;
 }					t_draw_screen_calc;
 
-void		draw_screen(t_sector *sector, t_player plr);
-void 		load_data(t_player *player, t_sector **sectors);
-char		*ft_itof(long double k);
-void		vline(int x, int y1, int y2, int color, t_player *player);
-t_xy Intersect(float x1, float y1, float x2, float y2, float x3, float y3,
-			   float x4, float y4);
-void					init_sdl(t_sdl_main *sdl);
-SDL_Texture				*load_texture(char *path, t_sdl_main *sdl);
+void			draw_screen(t_sector *sector, t_player plr);
+void 			load_data(t_player *player, t_sector **sectors);
+void			vline(int x, int y1, int y2, int color, t_player *player);
 t_xy	vv_to_v(float x0, float y0, float x1, float y1);
 float	len_vector(t_xy		free_vector);
 float	scalar_product(t_xy xy0, t_xy xy1);
@@ -246,5 +251,43 @@ float	angle_vv(float scalar_product, float len0, float len1);
 float	radian_to_grades(float rad);
 float	vector_product(t_xy xy0, t_xy xy1);
 int		move_or_not(float p_x , float p_y, t_sector *sectors, unsigned int num_sect);
+
+/*
+**  "math_fts.c" Math functions for vectors and other things
+**	Define various vision related constants
+*/
+
+bool 			overlap(float a0, float a1, float b0, float b1);
+
+bool 			intersect_box(float x0, float y0, float x1, float y1,
+							  float x2, float y2, float x3, float y3);
+
+t_xy 			intersect(float x1, float y1, float x2, float y2, float x3,
+						  float y3, float x4, float y4);
+
+float			point_side(float px, float py, float x0, float y0,
+							float x1, float y1);
+
+/*
+**  "move.c"
+*/
+
+void			move_player(t_player *plr, t_sector **sectors,
+							float dx, float dy);
+
+void			do_move(t_player *plr, t_sector **sc);
+void			do_fall(t_player *plr, t_sector **sectors);
+
+/*
+**	Quit
+*/
+
+int				exit_doom(t_sector **sectors, t_player *plr);
+
+//void			init_sdl(t_sdl_main *sdl);
+//SDL_Texture	*load_texture(char *path, t_sdl_main *sdl);
+char			*ft_itof(long double k);
+
+int g_x; //temp global iterator, delete it at the end
 
 #endif

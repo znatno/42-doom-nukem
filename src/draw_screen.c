@@ -104,10 +104,12 @@ void	find_intersect(t_draw_screen_calc *ds)
 	ds->f->nearside = 1e-5f;
 	ds->f->farside = 20.f;
 	// Find an intersection between the wall and the approximate edges of player's view
-	ds->s->i1 = Intersect(ds->f->tx1, ds->f->tz1, ds->f->tx2, ds->f->tz2,
-			-ds->f->nearside, ds->f->nearz,-ds->f->farside, ds->f->farz);
-	ds->s->i2 = Intersect(ds->f->tx1, ds->f->tz1, ds->f->tx2, ds->f->tz2,
-			ds->f->nearside, ds->f->nearz,ds->f->farside, ds->f->farz);
+	ds->s->i1 = intersect(ds->f->tx1, ds->f->tz1, ds->f->tx2, ds->f->tz2,
+						  -ds->f->nearside, ds->f->nearz, -ds->f->farside,
+						  ds->f->farz);
+	ds->s->i2 = intersect(ds->f->tx1, ds->f->tz1, ds->f->tx2, ds->f->tz2,
+						  ds->f->nearside, ds->f->nearz, ds->f->farside,
+						  ds->f->farz);
 	if (ds->f->tz1 < ds->f->nearz)
 	{
 		if (ds->s->i1.y > 0)
@@ -126,7 +128,8 @@ void	find_intersect(t_draw_screen_calc *ds)
 		{
 			ds->f->tx2 = ds->s->i1.x;
 			ds->f->tz2 = ds->s->i1.y;
-		} else
+		}
+		else
 		{
 			ds->f->tx2 = ds->s->i2.x;
 			ds->f->tz2 = ds->s->i2.y;
@@ -208,9 +211,9 @@ void	render_ceil_floor(t_draw_screen_calc *ds, t_player *p)
 	ds->i->cnyb = clamp(ds->i->nyb, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]);
 
 	/* If our ceiling is higher than their ceiling, render upper wall */
-	ds->i->r1 = 0x00000AAA;// top portal wall color
-	ds->i->r2 = 0x00ff0000;// bottom portal wall color
-//	SDL_UpdateWindowSurface(p->sdl->window);
+	ds->i->r1 = 0x010101 * (255 - ds->i->z); // top portal wall color
+	ds->i->r2 = 0x010101 * (255 - ds->i->z); // bottom portal wall color
+
 	vline(ds->it->x, ds->i->cya, ds->i->cnya - 1, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r1), p); // Between our and their ceiling
 //	SDL_UpdateWindowSurface(p->sdl->window);
 	ds->i->y_top[ds->it->x] = clamp(max(ds->i->cya, ds->i->cnya), ds->i->y_top[ds->it->x], H - 1); // Shrink the remaining window below these ceilings
@@ -229,8 +232,7 @@ void	render_sector(t_draw_screen_calc *ds, t_player *p)
 	else
 	{
 		/* There's no neighbor. Render wall from top (cya = ceiling level) to bottom (cyb = floor level). */
-		ds->i->r = 0x8300FF;//wall color 255 - ds->i->z
-//		SDL_UpdateWindowSurface(p->sdl->window);
+		ds->i->r = 0x010101 * (255 - ds->i->z); // wall color = 0x010101 * (255 - ds->i->z)
 		vline(ds->it->x, ds->i->cya, ds->i->cyb, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r), p);
 //		SDL_UpdateWindowSurface(p->sdl->window);
 	}
@@ -280,7 +282,7 @@ void	draw_screen(t_sector *sector, t_player plr)
 			continue; // Odd = still rendering, 0x20 = give up
 		++ds.i->renderedsectors[ds.s->now.sectorno];
 		ds.s->sect = &sector[ds.s->now.sectorno];
-		/* Render each wall of this sector that is facing towards player. */
+		/* Render each wall  of this sector that is facing towards player. */
 		for (ds.it->s = 0; ds.it->s < ds.s->sect->npoints; ++ds.it->s)
 		{
 			rotate_view(&ds, plr);
