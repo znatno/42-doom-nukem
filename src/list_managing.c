@@ -73,19 +73,17 @@ void            delete_sector_from_list(t_draw *draw)
 {
     t_sector *cur_s;
     t_vertex *cur_v;
+    t_sector *del_me;
     t_vertex *tmp;
 
     cur_s = draw->head;
-    while (cur_s->next)
+    while (cur_s->next->next != NULL)
+    {
         cur_s = cur_s->next;
-
-    cur_v = cur_s->vertexes;
-    while (cur_v->next) { // set curr to head, stop if list empty.
-        tmp = cur_v->next;          // advance head to next element.
-        free (cur_v);
-        //cur_v = tmp;// delete saved pointer.
     }
-//    free(cur_s);
+    del_me = cur_s->next;
+    cur_s->next = NULL;
+    free(del_me);
 }
 
 
