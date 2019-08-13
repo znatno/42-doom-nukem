@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   draw_screen.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggavryly <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/02 21:38:26 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/02 21:38:27 by ggavryly         ###   ########.fr       */
+/*   Updated: 2019/08/13 15:45:30 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,10 +194,10 @@ void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p)
 
 	/* Render ceiling: everything above this sector's ceiling height-> */
 //	SDL_UpdateWindowSurface(p->sdl->window);
-	vline(ds->it->x, ds->i->y_top[ds->it->x], ds->i->cya - 1, 0x002AFF00, p);
+	vline(ds->it->x, ds->i->y_top[ds->it->x], ds->i->cya - 1, 0x002d362f, p);
 //	SDL_UpdateWindowSurface(p->sdl->window);
 	/* Render floor: everything below this sector's floor height-> */
-	vline(ds->it->x, ds->i->cyb + 1, ds->i->y_bottom[ds->it->x], 0x00FF00A2, p);
+	vline(ds->it->x, ds->i->cyb + 1, ds->i->y_bottom[ds->it->x], 0x002d362f, p);
 //	SDL_UpdateWindowSurface(p->sdl->window);
 }
 

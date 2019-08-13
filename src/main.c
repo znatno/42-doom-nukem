@@ -110,10 +110,6 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 		draw_screen(sectors, *plr);
 		SDL_UpdateWindowSurface(sdl->window);
 		SDL_Delay(10);
-		SDL_UpdateTexture(sdl->texture, NULL, sdl->buffer,W *(sizeof(int)));
-		SDL_RenderCopy(sdl->renderer, sdl->texture, NULL, NULL);
-		SDL_RenderPresent(sdl->renderer);
-		SDL_Delay(15);
 	}
 }
 
