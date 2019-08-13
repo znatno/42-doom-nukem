@@ -22,6 +22,33 @@
 #define W_DRAW 1400
 #define H_DRAW 800
 
+#ifndef UKR_LANG
+# define UKR_LANG
+
+#define СЛАВА_УКРАЇНІ(x) main(x)
+#define ГЕРОЯМ_СЛАВА(x) return(x)
+
+#define гривня int
+#define буква char
+#define гривня_з_копійками double
+#define ніхріна void
+#define дофіга(x) x*
+
+#define от_стільки =
+#define так_само ==
+#define більше >
+#define менше <
+#define нарощувати(x) x++
+
+#define перемога if
+#define зрада else
+#define ганяти_по_колу_доки while
+
+#define червонець 10
+#define вякати printf
+
+
+#endif
 
 #define NONE 0
 #define LOOP_START 1
@@ -84,6 +111,7 @@ typedef struct s_draw
     t_xy f_p[256];
     t_xy temp;
     int counter;
+    bool s_mode;
     char key;
 } t_draw;
 

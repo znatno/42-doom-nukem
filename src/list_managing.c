@@ -76,7 +76,22 @@ void            delete_sector_from_list(t_draw *draw)
     t_sector *del_me;
     t_vertex *tmp;
 
-    cur_s = draw->head;
+    if (!(cur_s = draw->head))
+        return ;
+    if (cur_s->next == NULL)
+    {
+        cur_v = cur_s->vertexes;
+        while (cur_v != NULL)
+        {
+            tmp = cur_v->next;
+            free(cur_v);
+            cur_v = tmp;
+        }
+        cur_s = NULL;
+        draw->head = NULL;
+        free(cur_s);
+        return ;
+    }
     while (cur_s->next->next != NULL)
     {
         cur_s = cur_s->next;
