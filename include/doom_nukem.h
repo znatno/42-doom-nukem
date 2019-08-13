@@ -38,6 +38,7 @@
 #define isdigit(c) (c >= '0' && c <= '9')
 #define SEC_COLOR 0x0000ff00
 #define BLACK_COLOR 0x00
+#define ANGLE_V0_V1(xy0, xy1) (radian_to_grades(acosf(angle_vv(scalar_product(xy0, xy1), len_vector(xy0), len_vector(xy1)))))
 #define FILE_NAME "test.txt"
 
 //Coordinates
@@ -238,5 +239,12 @@ t_xy Intersect(float x1, float y1, float x2, float y2, float x3, float y3,
 			   float x4, float y4);
 void					init_sdl(t_sdl_main *sdl);
 SDL_Texture				*load_texture(char *path, t_sdl_main *sdl);
+t_xy	vv_to_v(float x0, float y0, float x1, float y1);
+float	len_vector(t_xy		free_vector);
+float	scalar_product(t_xy xy0, t_xy xy1);
+float	angle_vv(float scalar_product, float len0, float len1);
+float	radian_to_grades(float rad);
+float	vector_product(t_xy xy0, t_xy xy1);
+int		move_or_not(float p_x , float p_y, t_sector *sectors, unsigned int num_sect);
 
 #endif

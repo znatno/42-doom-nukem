@@ -138,6 +138,7 @@ static void MovePlayer(t_player *plr, t_sector **sectors, float dx, float dy)
 {
 	t_sector	*sect;
 	t_xy		*vert;
+	unsigned 	flag;
 	float		px;
 	float		py;
 	unsigned	s;
@@ -147,25 +148,38 @@ static void MovePlayer(t_player *plr, t_sector **sectors, float dx, float dy)
 	sect = &(*sectors)[plr->sector];
 	vert = sect->vertex;
 	s = 0;
-	while (s < sect->npoints)
-	{
-		if (sect->neighbors[s] >= 0 &&
-			IntersectBox(px, py, px + dx, py + dy, vert[s + 0].x,
-					vert[s + 0].y, vert[s + 1].x, vert[s + 1].y) &&
-		 	PointSide(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
-					  vert[s + 1].x, vert[s + 1].y) < 0)
-		{
-			plr->sector = sect->neighbors[s];
-			break;
-		}
-		s++;
-	}
+	flag = move_or_not(plr->where.x + dx, plr->where.y + dy, *sectors, plr->num_scts);
 	plr->anglesin = sinf(plr->angle);
 	plr->anglecos = cosf(plr->angle);
-	if (move_or_not(plr, *sectors) == -1)
-		return;
-	plr->where.x += dx;
-	plr->where.y += dy;
+	if (flag >= 0)
+	{
+		plr->where.x += dx;
+		plr->where.y += dy;
+		plr->sector = flag;
+	}
+	printf("%d \n", flag);
+//	while (s < sect->npoints)
+//	{
+//		if (sect->neighbors[s] >= 0 &&
+//			IntersectBox(px, py, px + dx, py + dy, vert[s + 0].x,
+//					vert[s + 0].y, vert[s + 1].x, vert[s + 1].y) &&
+//		 	PointSide(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
+//					  vert[s + 1].x, vert[s + 1].y) < 0)
+//		{
+//			plr->sector = sect->neighbors[s];
+//			break;
+//		}
+//		s++;
+//	}
+//	plr->anglesin = sinf(plr->angle);
+//	plr->anglecos = cosf(plr->angle);
+//	if (move_or_not(plr, *sectors) == -1))
+//	{
+//		plr->where.x += dx;
+//		plr->where.y += dy;
+//	}
+//		plr->where.x -= dx;
+//		plr->where.y -= dy;
 }
 
 int 		exit_doom(t_sector **sectors, t_player *plr)
@@ -349,20 +363,20 @@ void	print_all_edge(t_sector sector)
 	}
 }
 
-int		move_or_not(t_player *p, t_sector *sectors)
+int		move_or_not(float p_x , float p_y, t_sector *sectors, unsigned int num_sect)
 {
 	t_xy	xy[2];
 	int res = 0;
 	float sum_angles = 0;
 	float cur_angle = 0;
-	for (int i = 0; i < p->num_scts; i++)
+	for (int i = 0; i < num_sect; i++)
 	{
 		sum_angles = 0;
 		for (int j = 0; j < sectors[i].npoints; j++)
 		{
 //			print_all_edge(sectors[i]);
-			xy[0] = vv_to_v(p->where.x, p->where.y,sectors[i].vertex[j].x, sectors[i].vertex[j].y);
-			xy[1] = vv_to_v(p->where.x, p->where.y, sectors[i].vertex[j + 1].x, sectors[i].vertex[j + 1].y);
+			xy[0] = vv_to_v(p_x, p_y,sectors[i].vertex[j].x, sectors[i].vertex[j].y);
+			xy[1] = vv_to_v(p_x, p_y, sectors[i].vertex[j + 1].x, sectors[i].vertex[j + 1].y);
 			cur_angle = ANGLE_V0_V1(xy[0], xy[1]);
 			if (vector_product(xy[0], xy[1]) > 0)
 				sum_angles += cur_angle;

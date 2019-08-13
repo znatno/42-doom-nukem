@@ -46,6 +46,7 @@ link_directories(${SDL2_LIBRARY}
 add_executable(doom-nukem   src/main.c
                             src/load_data.c
                             src/sdl1.h
+                            src/utility_func.c
                             src/draw_screen.c)
 
 #target_link_libraries(doom-nukem -lSDL)
