@@ -20,29 +20,21 @@ void            save_sector(t_env *env, t_draw *draw)
     //free(temp);
 }
 
-void            redraw_screen(t_draw *draw, t_env *env)
-{
+void            redraw_screen(t_draw *draw, t_env *env) {
     t_sector *cur_s;
     t_vertex *cur_v;
 
     cur_s = draw->head;
-    if (cur_s->next == 0x0) {
-        delete_sector_from_list(draw);
-//    redraw_screen(draw, env);
-        clear_screen(env);
-        draw_desk(env);
-        while (cur_s) {
-            cur_v = cur_s->vertexes;
-            while (cur_v) {
-                line(cur_v->xy1, cur_v->xy2, env, 0xFF00FF);
-                cur_v = cur_v->next;
-            }
-            cur_s = cur_s->next;
+    delete_sector_from_list(draw);
+    clear_screen(env);
+    draw_desk(env);
+    while (cur_s) {
+        cur_v = cur_s->vertexes;
+        while (cur_v) {
+            line(cur_v->xy1, cur_v->xy2, env, 0xFF00FF);
+            cur_v = cur_v->next;
         }
-    }
-    else {
-        clear_screen(env);
-        draw_desk(env);
+        cur_s = cur_s->next;
     }
 }
 
