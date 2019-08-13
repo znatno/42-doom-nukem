@@ -136,50 +136,18 @@ void vline(int x, int y1, int y2, int color, t_player *player)
  */
 static void MovePlayer(t_player *plr, t_sector **sectors, float dx, float dy)
 {
-	t_sector	*sect;
-	t_xy		*vert;
-	unsigned 	flag;
-	float		px;
-	float		py;
-	unsigned	s;
+	int			flag;
 
-	px = plr->where.x;
-	py = plr->where.y;
-	sect = &(*sectors)[plr->sector];
-	vert = sect->vertex;
-	s = 0;
 	flag = move_or_not(plr->where.x + dx, plr->where.y + dy, *sectors, plr->num_scts);
-	plr->anglesin = sinf(plr->angle);
-	plr->anglecos = cosf(plr->angle);
-	if (flag >= 0)
+	printf("%u\n", flag);
+	if (flag >= 0 && flag < plr->num_scts)
 	{
 		plr->where.x += dx;
 		plr->where.y += dy;
 		plr->sector = flag;
 	}
-	printf("%d \n", flag);
-//	while (s < sect->npoints)
-//	{
-//		if (sect->neighbors[s] >= 0 &&
-//			IntersectBox(px, py, px + dx, py + dy, vert[s + 0].x,
-//					vert[s + 0].y, vert[s + 1].x, vert[s + 1].y) &&
-//		 	PointSide(px + dx, py + dy, vert[s + 0].x, vert[s + 0].y,
-//					  vert[s + 1].x, vert[s + 1].y) < 0)
-//		{
-//			plr->sector = sect->neighbors[s];
-//			break;
-//		}
-//		s++;
-//	}
-//	plr->anglesin = sinf(plr->angle);
-//	plr->anglecos = cosf(plr->angle);
-//	if (move_or_not(plr, *sectors) == -1))
-//	{
-//		plr->where.x += dx;
-//		plr->where.y += dy;
-//	}
-//		plr->where.x -= dx;
-//		plr->where.y -= dy;
+	plr->anglesin = sinf(plr->angle);
+	plr->anglecos = cosf(plr->angle);
 }
 
 int 		exit_doom(t_sector **sectors, t_player *plr)
