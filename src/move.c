@@ -17,17 +17,74 @@
 **	also updates their anglesin/anglecos/sector properties properly.
 */
 
+int		move_or_not(t_xyz where ,t_sector sector, unsigned sect_num)
+{
+	t_xy	xy[2];
+	int		res;
+	float sum_angles = 0;
+	float cur_angle = 0;
+
+	res = -1;
+	for (int j = 0; j < sector.npoints; j++)
+	{
+		xy[0] = vv_to_v(where.x, where.y,sector.vertex[j].x, sector.vertex[j].y);
+		xy[1] = vv_to_v(where.x, where.y, sector.vertex[j + 1].x, sector.vertex[j + 1].y);
+		cur_angle = ANGLE_V0_V1(xy[0], xy[1]);
+		if (vector_product(xy[0], xy[1]) > 0)
+			sum_angles += cur_angle;
+		else
+			sum_angles -= cur_angle;
+	}
+	if (sum_angles >= 359.0 && sum_angles <= 361.0)
+		res = sect_num;
+	return (res);
+}
+
 void	move_player(t_player *plr, t_sector **sectors, float dx, float dy)
 {
 	int			flag;
 
-	flag = move_or_not(plr->where.x + dx, plr->where.y + dy, *sectors, plr->num_scts);
-	printf("%u\n", flag);
-	if (flag >= 0 && flag < plr->num_scts)
+	unsigned	j;
+	t_sector	*tmp;
+	t_xy		*vt;
+
+	px = plr->where.x;
+	py = plr->where.y;
+	sect = &(*sectors)[plr->sector];
+	vert = sect->vertex;
+	i = 0;
+	plr->where.x += dx;
+	plr->where.y += dy;
+	while (i < sect->npoints)
 	{
-		plr->where.x += dx;
-		plr->where.y += dy;
-		plr->sector = flag;
+		//printf("nb: %d\n", sect->neighbors[i]);
+		if (	sect->neighbors[i] >= 0
+				&&
+				intersect_box(px, py, px + dx, py + dy,
+						vert[i + 0].x,
+						vert[i + 0].y,
+						vert[i + 1].x,
+						vert[i + 1].y)
+				&&
+				point_side(px + dx, py + dy,
+						vert[i + 0].x,
+						vert[i + 0].y,
+						vert[i + 1].x,
+						vert[i + 1].y) < 0)
+		{
+			int flag = move_or_not(plr->where, (*sectors)[sect->neighbors[i]], sect->neighbors[i]);
+			if (flag >= 0 && flag < plr->num_scts)
+				plr->sector = sect->neighbors[i];
+			else if (flag == -1)
+			{
+				plr->where.x -= dx;
+				plr->where.y -= dy;
+			}
+			printf("Moved to another sector ");
+			printf("| curr sec: %d\n",plr->sector);
+			break ;
+		}
+		i++;
 	}
 	plr->anglesin = sinf(plr->angle);
 	plr->anglecos = cosf(plr->angle);

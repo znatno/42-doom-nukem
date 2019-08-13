@@ -39,10 +39,11 @@ void		events(t_sector **sectors, t_player *plr)
 				printf("\n\t---------------------------\n");
 				printf("\t\t\t[print msg]\n");
 				// поточний сектор
-				printf("\tcurr sec: %d\n",plr->sector);
+				//printf("\tcurr sec: %d\n",plr->sector);
 				// поточна позиція
-				printf("\tx: %f\t\ty: %f\t\tz: %f\n",
-						plr->where.x, plr->where.y, plr->where.z);
+				//printf("\tx: %f\t\ty: %f\t\tz: %f\n",
+				//		plr->where.x, plr->where.y, plr->where.z);
+
 				printf("\n\t---------------------------\n\n");
 			}
 		}
@@ -106,46 +107,10 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 			plr->moving = 1;
 		else // для рівномірного руху
 			plr->moving = 0;
-
 		draw_screen(sectors, *plr);
 		SDL_UpdateWindowSurface(sdl->window);
-		SDL_Delay(10);
+		SDL_Delay(15);
 	}
-}
-
-void	print_all_edge(t_sector sector)
-{
-	for (int i = 0; i < sector.npoints; i++)
-	{
-		printf("edge[%i] x = %f | y = %f\n", i ,sector.vertex[i].x, sector.vertex[i].y);
-	}
-}
-
-int		move_or_not(float p_x , float p_y, t_sector *sectors, unsigned int num_sect)
-{
-	t_xy	xy[2];
-	int res = 0;
-	float sum_angles = 0;
-	float cur_angle = 0;
-	for (int i = 0; i < num_sect; i++)
-	{
-		sum_angles = 0;
-		for (int j = 0; j < sectors[i].npoints; j++)
-		{
-//			print_all_edge(sectors[i]);
-			xy[0] = vv_to_v(p_x, p_y,sectors[i].vertex[j].x, sectors[i].vertex[j].y);
-			xy[1] = vv_to_v(p_x, p_y, sectors[i].vertex[j + 1].x, sectors[i].vertex[j + 1].y);
-			cur_angle = ANGLE_V0_V1(xy[0], xy[1]);
-			if (vector_product(xy[0], xy[1]) > 0)
-				sum_angles += cur_angle;
-			else
-				sum_angles -= cur_angle;
-		}
-		if (sum_angles >= 359.0 && sum_angles <= 361.0)
-			return (i);
-//		printf("Angle_sum of sector[%d] = %f\n\n", i, sum_angles);
-	}
-	return (-1);
 }
 
 int 		main(void)
@@ -153,8 +118,6 @@ int 		main(void)
 	t_player	plr;
 	t_sdl_main	sdl;
 	t_sector	*sectors;
-	int 		*buffer;
-	//int		request;
 
 	sectors = NULL;
 	plr = (t_player){ .ground = 0, .falling = 1, .moving = 0, .ducking = 0 };
@@ -166,7 +129,6 @@ int 		main(void)
 
 	if (SDL_Init(SDL_INIT_EVERYTHING != 0))
 		printf("init");
-	//request = SDL_GetDesktopDisplayMode(0, &sdl.display_mode);
 	sdl.window = SDL_CreateWindow("Doom Nukem", SDL_WINDOWPOS_CENTERED,
 			SDL_WINDOWPOS_CENTERED, W, H,  SDL_WINDOW_SHOWN);
 	if (!sdl.window)
