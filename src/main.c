@@ -14,7 +14,7 @@ void save_sector(t_env *env, t_draw *draw)
 	else
 	{
 		add_sector_to_list(temp, draw);
-		print_all_sectors(draw, temp);
+//		print_all_sectors(draw, temp);
 	}
 
 	//free(temp);
@@ -84,9 +84,30 @@ void draw_vertex(t_env *env, t_draw *draw)
 						  ROUND(draw->temp.y));
 }
 
-void 		select_sector_mode(t_env *env, t_draw *draw)
+void 		select_sector_mode(t_env *env, t_draw *draw, int key)
 {
-	return ;
+	t_sector 	*cur_s;
+	t_vertex 	*cur_v;
+	int 		i;
+//    (draw->head->next == NULL) ? (cur_s = draw->head) : (cur_s = NULL);
+	cur_s = draw->head;
+	clear_screen(env);
+	draw_desk(env);
+	i = 0;
+	while (draw->head != NULL && cur_s)
+	{
+		i++;
+		cur_v = cur_s->vertexes;
+		while (cur_v)
+		{
+			if (i == key)
+			line(cur_v->xy1, cur_v->xy2, env, 0xFFFFFF);
+			else
+				line(cur_v->xy1, cur_v->xy2, env, 0xFF00FF);
+			cur_v = cur_v->next;
+		}
+		cur_s = cur_s->next;
+	}
 }
 
 t_env *sdl_main_loop(t_env *env)
@@ -95,12 +116,15 @@ t_env *sdl_main_loop(t_env *env)
 	t_draw *draw;
 	SDL_Event ev;
 	int loop;
+	int cur_s;
 
 
 	draw = init_draw(draw);
 	draw_desk(env);
 	loop = 1;
 	draw->s_mode = false;
+	draw->s_count = 0;
+	cur_s = 0;
 	while (loop && env->sdl_error == NONE)
 	{
 		kstate = SDL_GetKeyboardState(NULL);
@@ -124,9 +148,25 @@ t_env *sdl_main_loop(t_env *env)
 				else if (kstate[SDL_SCANCODE_S])
 				{
 					draw->s_mode = (draw->s_mode) ? 0 : 1;
-					if (draw->s_mode)
-						select_sector_mode(env, draw);
 				}
+				else if (kstate[SDL_SCANCODE_RIGHT] && draw->s_mode)
+				{
+					if (draw->s_count > 1)
+						cur_s += (draw->s_count > cur_s) ? 1 : (-cur_s + 1);
+					else
+						cur_s = 1;
+					printf("%d\n",cur_s);
+						select_sector_mode(env, draw, cur_s);
+				}
+//				else if (kstate[SDL_SCANCODE_LEFT] && draw->s_mode)
+//				{
+//					if (draw->s_count > cur_s && cur_s > 1)
+//						cur_s -= 1;
+//					else
+//						cur_s = 1;
+//					printf("%d\n",cur_s);
+////						select_sector_mode(env, draw);
+//				}
 			}
 			if (ev.type == SDL_MOUSEBUTTONDOWN && !draw->s_mode)
 			{
@@ -136,6 +176,7 @@ t_env *sdl_main_loop(t_env *env)
 				}
 			}
 		}
+//		printf("SECTORS = %d\n", draw->s_count);
 		draw_frame(env);
 		SDL_UpdateTexture(env->texture, NULL, env->buffer,
 						  W_WIDTH * (sizeof(int)));

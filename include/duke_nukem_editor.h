@@ -111,6 +111,7 @@ typedef struct s_draw
     t_xy f_p[256];
     t_xy temp;
     int counter;
+  	int s_count;
     bool s_mode;
     char key;
 } t_draw;

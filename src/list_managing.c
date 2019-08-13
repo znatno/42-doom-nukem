@@ -67,6 +67,7 @@ void            add_sector_to_list(t_sector *temp, t_draw *draw) {
     temp->vertexes->next = NULL;
     temp->vertexes = head;
     temp->next = NULL;
+	draw->s_count++;
 }
 
 void            delete_sector_from_list(t_draw *draw)
@@ -90,6 +91,7 @@ void            delete_sector_from_list(t_draw *draw)
         cur_s = NULL;
         draw->head = NULL;
         free(cur_s);
+		draw->s_count--;
         return ;
     }
     while (cur_s->next->next != NULL)
@@ -105,6 +107,7 @@ void            delete_sector_from_list(t_draw *draw)
     }
     del_me = cur_s->next;
     cur_s->next = NULL;
+	draw->s_count--;
     free(del_me);
 }
 
@@ -138,4 +141,5 @@ void            create_sectors_list(t_env *env, t_draw *draw, t_sector *temp)
     temp->vertexes = head;
     temp->next = NULL;
     draw->head = temp;
+    draw->s_count++;
 }
