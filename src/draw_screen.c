@@ -3,14 +3,34 @@
 /*                                                        :::      ::::::::   */
 /*   draw_screen.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggavryly <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/02 21:38:26 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/02 21:38:27 by ggavryly         ###   ########.fr       */
+/*   Updated: 2019/08/13 15:57:42 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "doom_nukem.h"
+
+void	print_player_pos(t_player *p)
+{
+	printf("\n-------------------------------\n");
+	printf("| x = %5f | y = %5f |\n", p->where.x, p->where.y);
+	printf("-------------------------------\n");
+}
+
+void	print_data_ds(t_player *p)
+{
+	printf("\n---------------------\n");
+	printf("| player_x = %5f | player_y = %5f |\n", p->where.x, p->where.y);
+	printf("| vlct_x = %5f | vlct_y = %5f | vlct_z = %5f|\n", p->vlct.x, p->vlct.y, p->vlct.z);
+	printf("| angle = %f | ang_sin = %5f | ang_cos = %5f | yaw = %5f|\n", p->angle, p->anglesin, p->anglecos, p->yaw);
+	printf("| cur_s = %u | num_s = %u|\n", p->sector, p->num_scts);
+	printf("| ground = %i | falling = %i | moving = %i | ducking = %i | eyeheight = %5f|\n", p->ground, p->falling, p->moving, p->ducking,p->eyeheight);
+	printf("| move_x = %5f | move_y = %5f |\n", p->mv.x, p->mv.y);
+	printf("| mouse_aim_x = %i | mouse_aim_y = %i | mouse_aim_yaw = %5f |\n", p->ms.x, p->ms.y, p->ms.yaw);
+	printf("---------------------\n");
+}
 
 int		main_loop_condition(t_draw_screen_calc *ds)
 {
@@ -173,9 +193,12 @@ void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p)
 	ds->i->cyb = clamp(ds->i->yb, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // bottom
 
 	/* Render ceiling: everything above this sector's ceiling height-> */
-	vline(ds->it->x, ds->i->y_top[ds->it->x], ds->i->cya - 1, 0x222222, p);
+//	SDL_UpdateWindowSurface(p->sdl->window);
+	vline(ds->it->x, ds->i->y_top[ds->it->x], ds->i->cya - 1, 0x00333333, p);
+//	SDL_UpdateWindowSurface(p->sdl->window);
 	/* Render floor: everything below this sector's floor height-> */
-	vline(ds->it->x, ds->i->cyb + 1, ds->i->y_bottom[ds->it->x], 0x0000AA, p);
+	vline(ds->it->x, ds->i->cyb + 1, ds->i->y_bottom[ds->it->x], 0x00663333, p);
+//	SDL_UpdateWindowSurface(p->sdl->window);
 }
 
 void	render_ceil_floor(t_draw_screen_calc *ds, t_player *p)
@@ -192,11 +215,11 @@ void	render_ceil_floor(t_draw_screen_calc *ds, t_player *p)
 	ds->i->r2 = 0x010101 * (255 - ds->i->z); // bottom portal wall color
 
 	vline(ds->it->x, ds->i->cya, ds->i->cnya - 1, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r1), p); // Between our and their ceiling
-
+//	SDL_UpdateWindowSurface(p->sdl->window);
 	ds->i->y_top[ds->it->x] = clamp(max(ds->i->cya, ds->i->cnya), ds->i->y_top[ds->it->x], H - 1); // Shrink the remaining window below these ceilings
 	/* If our floor is lower than their floor, render bottom wall */
 	vline(ds->it->x, ds->i->cnyb + 1, ds->i->cyb, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r2), p); // Between their and our floor
-
+//	SDL_UpdateWindowSurface(p->sdl->window);
 	ds->i->y_bottom[ds->it->x] = clamp(min(ds->i->cyb, ds->i->cnyb), 0, ds->i->y_bottom[ds->it->x]); // Shrink the remaining window above these floors
 }
 
@@ -211,6 +234,7 @@ void	render_sector(t_draw_screen_calc *ds, t_player *p)
 		/* There's no neighbor. Render wall from top (cya = ceiling level) to bottom (cyb = floor level). */
 		ds->i->r = 0x010101 * (255 - ds->i->z); // wall color = 0x010101 * (255 - ds->i->z)
 		vline(ds->it->x, ds->i->cya, ds->i->cyb, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r), p);
+//		SDL_UpdateWindowSurface(p->sdl->window);
 	}
 }
 
@@ -252,6 +276,7 @@ void	draw_screen(t_sector *sector, t_player plr)
 		ds.s->head = ds.que;
 	while (main_loop_condition(&ds))
 	{
+//		SDL_UpdateWindowSurface(plr.sdl->window);
 		pick_sector_slice(&ds);
 		if ((unsigned)ds.i->renderedsectors[ds.s->now.sectorno] & 0x21u)
 			continue; // Odd = still rendering, 0x20 = give up
@@ -272,6 +297,7 @@ void	draw_screen(t_sector *sector, t_player plr)
 				continue; // Only render if it's visible
 			/* Acquire the floor and ceiling heights, relative to where the player's view is */
 			render_sector_walls(&ds, sector, ds.que, &plr);
+//			SDL_UpdateWindowSurface(plr.sdl->window);
 		} // for s in sector's edges
 		++ds.i->renderedsectors[ds.s->now.sectorno];
 	}

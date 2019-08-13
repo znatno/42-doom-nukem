@@ -39,10 +39,11 @@ void		events(t_sector **sectors, t_player *plr)
 				printf("\n\t---------------------------\n");
 				printf("\t\t\t[print msg]\n");
 				// поточний сектор
-				printf("\tcurr sec: %d\n",plr->sector);
+				//printf("\tcurr sec: %d\n",plr->sector);
 				// поточна позиція
-				printf("\tx: %f\t\ty: %f\t\tz: %f\n",
-						plr->where.x, plr->where.y, plr->where.z);
+				//printf("\tx: %f\t\ty: %f\t\tz: %f\n",
+				//		plr->where.x, plr->where.y, plr->where.z);
+
 				printf("\n\t---------------------------\n\n");
 			}
 		}
@@ -106,11 +107,8 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 			plr->moving = 1;
 		else // для рівномірного руху
 			plr->moving = 0;
-
 		draw_screen(sectors, *plr);
-		SDL_UpdateTexture(sdl->texture, NULL, sdl->buffer,W *(sizeof(int)));
-		SDL_RenderCopy(sdl->renderer, sdl->texture, NULL, NULL);
-		SDL_RenderPresent(sdl->renderer);
+		SDL_UpdateWindowSurface(sdl->window);
 		SDL_Delay(15);
 	}
 }
@@ -120,14 +118,10 @@ int 		main(void)
 	t_player	plr;
 	t_sdl_main	sdl;
 	t_sector	*sectors;
-	int 		*buffer;
-	//int		request;
 
 	sectors = NULL;
-	buffer = (int *)malloc(sizeof(int) * W * H);
 	plr = (t_player){ .ground = 0, .falling = 1, .moving = 0, .ducking = 0 };
 	plr.key = (t_keys){ .w = 0, .s = 0, .a = 0, .d = 0 };
-	sdl.buffer = buffer;
 	plr.sdl = &sdl;
 	plr.num_scts = 0;
 
@@ -135,15 +129,11 @@ int 		main(void)
 
 	if (SDL_Init(SDL_INIT_EVERYTHING != 0))
 		printf("init");
-	//request = SDL_GetDesktopDisplayMode(0, &sdl.display_mode);
 	sdl.window = SDL_CreateWindow("Doom Nukem", SDL_WINDOWPOS_CENTERED,
 			SDL_WINDOWPOS_CENTERED, W, H,  SDL_WINDOW_SHOWN);
 	if (!sdl.window)
 		printf("win");
-	sdl.renderer = SDL_CreateRenderer(sdl.window, -1, SDL_RENDERER_ACCELERATED);
-	if (!sdl.renderer)
-		printf("renderer");
-	sdl.texture = SDL_CreateTexture(sdl.renderer, SDL_PIXELFORMAT_ARGB32, SDL_TEXTUREACCESS_STREAMING, W, H);
+	sdl.w_surface = SDL_GetWindowSurface(sdl.window);
 	plr.ms.yaw = 0;
 	game_loop(&sdl, &plr, sectors);
 	SDL_DestroyWindow(sdl.window);

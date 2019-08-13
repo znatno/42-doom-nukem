@@ -34,7 +34,7 @@ void	UnloadData(t_sector **sectors, t_player *plr)
 
 void	vline(int x, int y1, int y2, int color, t_player *player)
 {
-	int *pix = (int *)player->sdl->buffer;
+	int *pix = (int *)player->sdl->w_surface->pixels;
 	y1 = clamp(y1, 0, H - 1);
 	y2 = clamp(y2, 0, H - 1);
 	if (y2 == y1)

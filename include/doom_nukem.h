@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/12 21:07:16 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/13 15:41:00 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@
 #define SEC_COLOR	0x0000ff00
 #define BLACK_COLOR	0x00
 #define FILE_NAME "../test.txt"
+#define ANGLE_V0_V1(xy0, xy1) (radian_to_grades(acosf(angle_vv(scalar_product(xy0, xy1), len_vector(xy0), len_vector(xy1)))))
 
 //	Utility functions. Because C doesn't have templates,
 //	we use the slightly less safe preprocessor macros to
@@ -119,11 +120,7 @@ typedef struct			s_sdl_main
 	SDL_DisplayMode		display_mode;
 	SDL_Window			*window;
 	SDL_Renderer		*renderer;
-	SDL_Surface			*surface;
-	SDL_Texture			*texture;
-	SDL_Rect			src_rect;
-	SDL_Rect			dst_rect;
-	int					*buffer;
+	SDL_Surface			*w_surface;
 }						t_sdl_main;
 
 // Player: location
@@ -247,6 +244,13 @@ typedef struct		s_draw_screen_calc
 void			draw_screen(t_sector *sector, t_player plr);
 void 			load_data(t_player *player, t_sector **sectors);
 void			vline(int x, int y1, int y2, int color, t_player *player);
+t_xy			vv_to_v(float x0, float y0, float x1, float y1);
+float			len_vector(t_xy		free_vector);
+float			scalar_product(t_xy xy0, t_xy xy1);
+float			angle_vv(float scalar_product, float len0, float len1);
+float			radian_to_grades(float rad);
+float			vector_product(t_xy xy0, t_xy xy1);
+int				move_or_not(float p_x , float p_y, t_sector *sectors, unsigned int num_sect);
 
 /*
 **  "math_fts.c" Math functions for vectors and other things
