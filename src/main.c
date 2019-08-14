@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/12 21:39:25 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/14 20:06:59 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ void		events(t_sector **sectors, t_player *plr)
 		plr->key.a = kstate[SDL_SCANCODE_A];
 		plr->key.s = kstate[SDL_SCANCODE_S];
 		plr->key.d = kstate[SDL_SCANCODE_D];
+		plr->draw_look = kstate[SDL_SCANCODE_L];
 		if (ev.type == SDL_KEYDOWN)
 		{
 			if (ev.key.keysym.sym == ' ' && plr->ground)
@@ -39,10 +40,13 @@ void		events(t_sector **sectors, t_player *plr)
 				printf("\n\t---------------------------\n");
 				printf("\t\t\t[print msg]\n");
 				// поточний сектор
-				//printf("\tcurr sec: %d\n",plr->sector);
+				printf("\tcurr sec: %d\n",plr->sector);
 				// поточна позиція
-				//printf("\tx: %f\t\ty: %f\t\tz: %f\n",
-				//		plr->where.x, plr->where.y, plr->where.z);
+				printf("\tx: %f\t\ty: %f\t\tz: %f\n",
+						plr->where.x, plr->where.y, plr->where.z);
+				// кути погляду
+				printf("\tangle: %f\t\tyaw: %f\n",
+					   plr->angle, plr->yaw);
 
 				printf("\n\t---------------------------\n\n");
 			}
@@ -64,6 +68,10 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 	while(!quit)
 	{
+		/* Очищує буфер чорним кольором */
+		SDL_FillRect(sdl->w_surface, NULL,
+				SDL_MapRGB(sdl->w_surface->format, 0, 0, 0));
+
 		events(&sectors, plr);
 
 		plr->eyeheight = plr->ducking ? DuckHeight : EyeHeight; /* Vertical collision detection */

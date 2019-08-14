@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/02 21:38:26 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/13 15:57:42 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/14 19:44:24 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -215,7 +215,8 @@ void	render_ceil_floor(t_draw_screen_calc *ds, t_player *p)
 	ds->i->r2 = 0x010101 * (255 - ds->i->z); // bottom portal wall color
 
 	vline(ds->it->x, ds->i->cya, ds->i->cnya - 1, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r1), p); // Between our and their ceiling
-//	SDL_UpdateWindowSurface(p->sdl->window);
+	if (p->draw_look)
+		SDL_UpdateWindowSurface(p->sdl->window);
 	ds->i->y_top[ds->it->x] = clamp(max(ds->i->cya, ds->i->cnya), ds->i->y_top[ds->it->x], H - 1); // Shrink the remaining window below these ceilings
 	/* If our floor is lower than their floor, render bottom wall */
 	vline(ds->it->x, ds->i->cnyb + 1, ds->i->cyb, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r2), p); // Between their and our floor
@@ -232,7 +233,8 @@ void	render_sector(t_draw_screen_calc *ds, t_player *p)
 	else
 	{
 		/* There's no neighbor. Render wall from top (cya = ceiling level) to bottom (cyb = floor level). */
-		ds->i->r = 0x010101 * (255 - ds->i->z); // wall color = 0x010101 * (255 - ds->i->z)
+		ds->i->r = 0x00ff0000 * (255 - ds->i->z); // wall color = 0x010101 *
+		// (255 - ds->i->z)
 		vline(ds->it->x, ds->i->cya, ds->i->cyb, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r), p);
 //		SDL_UpdateWindowSurface(p->sdl->window);
 	}

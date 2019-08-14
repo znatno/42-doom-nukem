@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/13 15:41:00 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/14 19:58:27 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,6 +146,8 @@ typedef struct		s_player
 	float			aclrt;		// acceleration / прискорення
 	t_xy_i			ms;			// mouse aiming
 	t_sdl_main		*sdl;
+
+	bool			draw_look; // для перегляду відмальовування полінійно
 }					t_player;
 
 typedef struct	s_tmp_iter
@@ -250,7 +252,7 @@ float			scalar_product(t_xy xy0, t_xy xy1);
 float			angle_vv(float scalar_product, float len0, float len1);
 float			radian_to_grades(float rad);
 float			vector_product(t_xy xy0, t_xy xy1);
-int				move_or_not(float p_x , float p_y, t_sector *sectors, unsigned int num_sect);
+int				move_or_not(t_xyz where ,t_sector sector, unsigned sect_num);
 
 /*
 **  "math_fts.c" Math functions for vectors and other things

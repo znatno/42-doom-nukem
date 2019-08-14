@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:00:35 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/12 21:31:12 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/13 20:44:35 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,11 +42,11 @@ int		move_or_not(t_xyz where ,t_sector sector, unsigned sect_num)
 
 void	move_player(t_player *plr, t_sector **sectors, float dx, float dy)
 {
-	int			flag;
-
-	unsigned	j;
-	t_sector	*tmp;
-	t_xy		*vt;
+	t_sector	*sect;
+	t_xy		*vert;
+	float		px;
+	float		py;
+	unsigned	i;
 
 	px = plr->where.x;
 	py = plr->where.y;
