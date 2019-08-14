@@ -116,6 +116,7 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 int 		main(void)
 {
 	t_player	plr;
+	t_textures	tex;
 	t_sdl_main	sdl;
 	t_sector	*sectors;
 
@@ -123,9 +124,11 @@ int 		main(void)
 	plr = (t_player){ .ground = 0, .falling = 1, .moving = 0, .ducking = 0 };
 	plr.key = (t_keys){ .w = 0, .s = 0, .a = 0, .d = 0 };
 	plr.sdl = &sdl;
+	sdl.textures = &tex;
 	plr.num_scts = 0;
 
 	load_data(&plr, &sectors);
+	textures_init(&sdl);
 
 	if (SDL_Init(SDL_INIT_EVERYTHING != 0))
 		printf("init");
@@ -133,7 +136,7 @@ int 		main(void)
 			SDL_WINDOWPOS_CENTERED, W, H,  SDL_WINDOW_SHOWN);
 	if (!sdl.window)
 		printf("win");
-	sdl.w_surface = SDL_GetWindowSurface(sdl.window);
+	sdl.win_surface = SDL_GetWindowSurface(sdl.window);
 	plr.ms.yaw = 0;
 	game_loop(&sdl, &plr, sectors);
 	SDL_DestroyWindow(sdl.window);

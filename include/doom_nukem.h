@@ -40,7 +40,14 @@
 #define BLACK_COLOR 0x00
 #define ANGLE_V0_V1(xy0, xy1) (radian_to_grades(acosf(angle_vv(scalar_product(xy0, xy1), len_vector(xy0), len_vector(xy1)))))
 #define FILE_NAME "map-clear.txt"
-
+#define RED					0
+#define GREEN				1
+#define BLUE				2
+#define TOP_PORTAL_WALL	0
+#define BOTTOM_PORTAL_WALL 1
+#define FULL_WALL			2
+#define CEIL				3
+#define FLOOR				4
 //	Utility functions. Because C doesn't have templates,
 //	we use the slightly less safe preprocessor macros to
 //	implement these functions that work with multiple types.
@@ -115,12 +122,19 @@ typedef struct		s_move_vec
 	float 			y;
 }					t_move_vec;
 
+typedef struct		s_textures
+{
+	SDL_Surface		**arr_tex;
+}					t_textures;
+
+
 typedef struct			s_sdl_main
 {
 	SDL_DisplayMode		display_mode;
 	SDL_Window			*window;
 	SDL_Renderer		*renderer;
-	SDL_Surface			*w_surface;
+	SDL_Surface			*win_surface;
+	t_textures			*textures;
 }						t_sdl_main;
 
 // Player: location
@@ -190,6 +204,7 @@ typedef struct	s_calc_tmp_float
 	float yfloor;
 	float nyceil;
 	float nyfloor;
+	float perc_light;
 }				t_calc_tmp_float;
 
 typedef struct	s_calc_tmp_int
@@ -255,11 +270,10 @@ typedef struct		s_draw_screen_calc
 void		draw_screen(t_sector *sector, t_player plr);
 void 		load_data(t_player *player, t_sector **sectors);
 char		*ft_itof(long double k);
-void		vline(int x, int y1, int y2, int color, t_player *player);
+void	vline(int y1, int y2, int color, t_player *player, t_draw_screen_calc *ds);
 t_xy Intersect(float x1, float y1, float x2, float y2, float x3, float y3,
 			   float x4, float y4);
 void					init_sdl(t_sdl_main *sdl);
-SDL_Texture				*load_texture(char *path, t_sdl_main *sdl);
 t_xy	vv_to_v(float x0, float y0, float x1, float y1);
 float	len_vector(t_xy		free_vector);
 float	scalar_product(t_xy xy0, t_xy xy1);
@@ -267,6 +281,9 @@ float	angle_vv(float scalar_product, float len0, float len1);
 float	radian_to_grades(float rad);
 float	vector_product(t_xy xy0, t_xy xy1);
 int		move_or_not(t_xyz where ,t_sector sector, unsigned sect_num);
+void	textures_init(t_sdl_main *sdl);
+float		percentage(int start, int end, int curr);
+void	render(int draw_mode ,int texture_num, t_player *p, t_draw_screen_calc *ds);
 
 /*
 **  "math_fts.c" Math functions for vectors and other things

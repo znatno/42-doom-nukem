@@ -185,6 +185,8 @@ void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p)
 	/* Calculate the Z coordinate for this point. (Only used for lighting.) */
 	ds->i->z = (int)roundf(((ds->it->x - ds->i->x1) * (ds->f->tz2-ds->f->tz1) / (ds->i->x2-ds->i->x1) + ds->f->tz1) * 8);
 	ds->i->z = (ds->i->z > 250) ? (250) : (ds->i->z);
+
+	ds->f->perc_light = percentage(250, 0, ds->i->z); //light percent by ds-i->z
 	/* Acquire the Y coordinates for our ceiling & floor for this X coordinate-> Clamp them-> */
 	ds->i->ya = (ds->it->x - ds->i->x1) * (ds->i->y2a - ds->i->y1a) / (ds->i->x2 - ds->i->x1) + ds->i->y1a;
 	ds->i->cya = clamp(ds->i->ya, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // top
@@ -194,10 +196,10 @@ void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p)
 
 	/* Render ceiling: everything above this sector's ceiling height-> */
 //	SDL_UpdateWindowSurface(p->sdl->window);
-	vline(ds->it->x, ds->i->y_top[ds->it->x], ds->i->cya - 1, 0x00333333, p);
+	render(CEIL, 0, p, ds);
 //	SDL_UpdateWindowSurface(p->sdl->window);
 	/* Render floor: everything below this sector's floor height-> */
-	vline(ds->it->x, ds->i->cyb + 1, ds->i->y_bottom[ds->it->x], 0x00663333, p);
+	render(FLOOR, 0, p, ds);
 //	SDL_UpdateWindowSurface(p->sdl->window);
 }
 
@@ -214,11 +216,11 @@ void	render_ceil_floor(t_draw_screen_calc *ds, t_player *p)
 	ds->i->r1 = 0x010101 * (255 - ds->i->z); // top portal wall color
 	ds->i->r2 = 0x010101 * (255 - ds->i->z); // bottom portal wall color
 
-	vline(ds->it->x, ds->i->cya, ds->i->cnya - 1, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r1), p); // Between our and their ceiling
+	render(TOP_PORTAL_WALL, 0, p, ds); // Between our and their ceiling TODO:texture_mapping
 //	SDL_UpdateWindowSurface(p->sdl->window);
 	ds->i->y_top[ds->it->x] = clamp(max(ds->i->cya, ds->i->cnya), ds->i->y_top[ds->it->x], H - 1); // Shrink the remaining window below these ceilings
 	/* If our floor is lower than their floor, render bottom wall */
-	vline(ds->it->x, ds->i->cnyb + 1, ds->i->cyb, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r2), p); // Between their and our floor
+	render(BOTTOM_PORTAL_WALL, 0, p, ds); // Between their and our floor
 //	SDL_UpdateWindowSurface(p->sdl->window);
 	ds->i->y_bottom[ds->it->x] = clamp(min(ds->i->cyb, ds->i->cnyb), 0, ds->i->y_bottom[ds->it->x]); // Shrink the remaining window above these floors
 }
@@ -233,7 +235,8 @@ void	render_sector(t_draw_screen_calc *ds, t_player *p)
 	{
 		/* There's no neighbor. Render wall from top (cya = ceiling level) to bottom (cyb = floor level). */
 		ds->i->r = 0x010101 * (255 - ds->i->z); // wall color = 0x010101 * (255 - ds->i->z)
-		vline(ds->it->x, ds->i->cya, ds->i->cyb, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r), p);
+		printf("%d\n", ds->i->z);
+		render(FULL_WALL, 0, p, ds);
 //		SDL_UpdateWindowSurface(p->sdl->window);
 	}
 }
@@ -272,7 +275,7 @@ void	draw_screen(t_sector *sector, t_player plr)
 	ds.s->tail = ds.que;
 
 	init_draw(&ds, plr);
-	if (++ds.s->head  == ds.que + MaxQue)
+	if (++ds.s->head == ds.que + MaxQue)
 		ds.s->head = ds.que;
 	while (main_loop_condition(&ds))
 	{
