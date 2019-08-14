@@ -70,30 +70,46 @@ void            add_sector_to_list(t_sector *temp, t_draw *draw) {
 	draw->s_count++;
 }
 
+t_sector 		*check_if_deleted_sector(t_draw *draw,  t_vertex *tmp,
+		t_vertex *cur_v, t_sector *cur_s)
+{
+	if (!(cur_s = draw->head))
+		return(NULL);
+	if (cur_s->next == NULL)
+	{
+		cur_v = cur_s->vertexes;
+		while (cur_v != NULL)
+		{
+			tmp = cur_v->next;
+			free(cur_v);
+			cur_v = tmp;
+		}
+		cur_s = NULL;
+		draw->head = NULL;
+		free(cur_s);
+		draw->s_count--;
+		return (NULL);
+	}
+	return(cur_s);
+}
+
+void			free_sect(t_draw *draw, t_sector *del_me, t_sector *cur_s)
+{
+	del_me = cur_s->next;
+	cur_s->next = NULL;
+	draw->s_count--;
+	free(del_me);
+}
+
 void            delete_sector_from_list(t_draw *draw)
 {
     t_sector *cur_s;
-    t_vertex *cur_v;
-    t_sector *del_me;
+	t_vertex *cur_v;
+	t_sector *del_me;
     t_vertex *tmp;
 
-    if (!(cur_s = draw->head))
-        return ;
-    if (cur_s->next == NULL)
-    {
-        cur_v = cur_s->vertexes;
-        while (cur_v != NULL)
-        {
-            tmp = cur_v->next;
-            free(cur_v);
-            cur_v = tmp;
-        }
-        cur_s = NULL;
-        draw->head = NULL;
-        free(cur_s);
-		draw->s_count--;
-        return ;
-    }
+	if (!(cur_s = check_if_deleted_sector(draw, tmp, cur_v, cur_s)))
+		return ;
     while (cur_s->next->next != NULL)
     {
         cur_s = cur_s->next;
@@ -105,10 +121,7 @@ void            delete_sector_from_list(t_draw *draw)
         free(cur_v);
         cur_v = tmp;
     }
-    del_me = cur_s->next;
-    cur_s->next = NULL;
-	draw->s_count--;
-    free(del_me);
+    free_sect(draw, del_me, cur_s);
 }
 
 

@@ -25,7 +25,6 @@ void redraw_screen(t_draw *draw, t_env *env)
 	t_sector *cur_s;
 	t_vertex *cur_v;
 
-//    (draw->head->next == NULL) ? (cur_s = draw->head) : (cur_s = NULL);
 	cur_s = draw->head;
 	delete_sector_from_list(draw);
 	clear_screen(env);

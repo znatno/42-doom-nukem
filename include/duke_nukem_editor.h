@@ -158,6 +158,11 @@ void            delete_sector_from_list(t_draw *draw);
 
 void            create_sectors_list(t_env *env, t_draw *draw, t_sector *temp);
 
+void			free_sect(t_draw *draw, t_sector *del_me, t_sector *cur_s);
+
+t_sector 		*check_if_deleted_sector(t_draw *draw,  t_vertex *tmp,
+										 t_vertex *cur_v, t_sector *cur_s);
+
 #endif
 
 
