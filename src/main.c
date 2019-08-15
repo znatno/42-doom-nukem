@@ -119,6 +119,8 @@ int 		main(void)
 	t_textures	tex;
 	t_sdl_main	sdl;
 	t_sector	*sectors;
+	int audio_rate = 22050; Uint16 audio_format = AUDIO_S16SYS; int audio_channels = 2; int audio_buffers = 4096;
+	Mix_Chunk *sound = NULL;
 
 	sectors = NULL;
 	plr = (t_player){ .ground = 0, .falling = 1, .moving = 0, .ducking = 0 };
@@ -136,6 +138,11 @@ int 		main(void)
 			SDL_WINDOWPOS_CENTERED, W, H,  SDL_WINDOW_SHOWN);
 	if (!sdl.window)
 		printf("win");
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) { fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError()); return 1; }
+	if(Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers) != 0) { fprintf(stderr, "Unable to initialize audio: %s\n", Mix_GetError()); exit(1); }
+	sound = Mix_LoadWAV("../bestmusic.wav"); if(sound == NULL) { fprintf(stderr, "Unable to load WAV file: %s\n", Mix_GetError()); }
+	if (sound == NULL)
+		return 0;
 	sdl.win_surface = SDL_GetWindowSurface(sdl.window);
 	plr.ms.yaw = 0;
 	game_loop(&sdl, &plr, sectors);
