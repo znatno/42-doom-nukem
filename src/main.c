@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/14 20:06:59 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/15 18:38:33 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,8 @@ void		events(t_sector **sectors, t_player *plr)
 		plr->draw_look = kstate[SDL_SCANCODE_L];
 		if (ev.type == SDL_KEYDOWN)
 		{
-			if (ev.key.keysym.sym == ' ' && plr->ground)
+			if (ev.key.keysym.sym == ' ' && plr->ground
+				&& plr->where.z == (*sectors)[plr->sector].floor + EyeHeight)
 			{
 				plr->vlct.z += 0.5;
 				plr->falling = 1;
@@ -40,7 +41,9 @@ void		events(t_sector **sectors, t_player *plr)
 				printf("\n\t---------------------------\n");
 				printf("\t\t\t[print msg]\n");
 				// поточний сектор
-				printf("\tcurr sec: %d\n",plr->sector);
+				printf("\tcurr sec: %d\n", plr->sector);
+				printf("\tceil: %f\n", (*sectors)[plr->sector].ceil);
+				printf("\tfloor: %f\n\n", (*sectors)[plr->sector].floor);
 				// поточна позиція
 				printf("\tx: %f\t\ty: %f\t\tz: %f\n",
 						plr->where.x, plr->where.y, plr->where.z);
@@ -51,9 +54,10 @@ void		events(t_sector **sectors, t_player *plr)
 				printf("\n\t---------------------------\n\n");
 			}
 		}
-		plr->ducking = kstate[SDL_SCANCODE_LCTRL];
+		plr->ducking = kstate[SDL_SCANCODE_LCTRL]; //todo вставати після KEY_UP
 		if (plr->ducking)
 			plr->falling = 1;
+
 
 		SDL_PumpEvents(); // обработчик событий
 	}
@@ -68,13 +72,25 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 	while(!quit)
 	{
+		//printf("x: %d\ty: %d\n", plr->ms.x, plr->ms.y);
+
 		/* Очищує буфер чорним кольором */
-		SDL_FillRect(sdl->w_surface, NULL,
-				SDL_MapRGB(sdl->w_surface->format, 0, 0, 0));
+		//SDL_FillRect(sdl->w_surface, NULL,
+		//		SDL_MapRGB(sdl->w_surface->format, 0, 0, 0));
 
+		/* Key Events */
 		events(&sectors, plr);
+		//printf("fall: %d\tground: %d\n", plr->falling, plr->ground);
 
-		plr->eyeheight = plr->ducking ? DuckHeight : EyeHeight; /* Vertical collision detection */
+		//printf("DUCK: %d \n",plr->ducking);
+		if (plr->ducking || sectors[plr->sector].ceil < plr->where.z + EyeHeight)
+		{
+			plr->eyeheight = DuckHeight;
+			plr->ducking = true;
+		}
+		else if (plr->eyeheight != EyeHeight)
+			plr->eyeheight += 0.5f;
+		/* Vertical collision detection */
 		plr->ground = !plr->falling;
 		if (plr->falling) //TODO: make ducking unreversable if стеля згори
 			do_fall(plr, &sectors);
@@ -113,9 +129,10 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 		plr->vlct.y = plr->vlct.y * (1 - plr->aclrt) + plr->mv.y * plr->aclrt;
 		if (plr->pushing)
 			plr->moving = 1;
-		else // для рівномірного руху
-			plr->moving = 0;
+		/*else // припинення ходьби після відтиску клавіші
+			plr->moving = 0;*/
 		draw_screen(sectors, *plr);
+		//putmsg("Game Started");
 		SDL_UpdateWindowSurface(sdl->window);
 		SDL_Delay(15);
 	}
@@ -128,7 +145,8 @@ int 		main(void)
 	t_sector	*sectors;
 
 	sectors = NULL;
-	plr = (t_player){ .ground = 0, .falling = 1, .moving = 0, .ducking = 0 };
+	plr = (t_player){ .ground = 0, .falling = 1, .moving = 0, .ducking = 0,
+						.eyeheight = EyeHeight };
 	plr.key = (t_keys){ .w = 0, .s = 0, .a = 0, .d = 0 };
 	plr.sdl = &sdl;
 	plr.num_scts = 0;

@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/14 19:58:27 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/15 18:13:02 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,9 @@
 /* Define window size */
 #define W 640
 #define H 480
-#define Yaw(y, z) (y + z * plr.yaw)
-#define MaxQue	32
+
+#define Yaw(y, z) (y + z * plr.yaw) // Y-axis angle of player camera
+#define MaxQue	32			// max num of sectors what will be rendered
 #define EyeHeight  6		// Camera height from floor when standing
 #define DuckHeight 2.5		// And when crouching
 #define HeadMargin 1		// How much room there is above camera before the head hits the ceiling

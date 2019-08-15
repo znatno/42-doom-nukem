@@ -80,7 +80,7 @@ t_posf	atof_posf(const char *s, t_posf posf)
 	}
 
 	posf.value *= sign;
-	return posf;
+	return (posf);
 }
 
 void	reader(char *line, int fd, t_player *p, t_sector **sectors)
