@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/15 18:13:02 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/15 18:13:56 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,6 +139,7 @@ typedef struct		s_player
 	int				falling;
 	int				moving;
 	int				ducking;	// присяд
+	int 			run;		// пришвидшення
 	float			eyeheight;
 	t_keys			key;		// WASD провірка натиску клавіш
 	t_move_vec		mv;			// вектор руху

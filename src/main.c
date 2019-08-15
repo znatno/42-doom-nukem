@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/15 18:38:33 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/15 18:52:21 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,15 @@ void		events(t_sector **sectors, t_player *plr)
 				printf("\n\t---------------------------\n\n");
 			}
 		}
-		plr->ducking = kstate[SDL_SCANCODE_LCTRL]; //todo вставати після KEY_UP
+		plr->ducking = kstate[SDL_SCANCODE_LCTRL];
 		if (plr->ducking)
 			plr->falling = 1;
-
-
+		plr->run = kstate[SDL_SCANCODE_LSHIFT];
+		/*if (plr->run)
+			plr->speed = 0.4f;
+		else
+			plr->speed = 0.2f;*/
+		plr->speed = plr->run ? 0.3f : 0.2f;
 		SDL_PumpEvents(); // обработчик событий
 	}
 }
@@ -83,15 +87,16 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 		//printf("fall: %d\tground: %d\n", plr->falling, plr->ground);
 
 		//printf("DUCK: %d \n",plr->ducking);
-		if (plr->ducking || sectors[plr->sector].ceil < plr->where.z + EyeHeight)
+
+		if (plr->ducking || sectors[plr->sector].ceil < plr->where.z + HeadMargin)
 		{
 			plr->eyeheight = DuckHeight;
 			plr->ducking = true;
+			plr->speed /= 2;
 		}
 		else if (plr->eyeheight != EyeHeight)
 			plr->eyeheight += 0.5f;
-		/* Vertical collision detection */
-		plr->ground = !plr->falling;
+		plr->ground = !plr->falling; /* Vertical collision detection */
 		if (plr->falling) //TODO: make ducking unreversable if стеля згори
 			do_fall(plr, &sectors);
 		if (plr->moving) /* Horizontal collision detection */
@@ -106,9 +111,8 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 
 		plr->mv = (t_move_vec){.x = 0.f, .y = 0.f};
 		move_player(plr, &sectors, 0, 0);
-		plr->speed = 0.2f;
-		if (plr->ducking)
-			plr->speed /= 2;
+
+
 
 		if (plr->key.w)
 			plr->mv = (t_move_vec){.x = plr->mv.x + plr->anglecos * plr->speed,
