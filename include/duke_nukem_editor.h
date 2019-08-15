@@ -22,34 +22,6 @@
 #define W_DRAW 1400
 #define H_DRAW 800
 
-#ifndef UKR_LANG
-# define UKR_LANG
-
-#define СЛАВА_УКРАЇНІ(x) main(x)
-#define ГЕРОЯМ_СЛАВА(x) return(x)
-
-#define гривня int
-#define буква char
-#define гривня_з_копійками double
-#define ніхріна void
-#define дофіга(x) x*
-
-#define от_стільки =
-#define так_само ==
-#define більше >
-#define менше <
-#define нарощувати(x) x++
-
-#define перемога if
-#define зрада else
-#define ганяти_по_колу_доки while
-
-#define червонець 10
-#define вякати printf
-
-
-#endif
-
 #define NONE 0
 #define LOOP_START 1
 # define MAX(x, y) (x >= y) ? (x) : (y)
@@ -60,6 +32,14 @@ typedef struct s_xy {
     int x;
     int y;
 } t_xy;
+
+typedef struct s_portals
+{
+	struct t_vertex *line;
+	struct t_sector *sec_a;
+	struct t_sector *sec_b;
+	struct t_portals *next;
+} t_portals;
 
 typedef struct s_line {
     int start;
@@ -108,6 +88,7 @@ typedef struct s_posf_t
 typedef struct s_draw
 {
     t_sector    *head;
+    t_portals   *portals;
     t_xy f_p[256];
     t_xy temp;
     int counter;

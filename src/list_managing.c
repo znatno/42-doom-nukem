@@ -31,12 +31,48 @@ void            print_all_sectors(t_draw *draw, t_sector *temp)
     }
 }
 
-//void            clear_screen()
+void			create_portals_head(t_draw *draw, t_sector *temp, t_vertex *cur_v, t_sector *cur_s)
+{
+	int i;
+	t_portals *head;
+
+	if (!(draw->portals = (t_portals*)malloc(sizeof(t_portals))))
+		exit(167);
+	head = draw->portals;
+	head->sec_a = temp;
+	head->sec_b = cur_s;
+	head->line = cur_v;
+	head->next = NULL;
+	draw->portals = head;
+}
+
+void			find_portal(t_draw *draw, t_sector *temp)
+{
+	t_sector *cur_s;
+	t_vertex *cur_v;
+
+	cur_s = draw->head;
+	while (cur_s)
+	{
+		cur_v = cur_s->vertexes;
+		while (cur_v) {
+			if ((temp->vertexes->xy1.x == cur_v->xy1.x && temp->vertexes->xy1.y == cur_v->xy1.y &&
+					temp->vertexes->xy2.x == cur_v->xy2.x && temp->vertexes->xy2.y == cur_v->xy2.y)
+				|| (temp->vertexes->xy1.x == cur_v->xy2.x && temp->vertexes->xy2.y == cur_v->xy1.y &&
+					temp->vertexes->xy2.x == cur_v->xy1.x &&temp->vertexes->xy2.y == cur_v->xy1.y))
+				create_portals_head(draw, temp, cur_v, cur_s);
+			cur_v = cur_v->next;
+		}
+		cur_s = cur_s->next;
+	}
+}
 
 void            add_sector_to_list(t_sector *temp, t_draw *draw) {
     int i;
     t_vertex *head;
+	t_vertex *comp;
 
+	comp = NULL;
     while (temp->next != NULL)
         temp = temp->next;
     if (!(temp->next = (t_sector*)malloc(sizeof(t_sector))))
@@ -52,8 +88,7 @@ void            add_sector_to_list(t_sector *temp, t_draw *draw) {
         temp->vertexes->xy1.y = draw->f_p[i - 1].y;
         temp->vertexes->xy2.x = draw->f_p[i].x;
         temp->vertexes->xy2.y = draw->f_p[i].y;
-//        printf("x1 = %d y1 = %d \n x2 = %d y2 = %d\n\n",
-//               temp->vertexes->xy1.x, temp->vertexes->xy1.y, temp->vertexes->xy2.x, temp->vertexes->xy2.y);
+        find_portal(draw, temp);
         if (!(temp->vertexes->next = (t_vertex*)malloc(sizeof(t_vertex))))
             exit(168);
         temp->vertexes = temp->vertexes->next;
@@ -62,8 +97,6 @@ void            add_sector_to_list(t_sector *temp, t_draw *draw) {
     temp->vertexes->xy1.y = draw->f_p[i - 1].y;
     temp->vertexes->xy2.x = draw->f_p[0].x;
     temp->vertexes->xy2.y = draw->f_p[0].y;
-//    printf("x1 = %d y1 = %d \n x2 = %d y2 = %d\n\n",
-//           temp->vertexes->xy1.x, temp->vertexes->xy1.y, temp->vertexes->xy2.x, temp->vertexes->xy2.y);
     temp->vertexes->next = NULL;
     temp->vertexes = head;
     temp->next = NULL;

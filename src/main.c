@@ -20,7 +20,32 @@ void save_sector(t_env *env, t_draw *draw)
 	//free(temp);
 }
 
-void redraw_screen(t_draw *draw, t_env *env)
+void				is_portal(t_draw *draw, t_env *env, t_vertex *cur_v)
+{
+
+}
+void 				refresh_screen(t_draw *draw, t_env *env)
+{
+	t_sector *cur_s;
+	t_vertex *cur_v;
+
+	cur_s = draw->head;
+	clear_screen(env);
+	draw_desk(env);
+	while (draw->head != NULL && cur_s)
+	{
+		cur_v = cur_s->vertexes;
+		while (cur_v)
+		{
+			is_portal(draw, env, cur_v);
+			line(cur_v->xy1, cur_v->xy2, env, 0xFF00FF);
+			cur_v = cur_v->next;
+		}
+		cur_s = cur_s->next;
+	}
+}
+
+void 				redraw_screen(t_draw *draw, t_env *env)
 {
 	t_sector *cur_s;
 	t_vertex *cur_v;
@@ -51,7 +76,7 @@ t_draw *init_draw(t_draw *draw)
 	draw->temp.x = 0;
 	draw->temp.y = 0;
 	draw->head = NULL;
-	draw->head = NULL;
+	draw->portals = NULL;
 	return (draw);
 }
 
@@ -88,7 +113,7 @@ void 		select_sector_mode(t_env *env, t_draw *draw, int key)
 	t_sector 	*cur_s;
 	t_vertex 	*cur_v;
 	int 		i;
-//    (draw->head->next == NULL) ? (cur_s = draw->head) : (cur_s = NULL);
+
 	cur_s = draw->head;
 	clear_screen(env);
 	draw_desk(env);
@@ -139,12 +164,12 @@ t_env *sdl_main_loop(t_env *env)
 					draw_vertex(env, draw);
 					draw->key = 0;
 				}
-				else if (kstate[SDL_SCANCODE_BACKSPACE] && !draw->s_mode)
+				else if (kstate[SDL_SCANCODE_BACKSPACE] && !draw->s_mode && I == 0)
 				{
 					redraw_screen(draw, env);
 					I = 0;
 				}
-				else if (kstate[SDL_SCANCODE_S])
+				else if (kstate[SDL_SCANCODE_S] && I == 0)
 				{
 					draw->s_mode = (draw->s_mode) ? 0 : 1;
 				}
@@ -216,19 +241,19 @@ t_env *sdl_init(t_env *env)
 	return (env);
 }
 
-СЛАВА_УКРАЇНІ(void)
+int main(void)
 {
 	t_env *env;
 
 	env = malloc(sizeof(t_env));
-	перемога (!(SDL_Init(SDL_INIT_EVERYTHING) < 0))
+	if (!(SDL_Init(SDL_INIT_EVERYTHING) < 0))
 	{
-		env от_стільки sdl_main_loop(sdl_init(env));
+		env = sdl_main_loop(sdl_init(env));
 	}
-	зрада
+	else
 	{
 		SDL_GetError();
 	}
 	SDL_Quit();
-	ГЕРОЯМ_СЛАВА(0);
+	return (0);
 }
