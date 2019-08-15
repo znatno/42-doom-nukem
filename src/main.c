@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/15 18:57:45 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/15 19:01:39 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void		events(t_sector **sectors, t_player *plr)
 			}
 		}
 		plr->ducking = kstate[SDL_SCANCODE_LCTRL];
-		plr->falling = plr->ducking == 1;
+		plr->falling = plr->ducking ? 1 : plr->falling;
 		plr->run = kstate[SDL_SCANCODE_LSHIFT];
 		plr->speed = plr->run ? 0.275f : 0.195f;
 		SDL_PumpEvents(); // обработчик событий
