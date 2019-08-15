@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/15 18:52:21 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/15 18:57:45 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void		events(t_sector **sectors, t_player *plr)
 				printf("\n\t---------------------------\n");
 				printf("\t\t\t[print msg]\n");
 				// поточний сектор
+				printf("\tplr->speed: %f\n\n", plr->speed);
 				printf("\tcurr sec: %d\n", plr->sector);
 				printf("\tceil: %f\n", (*sectors)[plr->sector].ceil);
 				printf("\tfloor: %f\n\n", (*sectors)[plr->sector].floor);
@@ -55,14 +56,9 @@ void		events(t_sector **sectors, t_player *plr)
 			}
 		}
 		plr->ducking = kstate[SDL_SCANCODE_LCTRL];
-		if (plr->ducking)
-			plr->falling = 1;
+		plr->falling = plr->ducking == 1;
 		plr->run = kstate[SDL_SCANCODE_LSHIFT];
-		/*if (plr->run)
-			plr->speed = 0.4f;
-		else
-			plr->speed = 0.2f;*/
-		plr->speed = plr->run ? 0.3f : 0.2f;
+		plr->speed = plr->run ? 0.275f : 0.195f;
 		SDL_PumpEvents(); // обработчик событий
 	}
 }
@@ -138,7 +134,7 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 		draw_screen(sectors, *plr);
 		//putmsg("Game Started");
 		SDL_UpdateWindowSurface(sdl->window);
-		SDL_Delay(15);
+		SDL_Delay(20);
 	}
 }
 
