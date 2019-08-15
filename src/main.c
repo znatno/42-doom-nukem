@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/15 19:01:39 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/15 20:46:12 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,11 +56,48 @@ void		events(t_sector **sectors, t_player *plr)
 			}
 		}
 		plr->ducking = kstate[SDL_SCANCODE_LCTRL];
-		plr->falling = plr->ducking ? 1 : plr->falling;
+		if (plr->ducking)
+			plr->falling = 1;
 		plr->run = kstate[SDL_SCANCODE_LSHIFT];
 		plr->speed = plr->run ? 0.275f : 0.195f;
 		SDL_PumpEvents(); // обработчик событий
 	}
+}
+
+void		showmsg(t_sdl_main *sdl)
+{
+	TTF_Font* Sans = TTF_OpenFont("Sans.ttf", 24);
+	//this opens a font style and sets a size
+
+	SDL_Color White = {255, 255, 255};
+	// this is the color in rgb format, maxing out all would give you the color
+	// white, and it will be your text's color
+
+	SDL_Surface* surfaceMessage = TTF_RenderText_Solid(Sans, "put your text here", White);
+	// as TTF_RenderText_Solid could only be used on SDL_Surface then you have
+	// to create the surface first
+
+	//SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer,surfaceMessage);
+	//now you can convert it into a texture
+
+	SDL_Rect Message_rect; //create a rect
+	Message_rect.x = 0;  //controls the rect's x coordinate
+	Message_rect.y = 0; // controls the rect's y coordinte
+	Message_rect.w = 100; // controls the width of the rect
+	Message_rect.h = 100; // controls the height of the rect
+
+	//Mind you that (0,0) is on the top left of the window/screen, think a rect as
+	// the text's box, that way it would be very simple to understance
+
+	//Now since it's a texture, you have to put RenderCopy in your game loop area,
+	// the area where the whole code executes
+
+	//SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
+	//you put the renderer's name first, the Message, the crop size(you can
+	// ignore this if you don't want to dabble with cropping), and the rect
+	// which is the size and coordinate of your texture
+
+	//Don't forget too free your surface and texture
 }
 
 void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
@@ -84,16 +121,16 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 
 		//printf("DUCK: %d \n",plr->ducking);
 
-		if (plr->ducking || sectors[plr->sector].ceil < plr->where.z + HeadMargin)
+		if (plr->ducking || sectors[plr->sector].ceil <= plr->where.z + HeadMargin)
 		{
 			plr->eyeheight = DuckHeight;
 			plr->ducking = true;
 			plr->speed /= 2;
 		}
-		else if (plr->eyeheight != EyeHeight)
-			plr->eyeheight += 0.5f;
+		//else if (plr->eyeheight != EyeHeight && !plr->ducking)
+		//	plr->eyeheight += 0.5f;
 		plr->ground = !plr->falling; /* Vertical collision detection */
-		if (plr->falling) //TODO: make ducking unreversable if стеля згори
+		if (plr->falling)
 			do_fall(plr, &sectors);
 		if (plr->moving) /* Horizontal collision detection */
 			do_move(plr, &sectors);
@@ -132,7 +169,7 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 		/*else // припинення ходьби після відтиску клавіші
 			plr->moving = 0;*/
 		draw_screen(sectors, *plr);
-		//putmsg("Game Started");
+		//showmsg("Game Loop");
 		SDL_UpdateWindowSurface(sdl->window);
 		SDL_Delay(20);
 	}

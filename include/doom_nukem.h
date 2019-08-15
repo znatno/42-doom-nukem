@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/15 18:13:56 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/15 20:36:17 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # include "SDL.h"
 # include "SDL_mixer.h"
 # include "SDL_image.h"
+# include "SDL_ttf.h"
 
 /* Define window size */
 #define W 640
@@ -135,11 +136,11 @@ typedef struct		s_player
 	float			yaw;		// Looking towards (and sin() and cos() thereof)
 	unsigned		sector;		// Which sector the player is currently in
 	unsigned int	num_scts;	// Number of Sectors
-	int				ground;
-	int				falling;
-	int				moving;
-	int				ducking;	// присяд
-	int 			run;		// пришвидшення
+	bool			ground;
+	bool			falling;
+	bool			moving;
+	bool			ducking;	// присяд
+	bool 			run;		// пришвидшення
 	float			eyeheight;
 	t_keys			key;		// WASD провірка натиску клавіш
 	t_move_vec		mv;			// вектор руху
