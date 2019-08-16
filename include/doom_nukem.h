@@ -125,6 +125,12 @@ typedef struct			s_sdl_main
 	SDL_Surface			*w_surface;
 }						t_sdl_main;
 
+typedef struct		s_sounds
+{
+	Mix_Music 		*bg_music;
+	Mix_Chunk 		*run_sound;
+}					t_sounds;
+
 // Player: location
 typedef struct		s_player
 {

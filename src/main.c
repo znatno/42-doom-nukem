@@ -27,7 +27,7 @@ void		events(t_sector **sectors, t_player *plr)
 		plr->key.s = kstate[SDL_SCANCODE_S];
 		plr->key.d = kstate[SDL_SCANCODE_D];
 		plr->draw_look = kstate[SDL_SCANCODE_L];
-		if (ev.type == SDL_KEYDOWN)
+		if (ev.type == SDL_KEYDOWN || ev.type == SDL_KEYUP)
 		{
 			if (ev.key.keysym.sym == ' ' && plr->ground
 				&& plr->where.z == (*sectors)[plr->sector].floor + EyeHeight)
@@ -105,7 +105,7 @@ void		showmsg(t_sdl_main *sdl)
 	//Don't forget too free your surface and texture
 }
 
-void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
+void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors, t_sounds *sounds)
 {
 	bool 			quit;
 
@@ -168,6 +168,11 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 		plr->aclrt = plr->pushing ? 0.4 : 0.2;
 		plr->vlct.x = plr->vlct.x * (1 - plr->aclrt) + plr->mv.x * plr->aclrt;
 		plr->vlct.y = plr->vlct.y * (1 - plr->aclrt) + plr->mv.y * plr->aclrt;
+		if (plr->pushing && !plr->ducking)
+		{
+			if (!Mix_Playing(2))
+				Mix_PlayChannel(2, sounds->run_sound, 0);
+		}
 		if (plr->pushing)
 			plr->moving = 1;
 		/*else // припинення ходьби після відтиску клавіші
@@ -179,11 +184,30 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 	}
 }
 
+t_sounds *init_music_n_sounds() {
+	int audio_rate = 42000;
+	Uint16 audio_format = AUDIO_S16SYS;
+	int audio_channels = 2;
+	int audio_buffers = 4096;
+	t_sounds *sounds;
+
+	sounds = (t_sounds *) malloc(sizeof(t_sounds));
+	SDL_Init(SDL_INIT_AUDIO);
+	Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers);
+	sounds->bg_music = Mix_LoadMUS("../bestmusic.wav");
+	sounds->run_sound = Mix_LoadWAV("../run.wav");
+	Mix_VolumeMusic(30);
+	Mix_Volume(2, 20);
+	return (sounds);
+
+}
+
 int 		main(void)
 {
 	t_player	plr;
 	t_sdl_main	sdl;
 	t_sector	*sectors;
+	t_sounds	*sounds;
 
 	sectors = NULL;
 	plr = (t_player){ .ground = 0, .falling = 1, .moving = 0, .ducking = 0,
@@ -200,9 +224,11 @@ int 		main(void)
 			SDL_WINDOWPOS_CENTERED, W, H,  SDL_WINDOW_SHOWN);
 	if (!sdl.window)
 		printf("win");
+	sounds = init_music_n_sounds();
 	sdl.w_surface = SDL_GetWindowSurface(sdl.window);
 	plr.ms.yaw = 0;
-	game_loop(&sdl, &plr, sectors);
+	Mix_PlayMusic(sounds->bg_music, 0);
+	game_loop(&sdl, &plr, sectors, sounds);
 	SDL_DestroyWindow(sdl.window);
 	SDL_Quit();
 	return (0);
