@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/16 19:30:46 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/16 19:32:03 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ void		events(t_sector **sectors, t_player *plr)
 				SDL_UpdateWindowSurface(plr->sdl->window);
 				SDL_Delay(20000);
 				exit_doom(sectors, plr);
-
 
 				printf("\n\t---------------------------\n");
 				printf("\t\t\t[print msg]\n");
@@ -224,7 +223,6 @@ int 		main(void)
 	sdl.w_surface = SDL_GetWindowSurface(sdl.window);
 	plr.ms.yaw = 0;
 	game_loop(&sdl, &plr, sectors);
-	SDL_Delay(10000);
 	SDL_DestroyWindow(sdl.window);
 	SDL_Quit();
 	return (0);

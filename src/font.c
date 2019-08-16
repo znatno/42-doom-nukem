@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/16 18:32:05 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/16 19:30:46 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/16 19:34:59 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,10 @@ SDL_Surface *renderFontToSurface(TTF_Font *font, char *text)
 	text_rect.w = textw->w;
 	text_rect.h = textw->h;
 
-	SDL_UpperBlit(textw, NULL, surface, &text_rect);
+	SDL_UpperBlit(textw, NULL, surface, NULL);
 	text_rect.x = 0;
 	text_rect.y = 0;
-	SDL_UpperBlit(textb, NULL, surface, &text_rect);
+	SDL_UpperBlit(textb, NULL, surface, NULL);
 
 	//SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
 
