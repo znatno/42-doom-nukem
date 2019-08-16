@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/15 20:46:12 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/16 12:57:56 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,8 @@ void		events(t_sector **sectors, t_player *plr)
 			}
 		}
 		plr->ducking = kstate[SDL_SCANCODE_LCTRL];
+		if ((*sectors)[plr->sector].ceil <= plr->where.z + HeadMargin)
+			plr->ducking = true;
 		if (plr->ducking)
 			plr->falling = 1;
 		plr->run = kstate[SDL_SCANCODE_LSHIFT];
@@ -121,14 +123,16 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 
 		//printf("DUCK: %d \n",plr->ducking);
 
-		if (plr->ducking || sectors[plr->sector].ceil <= plr->where.z + HeadMargin)
+		/* Камера при присяді і її підняття */
+		if (plr->ducking)
 		{
 			plr->eyeheight = DuckHeight;
-			plr->ducking = true;
 			plr->speed /= 2;
 		}
-		//else if (plr->eyeheight != EyeHeight && !plr->ducking)
-		//	plr->eyeheight += 0.5f;
+		else if (plr->eyeheight != EyeHeight
+				&& sectors[plr->sector].ceil > plr->where.z + EyeHeight - DuckHeight)
+			plr->eyeheight += 0.5f;
+
 		plr->ground = !plr->falling; /* Vertical collision detection */
 		if (plr->falling)
 			do_fall(plr, &sectors);
