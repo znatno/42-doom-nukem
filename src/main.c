@@ -12,8 +12,6 @@
 
 #include "doom_nukem.h"
 
-
-
 void		events(t_sector **sectors, t_player *plr)
 {
 	const Uint8		*kstate;	//	array of keyboard keys states
@@ -41,8 +39,8 @@ void		events(t_sector **sectors, t_player *plr)
 
 			if (ev.key.keysym.sym == 'p') //TODO: вивід корисної інфи для дебаґу
 			{
-				TTF_Font *font = getFont("../Lato-Regular.ttf", 26);
-				plr->sdl->w_surface = renderFontToSurface(font, "xyi");
+//				TTF_Font *font = getFont("../Lato-Regular.ttf", 26);
+//				plr->sdl->w_surface = renderFontToSurface(font, "xyi");
 				SDL_UpdateWindowSurface(plr->sdl->window);
 				SDL_Delay(20000);
 				exit_doom(sectors, plr);
@@ -126,6 +124,7 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors, t_sounds *sou
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 	while(!quit)
 	{
+		printf("Duck: %d\n", plr->ducking);
 		//printf("x: %d\ty: %d\n", plr->ms.x, plr->ms.y);
 
 		/* Очищує буфер чорним кольором */
@@ -184,7 +183,7 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors, t_sounds *sou
 		plr->aclrt = plr->pushing ? 0.4 : 0.2;
 		plr->vlct.x = plr->vlct.x * (1 - plr->aclrt) + plr->mv.x * plr->aclrt;
 		plr->vlct.y = plr->vlct.y * (1 - plr->aclrt) + plr->mv.y * plr->aclrt;
-		if (plr->pushing && !plr->ducking)
+		if (plr->pushing && !plr->ducking && plr->ground)
 		{
 			if (!Mix_Playing(2))
 				Mix_PlayChannel(2, sounds->run_sound, 0);
