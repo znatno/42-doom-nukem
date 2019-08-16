@@ -41,8 +41,8 @@ void		events(t_sector **sectors, t_player *plr)
 
 			if (ev.key.keysym.sym == 'p') //TODO: вивід корисної інфи для дебаґу
 			{
-				TTF_Font *font = getFont("../Lato-Regular.ttf", 26);
-				plr->sdl->w_surface = renderFontToSurface(font, "xyi");
+				/*TTF_Font *font = getFont("../Lato-Regular.ttf", 26);
+				plr->sdl->w_surface = renderFontToSurface(font, "xyi");*/
 				SDL_UpdateWindowSurface(plr->sdl->window);
 				SDL_Delay(20000);
 				exit_doom(sectors, plr);
