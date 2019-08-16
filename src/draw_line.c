@@ -5,6 +5,8 @@ void	pixel_put(t_line line, t_env *env)
 	if (line.tmp_x < W_WIDTH && line.tmp_x >= 0 &&
 		line.tmp_y < W_HEIGHT && line.tmp_y >= 0)
 	{
+//		printf("x= %d y = %d\n",line.tmp_x, line.tmp_y);
+////		exit(1);
 		env->buffer[line.tmp_y * W_WIDTH + line.tmp_x] = line.p_color;
 	}
 }

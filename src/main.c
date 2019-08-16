@@ -5,6 +5,13 @@
 //
 //}
 
+void		draw_stack(t_env *env, t_draw *draw, t_stack **head)
+{
+	struct s_stack *temp;
+	struct s_stack *prev;
+
+}
+
 void		stack_print(struct s_stack **head)
 {
 	struct s_stack *temp;
@@ -44,26 +51,6 @@ void		stack_push(struct s_stack **head, t_xy data)
 	*head = new_next;
 }
 
-void		check_stack(void)
-{
-	t_stack *head;
-	t_xy 	to_push;
-
-	head = NULL;
-	to_push.x = 5;
-	to_push.y = 10;
-	stack_push(&head,to_push);
-	to_push.x += 2;
-	to_push.y -= 2;
-	stack_push(&head, to_push);
-	to_push.x += 4;
-	to_push.y -= 8;
-	stack_push(&head, to_push);
-	stack_print(&head);
-	exit(99);
-}
-
-
 t_draw *init_draw(t_draw *draw)
 {
 	if (!(draw = (t_draw *) malloc(sizeof(t_draw))))
@@ -79,6 +66,18 @@ t_draw *init_draw(t_draw *draw)
 }
 
 
+
+void	draw_dot(t_env *env, t_draw *draw, t_stack **head)
+{
+	t_xy data;
+
+	SDL_GetMouseState(&data.x,&data.y);
+	data.x = ROUND(data.x);
+	data.y = ROUND(data.y);
+	stack_push(head, data);
+	draw_stack(env, draw, head);
+	return ;
+}
 
 //void draw_vertex(t_env *env, t_draw *draw)
 //{
@@ -108,18 +107,27 @@ t_draw *init_draw(t_draw *draw)
 //						  ROUND(draw->temp.y));
 //}
 
+void	check_drawer(t_env *env, t_draw *draw)
+{
+	line()
+}
+
 t_env *sdl_main_loop(t_env *env)
 {
 	const Uint8 *kstate;
 	t_draw *draw;
+	t_stack **head;
 	SDL_Event ev;
 	int loop;
 
+	// TODO: DEL IT AFTER
+	t_xy pt1 = { .x = 20, .y = 20};
+	t_xy pt2 = { .x = 20, .y = 60};
 
-	check_stack();
 	draw = init_draw(draw);
 	draw_desk(env);
 	loop = 1;
+	head = NULL;
 	while (loop && env->sdl_error == NONE)
 	{
 		kstate = SDL_GetKeyboardState(NULL);
@@ -129,6 +137,7 @@ t_env *sdl_main_loop(t_env *env)
 			{
 				if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
 				{
+					stack_print(&head);
 					loop = 0;
 				}
 				else if (kstate[SDL_SCANCODE_SPACE])
@@ -140,7 +149,8 @@ t_env *sdl_main_loop(t_env *env)
 			{
 				if (ev.button.clicks)
 				{
-					printf("clicked\n");
+//					line(pt1, pt2, env, BLUE);
+					draw_dot(draw, env, &head);
 				}
 			}
 		}

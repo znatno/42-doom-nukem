@@ -22,6 +22,8 @@
 #define W_DRAW 1400
 #define H_DRAW 800
 
+#define BLUE (25555555 << 16)
+
 #define NONE 0
 #define LOOP_START 1
 # define MAX(x, y) (x >= y) ? (x) : (y)
