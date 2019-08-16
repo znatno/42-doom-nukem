@@ -32,9 +32,9 @@ void	UnloadData(t_sector **sectors, t_player *plr)
 ** Draw a vertical line on screen, with a different color pixel in top & bottom
 */
 
-void	vline(int x, int y1, int y2, int color, t_player *player)
+void	vline(int x, int y1, int y2, int color, t_player *plr)
 {
-	int *pix = (int *)player->sdl->w_surface->pixels;
+	int *pix = (int *)plr->sdl->w_surface->pixels;
 	y1 = clamp(y1, 0, H - 1);
 	y2 = clamp(y2, 0, H - 1);
 	if (y2 == y1)

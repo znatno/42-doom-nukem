@@ -6,11 +6,13 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/16 13:31:47 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/16 19:30:46 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "doom_nukem.h"
+
+
 
 void		events(t_sector **sectors, t_player *plr)
 {
@@ -22,6 +24,7 @@ void		events(t_sector **sectors, t_player *plr)
 	{
 		if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
 			exit_doom(sectors, plr);
+
 		plr->key.w = kstate[SDL_SCANCODE_W];
 		plr->key.a = kstate[SDL_SCANCODE_A];
 		plr->key.s = kstate[SDL_SCANCODE_S];
@@ -38,6 +41,13 @@ void		events(t_sector **sectors, t_player *plr)
 
 			if (ev.key.keysym.sym == 'p') //TODO: вивід корисної інфи для дебаґу
 			{
+				TTF_Font *font = getFont("../Lato-Regular.ttf", 26);
+				plr->sdl->w_surface = renderFontToSurface(font, "xyi");
+				SDL_UpdateWindowSurface(plr->sdl->window);
+				SDL_Delay(20000);
+				exit_doom(sectors, plr);
+
+
 				printf("\n\t---------------------------\n");
 				printf("\t\t\t[print msg]\n");
 				// поточний сектор
@@ -54,8 +64,10 @@ void		events(t_sector **sectors, t_player *plr)
 
 				printf("\n\t---------------------------\n\n");
 			}
+
+			if (ev.key.keysym.sym == SDLK_LCTRL)
+				plr->ducking = !plr->ducking ? 1 : 0;
 		}
-		plr->ducking = kstate[SDL_SCANCODE_LCTRL];
 		if ((*sectors)[plr->sector].ceil < plr->where.z + HeadMargin)
 			plr->ducking = true;
 		if (plr->ducking)
@@ -126,12 +138,18 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 
 		//printf("DUCK: %d \n",plr->ducking);
 
+		//printf("push: %d, w: %d, a: %d, s: %d, d: %d\n",
+		//		plr->pushing, plr->key.w, plr->key.a, plr->key.s, plr->key.d);
+
 		/* Камера при присяді і її підняття */
 		if (plr->ducking || plr->eyeheight == DuckHeight)
-			plr->speed /= 2;
-		if (plr->eyeheight != EyeHeight && !plr->ducking
-				&& sectors[plr->sector].ceil > sectors[plr->sector].floor + EyeHeight)
+			plr->speed /= 1.5f;
+		if (plr->eyeheight != EyeHeight && !plr->ducking &&
+			sectors[plr->sector].ceil > sectors[plr->sector].floor + EyeHeight)
 			plr->eyeheight += 0.5f;
+		else if (plr->eyeheight != DuckHeight && sectors[plr->sector].ceil
+					<= sectors[plr->sector].floor + EyeHeight)
+			plr->eyeheight -= 0.5f;
 
 		plr->ground = !plr->falling; /* Vertical collision detection */
 		if (plr->falling)
@@ -148,8 +166,6 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 
 		plr->mv = (t_move_vec){.x = 0.f, .y = 0.f};
 		move_player(plr, &sectors, 0, 0);
-
-
 
 		if (plr->key.w)
 			plr->mv = (t_move_vec){.x = plr->mv.x + plr->anglecos * plr->speed,
@@ -172,6 +188,7 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 			plr->moving = 1;
 		/*else // припинення ходьби після відтиску клавіші
 			plr->moving = 0;*/
+
 		draw_screen(sectors, *plr);
 		//showmsg("Game Loop");
 		SDL_UpdateWindowSurface(sdl->window);
@@ -192,9 +209,13 @@ int 		main(void)
 	plr.sdl = &sdl;
 	plr.num_scts = 0;
 
+	//
+
+	//
+
 	load_data(&plr, &sectors);
 
-	if (SDL_Init(SDL_INIT_EVERYTHING != 0))
+	if (SDL_Init(SDL_INIT_EVERYTHING != 0) || TTF_Init() == -1)
 		printf("init");
 	sdl.window = SDL_CreateWindow("Doom Nukem", SDL_WINDOWPOS_CENTERED,
 			SDL_WINDOWPOS_CENTERED, W, H,  SDL_WINDOW_SHOWN);
@@ -203,6 +224,7 @@ int 		main(void)
 	sdl.w_surface = SDL_GetWindowSurface(sdl.window);
 	plr.ms.yaw = 0;
 	game_loop(&sdl, &plr, sectors);
+	SDL_Delay(10000);
 	SDL_DestroyWindow(sdl.window);
 	SDL_Quit();
 	return (0);
