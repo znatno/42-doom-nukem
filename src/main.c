@@ -1,70 +1,68 @@
 #include "duke_nukem_editor.h"
 
-void save_sector(t_env *env, t_draw *draw)
+//void		stack_peek(struct s_stack **head)
+//{
+//
+//}
+
+void		stack_print(struct s_stack **head)
 {
-	t_sector *temp;
+	struct s_stack *temp;
 
-	if (!(temp = draw->head))
+	temp = *head;
+	while((temp))
 	{
-		if (!(temp = (t_sector *) malloc(sizeof(t_sector))))
-			exit(166);
-		create_sectors_list(env, draw, temp);
-//        print_sector(temp);
-	}
-	else
-	{
-		add_sector_to_list(temp, draw);
-//		print_all_sectors(draw, temp);
-	}
-
-	//free(temp);
-}
-
-void				is_portal(t_draw *draw, t_env *env, t_vertex *cur_v)
-{
-
-}
-void 				refresh_screen(t_draw *draw, t_env *env)
-{
-	t_sector *cur_s;
-	t_vertex *cur_v;
-
-	cur_s = draw->head;
-	clear_screen(env);
-	draw_desk(env);
-	while (draw->head != NULL && cur_s)
-	{
-		cur_v = cur_s->vertexes;
-		while (cur_v)
-		{
-			is_portal(draw, env, cur_v);
-			line(cur_v->xy1, cur_v->xy2, env, 0xFF00FF);
-			cur_v = cur_v->next;
-		}
-		cur_s = cur_s->next;
+		printf("%d %d\n", temp->point.x, temp->point.y);
+		temp = temp->next;
 	}
 }
 
-void 				redraw_screen(t_draw *draw, t_env *env)
+t_xy		stack_pop(struct s_stack **head)
 {
-	t_sector *cur_s;
-	t_vertex *cur_v;
+	t_stack *temp;
+	t_xy 	data;
 
-	cur_s = draw->head;
-	delete_sector_from_list(draw);
-	clear_screen(env);
-	draw_desk(env);
-	while (draw->head != NULL && cur_s)
+	if (head && *head)
 	{
-		cur_v = cur_s->vertexes;
-		while (cur_v)
-		{
-			line(cur_v->xy1, cur_v->xy2, env, 0xFF00FF);
-			cur_v = cur_v->next;
-		}
-		cur_s = cur_s->next;
+		data = (*head)->point;
+		temp = (*head)->next;
+		ft_memdel((void **) head);
+		*head = temp;
+		return (data);
 	}
+	data.x = -9e9;
+	return (data);
 }
+
+void		stack_push(struct s_stack **head, t_xy data)
+{
+	struct s_stack *new_next;
+
+	new_next = (t_stack*)ft_memalloc(sizeof(t_stack));
+	new_next->next = *head;
+	new_next->point = data;
+	*head = new_next;
+}
+
+void		check_stack(void)
+{
+	t_stack *head;
+	t_xy 	to_push;
+
+	head = NULL;
+	to_push.x = 5;
+	to_push.y = 10;
+	stack_push(&head,to_push);
+	to_push.x += 2;
+	to_push.y -= 2;
+	stack_push(&head, to_push);
+	to_push.x += 4;
+	to_push.y -= 8;
+	stack_push(&head, to_push);
+	stack_print(&head);
+	exit(99);
+}
+
 
 t_draw *init_draw(t_draw *draw)
 {
@@ -80,59 +78,35 @@ t_draw *init_draw(t_draw *draw)
 	return (draw);
 }
 
-void draw_vertex(t_env *env, t_draw *draw)
-{
-	SDL_GetMouseState(&draw->temp.x, &draw->temp.y);
-	if (draw->key == SPACE && draw->f_p[0].y != 0 && draw->f_p[0].x != 0 &&
-		I > 2)
-	{
-		line(draw->f_p[I - 1], draw->f_p[0], env, 0xFF00FF);
-		save_sector(env, draw);
-		I = -1;
-	}
-	else if (I && draw->key != SPACE)
-	{
-		draw->temp.x = ROUND(draw->temp.x);
-		draw->temp.y = ROUND(draw->temp.y);
-		line(draw->f_p[I - 1], draw->temp, env, 0xFF00FF);
-		draw->f_p[I].x = draw->temp.x;
-		draw->f_p[I].y = draw->temp.y;
-	}
-	else if (!I && draw->key != SPACE)
-	{
-		draw->f_p[I].x = ROUND(draw->temp.x);
-		draw->f_p[I].y = ROUND(draw->temp.y);
-	}
-	I++;
-	SDL_WarpMouseInWindow(env->window, ROUND(draw->temp.x),
-						  ROUND(draw->temp.y));
-}
 
-void 		select_sector_mode(t_env *env, t_draw *draw, int key)
-{
-	t_sector 	*cur_s;
-	t_vertex 	*cur_v;
-	int 		i;
 
-	cur_s = draw->head;
-	clear_screen(env);
-	draw_desk(env);
-	i = 0;
-	while (draw->head != NULL && cur_s)
-	{
-		i++;
-		cur_v = cur_s->vertexes;
-		while (cur_v)
-		{
-			if (i == key)
-			line(cur_v->xy1, cur_v->xy2, env, 0xFFFFFF);
-			else
-				line(cur_v->xy1, cur_v->xy2, env, 0xFF00FF);
-			cur_v = cur_v->next;
-		}
-		cur_s = cur_s->next;
-	}
-}
+//void draw_vertex(t_env *env, t_draw *draw)
+//{
+//	SDL_GetMouseState(&draw->temp.x, &draw->temp.y);
+//	if (draw->key == SPACE && draw->f_p[0].y != 0 && draw->f_p[0].x != 0 &&
+//		I > 2)
+//	{
+//		line(draw->f_p[I - 1], draw->f_p[0], env, 0xFF00FF);
+//		save_sector(env, draw);
+//		I = -1;
+//	}
+//	else if (I && draw->key != SPACE)
+//	{
+//		draw->temp.x = ROUND(draw->temp.x);
+//		draw->temp.y = ROUND(draw->temp.y);
+//		line(draw->f_p[I - 1], draw->temp, env, 0xFF00FF);
+//		draw->f_p[I].x = draw->temp.x;
+//		draw->f_p[I].y = draw->temp.y;
+//	}
+//	else if (!I && draw->key != SPACE)
+//	{
+//		draw->f_p[I].x = ROUND(draw->temp.x);
+//		draw->f_p[I].y = ROUND(draw->temp.y);
+//	}
+//	I++;
+//	SDL_WarpMouseInWindow(env->window, ROUND(draw->temp.x),
+//						  ROUND(draw->temp.y));
+//}
 
 t_env *sdl_main_loop(t_env *env)
 {
@@ -140,15 +114,12 @@ t_env *sdl_main_loop(t_env *env)
 	t_draw *draw;
 	SDL_Event ev;
 	int loop;
-	int cur_s;
 
 
+	check_stack();
 	draw = init_draw(draw);
 	draw_desk(env);
 	loop = 1;
-	draw->s_mode = false;
-	draw->s_count = 0;
-	cur_s = 0;
 	while (loop && env->sdl_error == NONE)
 	{
 		kstate = SDL_GetKeyboardState(NULL);
@@ -158,52 +129,21 @@ t_env *sdl_main_loop(t_env *env)
 			{
 				if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
 				{
-					print_all_portals(draw);
 					loop = 0;
 				}
-				else if (kstate[SDL_SCANCODE_SPACE] && !draw->s_mode)
+				else if (kstate[SDL_SCANCODE_SPACE])
 				{
-					draw->key = SPACE; // space pressed
-					draw_vertex(env, draw);
-					draw->key = 0;
+					printf("SPACE\n");
 				}
-				else if (kstate[SDL_SCANCODE_BACKSPACE] && !draw->s_mode && I == 0)
-				{
-					redraw_screen(draw, env);
-					I = 0;
-				}
-				else if (kstate[SDL_SCANCODE_S] && I == 0)
-				{
-					draw->s_mode = (draw->s_mode) ? 0 : 1;
-				}
-				else if (kstate[SDL_SCANCODE_RIGHT] && draw->s_mode)
-				{
-					if (draw->s_count > 1)
-						cur_s += (draw->s_count > cur_s) ? 1 : (-cur_s + 1);
-					else
-						cur_s = 1;
-					printf("%d\n",cur_s);
-						select_sector_mode(env, draw, cur_s);
-				}
-//				else if (kstate[SDL_SCANCODE_LEFT] && draw->s_mode)
-//				{
-//					if (draw->s_count > cur_s && cur_s > 1)
-//						cur_s -= 1;
-//					else
-//						cur_s = 1;
-//					printf("%d\n",cur_s);
-////						select_sector_mode(env, draw);
-//				}
 			}
-			if (ev.type == SDL_MOUSEBUTTONDOWN && !draw->s_mode)
+			if (ev.type == SDL_MOUSEBUTTONDOWN)
 			{
 				if (ev.button.clicks)
 				{
-					draw_vertex(env, draw);
+					printf("clicked\n");
 				}
 			}
 		}
-//		printf("SECTORS = %d\n", draw->s_count);
 		draw_frame(env);
 		SDL_UpdateTexture(env->texture, NULL, env->buffer,
 						  W_WIDTH * (sizeof(int)));
@@ -211,7 +151,6 @@ t_env *sdl_main_loop(t_env *env)
 		SDL_RenderPresent(env->renderer);
 		SDL_Delay(10);
 	}
-//    free(draw);
 	return (env);
 }
 
@@ -230,7 +169,6 @@ t_env *sdl_init(t_env *env)
 	env->buffer = (int *) malloc(sizeof(int) * W_HEIGHT * W_WIDTH);
 	if (!env->window)
 	{
-		//env->sdl_error = ERROR_WINDOW;
 		SDL_GetError();
 	}
 	env->renderer = SDL_CreateRenderer(env->window, -1,

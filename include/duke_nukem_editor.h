@@ -33,6 +33,12 @@ typedef struct s_xy {
     int y;
 } t_xy;
 
+typedef struct 	s_stack
+{
+	struct 		s_xy 		point;
+	struct 		s_stack 	*next;
+}				t_stack;
+
 typedef struct s_portals
 {
 	struct s_vertex *line;
@@ -129,21 +135,21 @@ void    clear_screen(t_env *env);
  * list_managing.c
  */
 
-void            print_sector(t_sector *temp);
-
-void            print_all_sectors(t_draw *draw, t_sector *temp);
-
-void            add_sector_to_list(t_sector *temp, t_draw *draw);
-
-void            delete_sector_from_list(t_draw *draw);
-
-void            create_sectors_list(t_env *env, t_draw *draw, t_sector *temp);
-
-void			free_sect(t_draw *draw, t_sector *del_me, t_sector *cur_s);
-
-t_sector 		*check_if_deleted_sector(t_draw *draw,  t_vertex *tmp,
-										 t_vertex *cur_v, t_sector *cur_s);
-void 			print_all_portals(t_draw *draw);
+//void            print_sector(t_sector *temp);
+//
+//void            print_all_sectors(t_draw *draw, t_sector *temp);
+//
+//void            add_sector_to_list(t_sector *temp, t_draw *draw);
+//
+//void            delete_sector_from_list(t_draw *draw);
+//
+//void            create_sectors_list(t_env *env, t_draw *draw, t_sector *temp);
+//
+//void			free_sect(t_draw *draw, t_sector *del_me, t_sector *cur_s);
+//
+//t_sector 		*check_if_deleted_sector(t_draw *draw,  t_vertex *tmp,
+//										 t_vertex *cur_v, t_sector *cur_s);
+//void 			print_all_portals(t_draw *draw);
 
 
 #endif
