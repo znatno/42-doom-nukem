@@ -51,6 +51,6 @@ add_executable(doom-nukem   src/main.c
 
 
 #target_link_libraries(doom-nukem -lSDL)
-target_link_libraries(doom-nukem -lft -lSDL2 -lSDL2_image -lSDL2_mixer)
+target_link_libraries(doom-nukem -g -fsanitize=address -lft -lSDL2 -lSDL2_image -lSDL2_mixer)
 #target_link_libraries(doom-nukem "-D_GNU_SOURCE=1" "-D_THREAD_SAFE" "-lSDLmain"
 #"-lSDL -Wl,-framework,Cocoa" "-lft")
