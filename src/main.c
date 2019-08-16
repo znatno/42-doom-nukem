@@ -28,7 +28,7 @@ void		events(t_sector **sectors, t_player *plr)
 		plr->key.s = kstate[SDL_SCANCODE_S];
 		plr->key.d = kstate[SDL_SCANCODE_D];
 		plr->draw_look = kstate[SDL_SCANCODE_L];
-		if (ev.type == SDL_KEYDOWN || ev.type == SDL_KEYUP)
+		if (ev.type == SDL_KEYDOWN)
 		{
 			if (ev.key.keysym.sym == ' ' && plr->ground
 				&& plr->where.z == (*sectors)[plr->sector].floor + EyeHeight)
@@ -65,7 +65,7 @@ void		events(t_sector **sectors, t_player *plr)
 			if (ev.key.keysym.sym == SDLK_LCTRL)
 				plr->ducking = !plr->ducking ? 1 : 0;
 		}
-		if ((*sectors)[plr->sector].ceil < plr->where.z + HeadMargin)
+		if ((*sectors)[plr->sector].ceil <= (*sectors)[plr->sector].floor + EyeHeight)
 			plr->ducking = true;
 		if (plr->ducking)
 		{
