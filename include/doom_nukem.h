@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/15 20:36:17 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/16 18:40:50 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@
 #define SEC_COLOR	0x0000ff00
 #define BLACK_COLOR	0x00
 #define FILE_NAME "../test.txt"
-#define ANGLE_V0_V1(xy0, xy1) (radian_to_grades(acosf(angle_vv(scalar_product(xy0, xy1), len_vector(xy0), len_vector(xy1)))))
+#define GET_ANGLE_V0_V1(xy0, xy1) (radian_to_grades(acosf(angle_vv(scalar_product(xy0, xy1), len_vector(xy0), len_vector(xy1)))))
 
 //	Utility functions. Because C doesn't have templates,
 //	we use the slightly less safe preprocessor macros to
@@ -300,5 +300,12 @@ int				exit_doom(t_sector **sectors, t_player *plr);
 char			*ft_itof(long double k);
 
 int g_x; //temp global iterator, delete it at the end
+
+/*
+** Font functions
+*/
+
+SDL_Surface		*renderFontToSurface(TTF_Font *font, char *text);
+TTF_Font		*getFont(char *filename, int size);
 
 #endif
