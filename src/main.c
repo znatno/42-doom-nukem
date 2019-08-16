@@ -157,7 +157,10 @@ t_env *sdl_main_loop(t_env *env)
 			if (ev.type == SDL_KEYDOWN)
 			{
 				if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
+				{
+					print_all_portals(draw);
 					loop = 0;
+				}
 				else if (kstate[SDL_SCANCODE_SPACE] && !draw->s_mode)
 				{
 					draw->key = SPACE; // space pressed

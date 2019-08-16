@@ -35,7 +35,7 @@ typedef struct s_xy {
 
 typedef struct s_portals
 {
-	struct t_vertex *line;
+	struct s_vertex *line;
 	struct t_sector *sec_a;
 	struct t_sector *sec_b;
 	struct t_portals *next;
@@ -143,6 +143,8 @@ void			free_sect(t_draw *draw, t_sector *del_me, t_sector *cur_s);
 
 t_sector 		*check_if_deleted_sector(t_draw *draw,  t_vertex *tmp,
 										 t_vertex *cur_v, t_sector *cur_s);
+void 			print_all_portals(t_draw *draw);
+
 
 #endif
 
