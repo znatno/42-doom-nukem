@@ -46,12 +46,15 @@ void	stack_draw(t_env *env, t_draw *draw, t_stack **head)
 	struct s_stack *temp;
 	struct s_stack *prev;
 
-	temp = *head;
-	while(temp->next)
+	if (head && *head)
 	{
-		prev = temp;
-		temp = temp->next;
-		line(prev->xy, temp->xy, env, BLUE);
+		temp = *head;
+		while (temp->next)
+		{
+			prev = temp;
+			temp = temp->next;
+			line(prev->xy, temp->xy, env, BLUE);
+		}
 	}
 }
 
