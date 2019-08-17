@@ -27,10 +27,8 @@ void    draw_desk(t_env *env) {
 void    clear_screen(t_env *env) {
     t_xy pos;
     int sum;
-    int coef;
 
     sum = 0;
-    coef = 1;
     pos.y = -1;
     while (++pos.y  < H_DRAW)
     {

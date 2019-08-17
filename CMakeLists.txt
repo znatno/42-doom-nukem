@@ -47,7 +47,7 @@ add_executable(doom-nukem   src/main.c
                             src/float_to_str.c
                             src/draw_line.c
                             src/record_data.c src/env_display.c
-                            src/list_managing.c)
+                            src/list_managing.c src/stack_manipulation.c)
 
 
 #target_link_libraries(doom-nukem -lSDL)

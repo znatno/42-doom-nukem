@@ -142,6 +142,8 @@ t_env *sdl_main_loop(t_env *env)
 	int loop;
 	int cur_s;
 
+	//STACK VARS
+	t_stack **head = ft_memalloc(sizeof(stack_t**));
 
 	draw = init_draw(draw);
 	draw_desk(env);
@@ -158,8 +160,9 @@ t_env *sdl_main_loop(t_env *env)
 			{
 				if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
 				{
-					print_all_portals(draw);
-					loop = 0;
+//					print_all_portals(draw);
+//					stack_print(head);
+				loop = 0;
 				}
 				else if (kstate[SDL_SCANCODE_SPACE] && !draw->s_mode)
 				{
@@ -169,8 +172,12 @@ t_env *sdl_main_loop(t_env *env)
 				}
 				else if (kstate[SDL_SCANCODE_BACKSPACE] && !draw->s_mode && I == 0)
 				{
-					redraw_screen(draw, env);
-					I = 0;
+					stack_pop(head);
+					clear_screen(env);
+					draw_desk(env);
+					stack_draw(env, draw, head);
+//					redraw_screen(draw, env);
+//					I = 0;
 				}
 				else if (kstate[SDL_SCANCODE_S] && I == 0)
 				{
@@ -199,7 +206,8 @@ t_env *sdl_main_loop(t_env *env)
 			{
 				if (ev.button.clicks)
 				{
-					draw_vertex(env, draw);
+					draw_dot(env, draw, head);
+//					draw_vertex(env, draw);
 				}
 			}
 		}

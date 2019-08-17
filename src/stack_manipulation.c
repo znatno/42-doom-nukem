@@ -1,0 +1,71 @@
+#include "duke_nukem_editor.h"
+
+void    stack_print(struct s_stack **head)
+{
+	struct s_stack *temp;
+
+	temp = *head;
+	while((temp))
+	{
+		printf("%d %d\n", temp->xy.x, temp->xy.y);
+		temp = temp->next;
+	}
+}
+
+t_xy    stack_pop(struct s_stack **head)
+{
+	t_stack *temp;
+	t_xy data;
+
+	if (head && *head)
+	{
+		data = (*head)->xy;
+		temp = (*head)->next;
+		ft_memdel((void **) head);
+		*head = temp;
+		return (data);
+	}
+	data.x = -9e9;
+	return (data);
+}
+
+void    stack_push(struct s_stack **head, t_xy data)
+{
+	struct s_stack *new_next;
+
+	new_next = (t_stack*)ft_memalloc(sizeof(t_stack));
+
+	new_next->next = *head;
+	new_next->xy.y = data.y;
+	new_next->xy.x = data.x;
+	*head = new_next;
+}
+
+void	stack_draw(t_env *env, t_draw *draw, t_stack **head)
+{
+	struct s_stack *temp;
+	struct s_stack *prev;
+
+	temp = *head;
+	while(temp->next)
+	{
+		prev = temp;
+		temp = temp->next;
+		line(prev->xy, temp->xy, env, BLUE);
+	}
+}
+
+void    draw_dot(t_env *env, t_draw *draw, t_stack **head)
+{
+	t_xy data;
+
+	SDL_GetMouseState(&data.x,&data.y);
+	data.x = ROUND(data.x);
+	data.y = ROUND(data.y);
+	stack_push(head, data);
+	if ((*head)->next != NULL)
+		stack_draw(env, draw, head);
+//	check_drawer(env, draw);
+//draw_stack(env, draw, head);
+	return ;
+}

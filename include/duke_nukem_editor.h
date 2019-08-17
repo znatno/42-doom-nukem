@@ -28,10 +28,18 @@
 # define ROUND(x) ((int)(round((double)x/20.0)))*20
 # define SPACE ' '
 # define I draw->counter
+
+# define BLUE (255555555 << 8)
+
 typedef struct s_xy {
     int x;
     int y;
 } t_xy;
+
+typedef struct s_stack {
+	struct s_xy xy;
+	struct t_stack *next;
+}				t_stack;
 
 typedef struct s_portals
 {
@@ -142,9 +150,24 @@ void            create_sectors_list(t_env *env, t_draw *draw, t_sector *temp);
 void			free_sect(t_draw *draw, t_sector *del_me, t_sector *cur_s);
 
 t_sector 		*check_if_deleted_sector(t_draw *draw,  t_vertex *tmp,
+
+
 										 t_vertex *cur_v, t_sector *cur_s);
 void 			print_all_portals(t_draw *draw);
 
+
+/*
+ * stack boi
+ */
+t_xy    stack_pop(struct s_stack **head);
+
+void    stack_push(struct s_stack **head, t_xy data);
+
+void    stack_print(struct s_stack **head);
+
+void    draw_dot(t_env *env, t_draw *draw, t_stack **head);
+
+void	stack_draw(t_env *env, t_draw *draw, t_stack **head);
 
 #endif
 
