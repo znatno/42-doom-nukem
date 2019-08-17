@@ -49,12 +49,25 @@ void	stack_draw(t_env *env, t_draw *draw, t_stack **head)
 	if (head && *head)
 	{
 		temp = *head;
-		while (temp->next)
+		if (draw->key == SPACE)
 		{
-			prev = temp;
-			temp = temp->next;
-			line(prev->xy, temp->xy, env, BLUE);
+			while (temp->next)
+			{
+				if (temp->next != NULL)
+				line((*head)->xy, temp->xy, env, BLUE);
+				temp = temp->next;
+			}
 		}
+		else
+		{
+			while (temp->next)
+			{
+				prev = temp;
+				temp = temp->next;
+				line(prev->xy, temp->xy, env, BLUE);
+			}
+		}
+
 	}
 }
 
@@ -68,6 +81,7 @@ void    draw_dot(t_env *env, t_draw *draw, t_stack **head)
 	stack_push(head, data);
 	if ((*head)->next != NULL)
 		stack_draw(env, draw, head);
+//	SDL_WarpMouseInWindow(env->window, data.x, data.y);
 //	check_drawer(env, draw);
 //draw_stack(env, draw, head);
 	return ;

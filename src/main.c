@@ -80,33 +80,33 @@ t_draw *init_draw(t_draw *draw)
 	return (draw);
 }
 
-void draw_vertex(t_env *env, t_draw *draw)
-{
-	SDL_GetMouseState(&draw->temp.x, &draw->temp.y);
-	if (draw->key == SPACE && draw->f_p[0].y != 0 && draw->f_p[0].x != 0 &&
-		I > 2)
-	{
-		line(draw->f_p[I - 1], draw->f_p[0], env, 0xFF00FF);
-		save_sector(env, draw);
-		I = -1;
-	}
-	else if (I && draw->key != SPACE)
-	{
-		draw->temp.x = ROUND(draw->temp.x);
-		draw->temp.y = ROUND(draw->temp.y);
-		line(draw->f_p[I - 1], draw->temp, env, 0xFF00FF);
-		draw->f_p[I].x = draw->temp.x;
-		draw->f_p[I].y = draw->temp.y;
-	}
-	else if (!I && draw->key != SPACE)
-	{
-		draw->f_p[I].x = ROUND(draw->temp.x);
-		draw->f_p[I].y = ROUND(draw->temp.y);
-	}
-	I++;
-	SDL_WarpMouseInWindow(env->window, ROUND(draw->temp.x),
-						  ROUND(draw->temp.y));
-}
+//void draw_vertex(t_env *env, t_draw *draw)
+//{
+//	SDL_GetMouseState(&draw->temp.x, &draw->temp.y);
+//	if (draw->key == SPACE && draw->f_p[0].y != 0 && draw->f_p[0].x != 0 &&
+//		I > 2)
+//	{
+//		line(draw->f_p[I - 1], draw->f_p[0], env, 0xFF00FF);
+//		save_sector(env, draw);
+//		I = -1;
+//	}
+//	else if (I && draw->key != SPACE)
+//	{
+//		draw->temp.x = ROUND(draw->temp.x);
+//		draw->temp.y = ROUND(draw->temp.y);
+//		line(draw->f_p[I - 1], draw->temp, env, 0xFF00FF);
+//		draw->f_p[I].x = draw->temp.x;
+//		draw->f_p[I].y = draw->temp.y;
+//	}
+//	else if (!I && draw->key != SPACE)
+//	{
+//		draw->f_p[I].x = ROUND(draw->temp.x);
+//		draw->f_p[I].y = ROUND(draw->temp.y);
+//	}
+//	I++;
+//	SDL_WarpMouseInWindow(env->window, ROUND(draw->temp.x),
+//						  ROUND(draw->temp.y));
+//}
 
 void 		select_sector_mode(t_env *env, t_draw *draw, int key)
 {
@@ -167,7 +167,7 @@ t_env *sdl_main_loop(t_env *env)
 				else if (kstate[SDL_SCANCODE_SPACE] && !draw->s_mode)
 				{
 					draw->key = SPACE; // space pressed
-					draw_vertex(env, draw);
+					draw_dot(env,draw,head);
 					draw->key = 0;
 				}
 				else if (kstate[SDL_SCANCODE_BACKSPACE] && !draw->s_mode && I == 0)
@@ -211,7 +211,6 @@ t_env *sdl_main_loop(t_env *env)
 				}
 			}
 		}
-//		printf("SECTORS = %d\n", draw->s_count);
 		draw_frame(env);
 		SDL_UpdateTexture(env->texture, NULL, env->buffer,
 						  W_WIDTH * (sizeof(int)));
@@ -219,7 +218,6 @@ t_env *sdl_main_loop(t_env *env)
 		SDL_RenderPresent(env->renderer);
 		SDL_Delay(10);
 	}
-//    free(draw);
 	return (env);
 }
 

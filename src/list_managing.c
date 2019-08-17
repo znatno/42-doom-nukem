@@ -103,9 +103,6 @@ void find_portal(t_draw *draw, t_sector *temp)
 		while (cur_v)
 		{
 
-//			printf("temp = %d, %d, %d, %d, | cur = %d, %d, %d, %d,\n\n",
-//					temp->vertexes->xy1.x,temp->vertexes->xy1.y,temp->vertexes->xy2.x,
-//					temp->vertexes->xy2.y,cur_v->xy1.x,cur_v->xy1.y,cur_v->xy2.x,cur_v->xy2.y);
 			if ((temp->vertexes->xy1.x == cur_v->xy1.x &&
 				 temp->vertexes->xy1.y == cur_v->xy1.y &&
 				 temp->vertexes->xy2.x == cur_v->xy2.x &&
