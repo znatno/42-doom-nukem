@@ -52,11 +52,8 @@ void	stack_draw(t_env *env, t_draw *draw, t_stack **head)
 		if (draw->key == SPACE)
 		{
 			while (temp->next)
-			{
-				if (temp->next != NULL)
-				line((*head)->xy, temp->xy, env, BLUE);
 				temp = temp->next;
-			}
+			line((*head)->xy, temp->xy, env, BLUE);
 		}
 		else
 		{
@@ -78,7 +75,7 @@ void    draw_dot(t_env *env, t_draw *draw, t_stack **head)
 	SDL_GetMouseState(&data.x,&data.y);
 	data.x = ROUND(data.x);
 	data.y = ROUND(data.y);
-	stack_push(head, data);
+	(draw->key != SPACE) ? stack_push(head, data) : 0 == 0;
 	if ((*head)->next != NULL)
 		stack_draw(env, draw, head);
 //	SDL_WarpMouseInWindow(env->window, data.x, data.y);
