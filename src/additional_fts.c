@@ -69,9 +69,9 @@ void	render(int draw_mode ,int texture_num, t_player *p, t_draw_screen_calc *ds)
 			   scaler_init(ds->i->ya, ds->i->cya, ds->i->yb, 0,
 						   p->sdl->textures->arr_tex[2]->w - 1), ds->i->txtx, p, ds, 5);
 	else if (draw_mode == CEIL)
-		vline(ds->i->y_top[ds->it->x], ds->i->cya - 1, 0xFFFFFF, p, ds);
+		vline(ds->i->y_top[ds->it->x], ds->i->cya - 1, 0x0, p, ds);
 	else if (draw_mode == FLOOR)
-		vline(ds->i->cyb + 1, ds->i->y_bottom[ds->it->x], 0x32a852, p, ds);
+		vline(ds->i->cyb + 1, ds->i->y_bottom[ds->it->x], 0x0, p, ds);
 }
 
 void vline2(int y1,int y2, t_scaler ty, unsigned txtx, t_player *p, t_draw_screen_calc *ds, int tn)
