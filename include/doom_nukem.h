@@ -23,10 +23,12 @@
 # include "SDL.h"
 # include "SDL_mixer.h"
 # include "SDL_image.h"
+# include "SDL_surface.h"
+# include "SDL_pixels.h"
 
 /* Define window size */
-#define W 640
-#define H 480
+#define W 1024
+#define H 768
 #define Yaw(y, z) (y + z * plr.yaw)
 #define MaxQue	32
 #define EyeHeight  6		// Camera height from floor when standing
@@ -39,6 +41,16 @@
 #define SEC_COLOR 0x0000ff00
 #define BLACK_COLOR 0x00
 #define ANGLE_V0_V1(xy0, xy1) (radian_to_grades(acosf(angle_vv(scalar_product(xy0, xy1), len_vector(xy0), len_vector(xy1)))))
+#define CeilingFloorScreenCoordinatesToMapCoordinates(mapY, screenX,screenY, X,Z) \
+                    do { Z = (mapY)*H*vfov / ((H/2 - (screenY)) - p->yaw*H*vfov); \
+                         X = (Z) * (W/2 - (screenX)) / (W*hfov); \
+                         RelativeMapCoordinatesToAbsoluteOnes(X,Z); } while(0)
+//
+#define RelativeMapCoordinatesToAbsoluteOnes(X,Z) \
+                    do { float rtx = (Z) * ds->f->pcos + (X) * ds->f->psin; \
+                         float rtz = (Z) * ds->f->psin - (X) * ds->f->pcos; \
+                         X = rtx + p->where.x; Z = rtz + p->where.y; \
+                    } while(0)
 #define FILE_NAME "map-clear.txt"
 #define RED					0
 #define GREEN				1
@@ -125,6 +137,10 @@ typedef struct		s_move_vec
 typedef struct		s_textures
 {
 	SDL_Surface		**arr_tex;
+	uint32_t 		txt_y;
+	uint32_t		txt_x;
+	float 			perc_x;
+	float 			perc_y;
 }					t_textures;
 
 
@@ -205,6 +221,9 @@ typedef struct	s_calc_tmp_float
 	float nyceil;
 	float nyfloor;
 	float perc_light;
+	float hei;
+	float mapx;
+	float mapz;
 }				t_calc_tmp_float;
 
 typedef struct	s_calc_tmp_int
@@ -234,6 +253,11 @@ typedef struct	s_calc_tmp_int
 	int 		cnya;
 	int 		nyb;
 	int 		cnyb;
+	int 		u0;
+	int 		u1;
+	int 		txtx;
+	int 		txty;
+	int 		pel;
 	unsigned	r1;
 	unsigned 	r2;
 	unsigned	r;
@@ -247,12 +271,27 @@ typedef struct	s_item
 	int sx2;
 }				t_item;
 
+typedef struct		s_scaler
+{
+	int				result;
+	int 			bop;
+	int 			fd;
+	int 			ca;
+	int 			cache;
+}					t_scaler;
+
 typedef struct		s_calc_tmp_struct
 {
 	t_item				now;
+	t_scaler			ya_int;
+	t_scaler			yb_int;
+	t_scaler			nya_int;
+	t_scaler			nyb_int;
 	const t_sector 		*sect;
 	t_xy				i1;
 	t_xy				i2;
+	t_xy				org1;
+	t_xy				org2;
 	t_item				*head;
 	t_item				*tail;
 	t_sector			*sector;
@@ -271,6 +310,7 @@ void		draw_screen(t_sector *sector, t_player plr);
 void 		load_data(t_player *player, t_sector **sectors);
 char		*ft_itof(long double k);
 void	vline(int y1, int y2, int color, t_player *player, t_draw_screen_calc *ds);
+void	vline_texture(int y1, int y2, int text_num, t_player *plr, t_draw_screen_calc *ds);
 t_xy Intersect(float x1, float y1, float x2, float y2, float x3, float y3,
 			   float x4, float y4);
 void					init_sdl(t_sdl_main *sdl);
@@ -284,6 +324,10 @@ int		move_or_not(t_xyz where ,t_sector sector, unsigned sect_num);
 void	textures_init(t_sdl_main *sdl);
 float		percentage(int start, int end, int curr);
 void	render(int draw_mode ,int texture_num, t_player *p, t_draw_screen_calc *ds);
+int 	scaler_next(t_scaler *i);
+t_scaler scaler_init(int a, int b, int c, int d, int f);
+int		ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);
+void vline2(int y1,int y2, t_scaler ty, unsigned txtx, t_player *p, t_draw_screen_calc *ds, int tn);
 
 /*
 **  "math_fts.c" Math functions for vectors and other things
