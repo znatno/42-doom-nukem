@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/18 15:12:14 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/18 18:33:23 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,10 +120,13 @@ typedef struct		s_move_vec
 
 typedef struct			s_sdl_main
 {
-	SDL_DisplayMode		display_mode;
+	//SDL_DisplayMode		display_mode;
 	SDL_Window			*window;
 	SDL_Renderer		*renderer;
 	SDL_Surface			*w_surface;
+
+	SDL_Texture			*texture;
+	int					*buffer;
 }						t_sdl_main;
 
 // Player: location
@@ -142,6 +145,7 @@ typedef struct		s_player
 	bool			moving;
 	bool			ducking;	// присяд
 	bool 			run;		// пришвидшення
+	bool 			fly;		// політ
 	float			eyeheight;
 	t_keys			key;		// WASD провірка натиску клавіш
 	t_move_vec		mv;			// вектор руху

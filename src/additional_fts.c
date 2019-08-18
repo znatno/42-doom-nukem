@@ -36,7 +36,7 @@ void	vline(int x, int y1, int y2, int color, t_player *plr)
 {
 	int *pix;
 
-	pix = (int *)plr->sdl->w_surface->pixels;
+	pix = (int *)plr->sdl->buffer;
 	y1 = clamp(y1, 0, H - 1);
 	y2 = clamp(y2, 0, H - 1);
 	if (y2 == y1)

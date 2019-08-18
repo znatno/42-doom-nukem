@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:00:35 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/16 18:29:46 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/18 19:14:40 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,7 +145,10 @@ void		do_fall(t_player *plr, t_sector **sc)
 {
 	float	nextz;
 
-	plr->vlct.z -= 0.05f; /* Add gravity */
+	if (!plr->fly)
+		plr->vlct.z -= 0.05f; /* Add gravity */
+	else
+		plr->vlct.z += 0.001f;
 	nextz = plr->where.z + plr->vlct.z;
 	if (plr->vlct.z < 0 && nextz < (*sc)[plr->sector].floor + plr->eyeheight) // When going down
 	{

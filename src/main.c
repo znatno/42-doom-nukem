@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/18 16:38:33 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/18 21:58:19 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,8 @@ void		events(t_sector **sectors, t_player *plr)
 		plr->draw_look = kstate[SDL_SCANCODE_L];
 		if (ev.type == SDL_KEYDOWN)
 		{
+			if (ev.key.keysym.sym == 'f')
+				plr->fly = !plr->fly ? 1 : 0;
 			if (ev.key.keysym.sym == ' ' && plr->ground
 				&& plr->where.z == (*sectors)[plr->sector].floor + EyeHeight)
 			{
@@ -124,27 +126,14 @@ void		showmsg(t_sdl_main *sdl, char *text)
 
 void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 {
-	bool 			quit;
-
-	quit = false;
-	SDL_ShowCursor(SDL_DISABLE);
-	SDL_SetRelativeMouseMode(SDL_TRUE);
-	while(!quit)
+	while (true)
 	{
-		//printf("x: %d\ty: %d\n", plr->ms.x, plr->ms.y);
-
 		/* Очищує буфер чорним кольором */
 		//SDL_FillRect(sdl->w_surface, NULL,
 		//		SDL_MapRGB(sdl->w_surface->format, 0, 0, 0));
 
 		/* Key Events */
 		events(&sectors, plr);
-		//printf("fall: %d\tground: %d\n", plr->falling, plr->ground);
-
-		//printf("DUCK: %d \n",plr->ducking);
-
-		//printf("push: %d, w: %d, a: %d, s: %d, d: %d\n",
-		//		plr->pushing, plr->key.w, plr->key.a, plr->key.s, plr->key.d);
 
 		/* Камера при присяді і її підняття */
 		if (plr->ducking || plr->eyeheight == DuckHeight)
@@ -156,35 +145,38 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 					<= sectors[plr->sector].floor + EyeHeight)
 			plr->eyeheight -= 0.5f;
 
-		plr->ground = !plr->falling; /* Vertical collision detection */
+		/* Vertical collision detection */
+		plr->ground = !plr->falling;
 		if (plr->falling)
 			do_fall(plr, &sectors);
-		if (plr->moving) /* Horizontal collision detection */
+
+		/* Horizontal collision detection */
+		if (plr->moving)
 			do_move(plr, &sectors);
 
-		plr->ms.x = 0; /* mouse aiming */
+		/* mouse aiming */
+		plr->ms.x = 0;
 		plr->ms.y = 0;
 		SDL_GetRelativeMouseState(&plr->ms.x, &plr->ms.y);
 		plr->angle += plr->ms.x * 0.03f;
 		plr->ms.yaw = clamp(plr->ms.yaw - plr->ms.y * 0.05f, -5, 5);
 		plr->yaw = plr->ms.yaw - plr->vlct.z * 0.5f;
 
+		/* player moving */
 		plr->mv = (t_move_vec){.x = 0.f, .y = 0.f};
 		move_player(plr, &sectors, 0, 0);
-
 		if (plr->key.w)
 			plr->mv = (t_move_vec){.x = plr->mv.x + plr->anglecos * plr->speed,
-					.y = plr->mv.y + plr->anglesin * plr->speed};
+						  .y = plr->mv.y + plr->anglesin * plr->speed};
 		if (plr->key.s)
 			plr->mv = (t_move_vec){.x = plr->mv.x - plr->anglecos * plr->speed,
-					.y = plr->mv.y - plr->anglesin * plr->speed};
+						  .y = plr->mv.y - plr->anglesin * plr->speed};
 		if (plr->key.a)
 			plr->mv = (t_move_vec){.x = plr->mv.x + plr->anglesin * plr->speed,
-					.y = plr->mv.y - plr->anglecos * plr->speed};
+						  .y = plr->mv.y - plr->anglecos * plr->speed};
 		if (plr->key.d)
 			plr->mv = (t_move_vec){.x = plr->mv.x - plr->anglesin * plr->speed,
-					.y = plr->mv.y + plr->anglecos * plr->speed};
-
+						  .y = plr->mv.y + plr->anglecos * plr->speed};
 		plr->pushing = plr->key.w || plr->key.s || plr->key.a || plr->key.d;
 		plr->aclrt = plr->pushing ? 0.4 : 0.2;
 		plr->vlct.x = plr->vlct.x * (1 - plr->aclrt) + plr->mv.x * plr->aclrt;
@@ -192,8 +184,14 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 		if (plr->pushing)
 			plr->moving = 1;
 
+		/* Draw frame */
 		draw_screen(sectors, *plr);
-		SDL_UpdateWindowSurface(sdl->window);
+
+		/* update window */
+		SDL_UpdateTexture(sdl->texture, NULL, sdl->buffer, W * (sizeof(int)));
+		SDL_RenderCopy(sdl->renderer, sdl->texture, NULL, NULL);
+		SDL_RenderPresent(sdl->renderer);
+
 		//showmsg(sdl, "TEST");
 		SDL_Delay(20);
 	}
@@ -205,37 +203,34 @@ int 		main(void)
 	t_sdl_main	sdl;
 	t_sector	*sectors;
 
+	//Structs initialization
 	sectors = NULL;
 	plr = (t_player){ .ground = 0, .falling = 1, .moving = 0, .ducking = 0,
-						.eyeheight = EyeHeight };
-	plr.key = (t_keys){ .w = 0, .s = 0, .a = 0, .d = 0 };
-	plr.sdl = &sdl;
-	plr.num_scts = 0;
+				   .eyeheight = EyeHeight, .num_scts = 0, .ms.yaw = 0,
+				   .sdl = &sdl, .key = { .w = 0, .s = 0, .a = 0, .d = 0 }};
 
-	//
-
-	//
-
+	//Load map
 	load_data(&plr, &sectors);
 
+	//Framework initialization
 	if (SDL_Init(SDL_INIT_EVERYTHING != 0) || TTF_Init() == -1)
-		printf("init error");
+		printf("SDL_Init || TTF_Init error");
 	sdl.window = SDL_CreateWindow("Doom Nukem", SDL_WINDOWPOS_CENTERED,
 			SDL_WINDOWPOS_CENTERED, W, H,  SDL_WINDOW_SHOWN);
-	//SDL_CreateWindowAndRenderer(W, H, SDL_WINDOW_SHOWN, &sdl.window, &sdl.renderer);
-	if (!sdl.window)
-		printf("win error");
-	//sdl.renderer = SDL_CreateRenderer(sdl.window, 0, 0);
-	sdl.w_surface = SDL_GetWindowSurface(sdl.window);
-	plr.ms.yaw = 0;
+	sdl.renderer = SDL_CreateRenderer(sdl.window, 0, 0);
+	sdl.texture = SDL_CreateTexture(sdl.renderer,
+			SDL_PIXELFORMAT_ARGB32, SDL_TEXTUREACCESS_STREAMING, W, H);
+	sdl.buffer = (int *)malloc(sizeof(int) * W * H);
+	if (!sdl.window || !sdl.renderer || !sdl.buffer || sdl.texture)
+		printf("SDL error");
+
+	//Cursor lock
+	SDL_ShowCursor(SDL_DISABLE);
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+
+	//Loop
 	game_loop(&sdl, &plr, sectors);
 
-	//
-
-	//
-
-	SDL_DestroyWindow(sdl.window);
-	SDL_Quit();
-	TTF_Quit();
-	return (0);
+	//Before quit
+	exit_doom(&sectors, &plr);
 }
