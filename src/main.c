@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/18 21:58:19 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/18 22:33:41 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,10 +85,10 @@ void		events(t_sector **sectors, t_player *plr)
 
 void		showmsg(t_sdl_main *sdl, char *text)
 {
-	TTF_Font *font = TTF_OpenFont("../Lato-Regular.ttf", 24);
+	TTF_Font *font = TTF_OpenFont("../Lato-Regular.ttf", 18);
 	//this opens a font style and sets a size
 
-	SDL_Color White = {255, 255, 255};
+	SDL_Color White = {255, 255, 255, 0};
 	/* this is the color in rgb format, maxing out all would give you the color
 	** white, and it will be your text's color */
 
@@ -100,11 +100,12 @@ void		showmsg(t_sdl_main *sdl, char *text)
 	/* now you can convert it into a texture */
 
 	SDL_Rect Message_rect;	// create a rect
-	Message_rect.x = 0;		// controls the rect's x coordinate
-	Message_rect.y = 0;		// controls the rect's y coordinte
+	Message_rect.x = 10;		// controls the rect's x coordinate
+	Message_rect.y = 10;		// controls the rect's y coordinte
 	TTF_SizeText(font, text, &Message_rect.w, &Message_rect.h);
-	/* Message_rect.w = 100; // controls the width of the rect
-	** Message_rect.h = 100; // controls the height of the rect */
+
+//	Message_rect.w = 100; // controls the width of the rect
+//	Message_rect.h = 100; // controls the height of the rect
 
 	/* Mind you that (0,0) is on the top left of the window/screen, think a
 	** rect as the text's box, that way it would be very simple to understance
@@ -120,6 +121,9 @@ void		showmsg(t_sdl_main *sdl, char *text)
 	**
 	**Don't forget too free your surface and texture
 	*/
+
+	SDL_FreeSurface(surfaceMessage);
+	SDL_DestroyTexture(Message);
 
 	TTF_CloseFont(font);
 }
@@ -190,9 +194,10 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 		/* update window */
 		SDL_UpdateTexture(sdl->texture, NULL, sdl->buffer, W * (sizeof(int)));
 		SDL_RenderCopy(sdl->renderer, sdl->texture, NULL, NULL);
-		SDL_RenderPresent(sdl->renderer);
+		//SDL_RenderPresent(sdl->renderer);
 
-		//showmsg(sdl, "TEST");
+		showmsg(sdl, "TEST");
+		SDL_RenderPresent(sdl->renderer);
 		SDL_Delay(20);
 	}
 }
