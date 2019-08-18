@@ -12,6 +12,23 @@ void    stack_print(struct s_stack **head)
 	}
 }
 
+int    stack_more_than_two(struct s_stack **head)
+{
+	struct s_stack *temp;
+	int 	i;
+
+	temp = *head;
+	i = 0;
+	while((temp))
+	{
+		i++;
+		if (i > 2)
+			return (true);
+		temp = temp->next;
+	}
+	return (false);
+}
+
 t_xy    stack_pop(struct s_stack **head)
 {
 	t_stack *temp;

@@ -20,10 +20,10 @@ void save_sector(t_env *env, t_draw *draw)
 	//free(temp);
 }
 
-void				is_portal(t_draw *draw, t_env *env, t_vertex *cur_v)
-{
-
-}
+//void				is_portal(t_draw *draw, t_env *env, t_vertex *cur_v)
+//{
+//
+//}
 void 				refresh_screen(t_draw *draw, t_env *env)
 {
 	t_sector *cur_s;
@@ -37,7 +37,6 @@ void 				refresh_screen(t_draw *draw, t_env *env)
 		cur_v = cur_s->vertexes;
 		while (cur_v)
 		{
-			is_portal(draw, env, cur_v);
 			line(cur_v->xy1, cur_v->xy2, env, 0xFF00FF);
 			cur_v = cur_v->next;
 		}
@@ -45,26 +44,26 @@ void 				refresh_screen(t_draw *draw, t_env *env)
 	}
 }
 
-void 				redraw_screen(t_draw *draw, t_env *env)
-{
-	t_sector *cur_s;
-	t_vertex *cur_v;
-
-	cur_s = draw->head;
-	delete_sector_from_list(draw);
-	clear_screen(env);
-	draw_desk(env);
-	while (draw->head != NULL && cur_s)
-	{
-		cur_v = cur_s->vertexes;
-		while (cur_v)
-		{
-			line(cur_v->xy1, cur_v->xy2, env, 0xFF00FF);
-			cur_v = cur_v->next;
-		}
-		cur_s = cur_s->next;
-	}
-}
+//void 				redraw_screen(t_draw *draw, t_env *env)
+//{
+//	t_sector *cur_s;
+//	t_vertex *cur_v;
+//
+//	cur_s = draw->head;
+//	delete_sector_from_list(draw);
+//	clear_screen(env);
+//	draw_desk(env);
+//	while (draw->head != NULL && cur_s)
+//	{
+//		cur_v = cur_s->vertexes;
+//		while (cur_v)
+//		{
+//			line(cur_v->xy1, cur_v->xy2, env, 0xFF00FF);
+//			cur_v = cur_v->next;
+//		}
+//		cur_s = cur_s->next;
+//	}
+//}
 
 t_draw *init_draw(t_draw *draw)
 {
@@ -79,34 +78,6 @@ t_draw *init_draw(t_draw *draw)
 	draw->portals = NULL;
 	return (draw);
 }
-
-//void draw_vertex(t_env *env, t_draw *draw)
-//{
-//	SDL_GetMouseState(&draw->temp.x, &draw->temp.y);
-//	if (draw->key == SPACE && draw->f_p[0].y != 0 && draw->f_p[0].x != 0 &&
-//		I > 2)
-//	{
-//		line(draw->f_p[I - 1], draw->f_p[0], env, 0xFF00FF);
-//		save_sector(env, draw);
-//		I = -1;
-//	}
-//	else if (I && draw->key != SPACE)
-//	{
-//		draw->temp.x = ROUND(draw->temp.x);
-//		draw->temp.y = ROUND(draw->temp.y);
-//		line(draw->f_p[I - 1], draw->temp, env, 0xFF00FF);
-//		draw->f_p[I].x = draw->temp.x;
-//		draw->f_p[I].y = draw->temp.y;
-//	}
-//	else if (!I && draw->key != SPACE)
-//	{
-//		draw->f_p[I].x = ROUND(draw->temp.x);
-//		draw->f_p[I].y = ROUND(draw->temp.y);
-//	}
-//	I++;
-//	SDL_WarpMouseInWindow(env->window, ROUND(draw->temp.x),
-//						  ROUND(draw->temp.y));
-//}
 
 void 		select_sector_mode(t_env *env, t_draw *draw, int key)
 {
@@ -153,6 +124,7 @@ t_env *sdl_main_loop(t_env *env)
 	cur_s = 0;
 	while (loop && env->sdl_error == NONE)
 	{
+		refresh_screen(draw, env);
 		kstate = SDL_GetKeyboardState(NULL);
 		while (SDL_PollEvent(&ev))
 		{
@@ -167,8 +139,14 @@ t_env *sdl_main_loop(t_env *env)
 				else if (kstate[SDL_SCANCODE_SPACE] && !draw->s_mode)
 				{
 					draw->key = SPACE; // space pressed
+					if (stack_more_than_two(head))
 					draw_dot(env,draw,head);
 					draw->key = 0;
+				}
+				else if (kstate[SDL_SCANCODE_DELETE] && !draw->s_mode)
+				{
+					delete_sector_from_list(draw);
+					stack_draw(env, draw, head);
 				}
 				else if (kstate[SDL_SCANCODE_BACKSPACE] && !draw->s_mode && I == 0)
 				{

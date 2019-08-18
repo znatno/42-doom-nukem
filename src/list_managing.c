@@ -220,8 +220,6 @@ void delete_sector_from_list(t_draw *draw)
 	}
 	free_sect(draw, del_me, cur_s);
 }
-
-
 void create_sectors_list(t_env *env, t_draw *draw, t_sector *temp)
 {
 	int i;
@@ -303,7 +301,7 @@ void	pop_from_stack_to_list(t_draw *draw, t_stack **head)
 
 	head_v = cur_s->vertexes;
 	head_v->xy1 = first_data;
-	head_v->xy1 = cur_data;
+	head_v->xy2 = cur_data;
 
 	while (cur_data.x != -42)
 	{
@@ -336,4 +334,5 @@ void save_stack_to_list (t_env *env, t_draw *draw, t_stack **head)
 		malloc_list(sect);
 	}
 	pop_from_stack_to_list(draw, head);
+	draw->s_count++;
 }

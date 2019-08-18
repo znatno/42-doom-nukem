@@ -167,6 +167,7 @@ void    draw_dot(t_env *env, t_draw *draw, t_stack **head);
 
 void	stack_draw(t_env *env, t_draw *draw, t_stack **head);
 
+int    stack_more_than_two(struct s_stack **head);
 /*
  * new list managing
  */
