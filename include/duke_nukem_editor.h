@@ -16,6 +16,7 @@
 # include "SDL.h"
 # include "SDL_mixer.h"
 # include "SDL_image.h"
+# include "SDL_ttf.h"
 
 #define W_WIDTH 1600
 #define W_HEIGHT 950

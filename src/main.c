@@ -213,7 +213,6 @@ t_env *sdl_main_loop(t_env *env)
 		}
 		draw_frame(env);
 		draw_tools(env);
-		draw_text(0,0, "kek", env);
 		SDL_UpdateWindowSurface(env->window);
 		SDL_Delay(10);
 	}
@@ -250,7 +249,7 @@ int main(void)
 
 	env = malloc(sizeof(t_env));
 	env->textures = &textures;
-	if (!(SDL_Init(SDL_INIT_EVERYTHING) < 0) &&)
+	if (!(SDL_Init(SDL_INIT_EVERYTHING) < 0) && !(TTF_Init() < 0))
 	{
 		env = sdl_main_loop(sdl_init(env));
 	}
@@ -259,5 +258,6 @@ int main(void)
 		SDL_GetError();
 	}
 	SDL_Quit();
+	TTF_Quit();
 	return (0);
 }

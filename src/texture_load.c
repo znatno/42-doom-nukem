@@ -18,31 +18,31 @@ void	texture_cords(t_env *env)
 
 	cords = (t_xy *)malloc(sizeof(t_xy) * 10);
 	cords[DRAW_MODE].x = 1425;
-	cords[DRAW_MODE].y = 65;
+	cords[DRAW_MODE].y = 10;
 
 	cords[SELECT_MODE].x = 1425;
-	cords[SELECT_MODE].y = 130;
+	cords[SELECT_MODE].y = 70;
 
 	cords[WALL_MODE].x = 1425;
-	cords[WALL_MODE].y = 205;
+	cords[WALL_MODE].y = 130;
 
 	cords[REFRESH].x = 1425;
-	cords[REFRESH].y = 280;
+	cords[REFRESH].y = 190;
 
 	cords[CEIL].x = 1425;
-	cords[CEIL].y = 355;
+	cords[CEIL].y = 300;
 
 	cords[FLOOR].x = 1425;
-	cords[FLOOR].y = 425;
+	cords[FLOOR].y = 360;
 
 	cords[LEFT].x = 1425;
-	cords[LEFT].y = 500;
+	cords[LEFT].y = 450;
 
 	cords[RIGHT].x = 1530;
-	cords[RIGHT].y = 500;
+	cords[RIGHT].y = 450;
 
-	cords[PLAYER].x = 1425;
-	cords[PLAYER].y = 575;
+	cords[PLAYER].x = 1420;
+	cords[PLAYER].y = 520;
 
 	cords[OBJECTS].x = 1470;
 	cords[OBJECTS].y = 640;

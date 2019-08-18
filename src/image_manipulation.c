@@ -28,8 +28,9 @@ uint32_t	get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y, uint32_t color)
 void	draw_text(uint32_t cord_x, uint32_t cord_y, char *text, t_env *env)
 {
 	TTF_Font	*font = TTF_OpenFont("../fonts/FiraSans-Regular.ttf", 32);
-	SDL_Color	color = {255, 255, 255};
+	SDL_Color	color = {255, 255, 255, 0};
 	SDL_Surface	*font_surface = TTF_RenderText_Solid(font, text, color);
+	font_surface = SDL_ConvertSurfaceFormat(font_surface, SDL_PIXELFORMAT_BGRA32, 0);
 	uint32_t it_x;
 	uint32_t it_y;
 	uint32_t size_w;
@@ -48,7 +49,7 @@ void	draw_text(uint32_t cord_x, uint32_t cord_y, char *text, t_env *env)
 		}
 		it_y++;
 	}
-
+	TTF_CloseFont(font);
 }
 
 void	draw_tools(t_env *env)
@@ -65,6 +66,14 @@ void	draw_tools(t_env *env)
 	draw_texture(env->textures->cords[OBJECTS], OBJECTS, 0xffffff, env);
 	line((t_xy){.x = 1495,.y = 700}, (t_xy){.x = 1495, .y = 930}, env, 0xffffff);
 	line((t_xy){.x = 1410,.y = 730}, (t_xy){.x = 1590, .y = 730}, env, 0xffffff);
+	draw_text(1480, 15, "- draw", env);
+	draw_text(1480, 75, "- select", env);
+	draw_text(1480, 135, "- wall", env);
+	draw_text(1475, 195, "- refresh", env);
+	draw_text(1480, 305, "- 20", env);
+	draw_text(1480, 365, "- 0", env);
+	draw_text(1480, 515, "x -", env);
+	draw_text(1480, 550, "y -", env);
 }
 
 void	draw_texture(t_xy cords ,uint32_t num_tex, uint32_t color,t_env *env)
