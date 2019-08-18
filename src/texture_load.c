@@ -20,6 +20,8 @@ void	texture_cords(t_env *env)
 	cords[DRAW_MODE].x = 1425;
 	cords[DRAW_MODE].y = 10;
 
+	printf("draw_mode_x - %d| draw_mode_y - %d\n", cords[DRAW_MODE].x, cords[DRAW_MODE].y);
+
 	cords[SELECT_MODE].x = 1425;
 	cords[SELECT_MODE].y = 70;
 
@@ -78,4 +80,25 @@ void	texture_load(t_env *env)
 	arr_tex[9] = SDL_ConvertSurfaceFormat(arr_tex[9], SDL_PIXELFORMAT_BGRA32, 0);
 	env->textures->arr_tex = arr_tex;
 	texture_cords(env);
+	texture_cords_end(env);
+	env->textures->pre = -1;
+	env->textures->selected = -1;
+}
+
+void	texture_cords_end(t_env *env)
+{
+	t_xy	*cords_end;
+	int 	i;
+
+	i = 0;
+	cords_end = (t_xy *)malloc(sizeof(t_xy) * 10);
+	while (i < 10)
+	{
+		cords_end[i].x = env->textures->cords[i].x + env->textures->arr_tex[i]->w;
+		cords_end[i].y = env->textures->cords[i].y + env->textures->arr_tex[i]->h;
+		printf("draw_mode_end_x - %d| draw_mode_end_y - %d\n", cords_end[i].x, cords_end[i].y);
+		printf("draw_mode_x - %d| draw_mode_y - %d\n", env->textures->cords[i].x, env->textures->cords[i].y);
+		i++;
+	}
+	env->textures->cords_end = cords_end;
 }

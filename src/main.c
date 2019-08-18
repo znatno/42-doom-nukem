@@ -209,6 +209,8 @@ t_env *sdl_main_loop(t_env *env)
 					draw_dot(env, draw, head);
 //					draw_vertex(env, draw);
 				}
+				SDL_GetMouseState(&env->mouse_x, &env->mouse_y);
+				draw_select_text(env);
 			}
 		}
 		draw_frame(env);

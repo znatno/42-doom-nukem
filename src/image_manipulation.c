@@ -74,6 +74,8 @@ void	draw_tools(t_env *env)
 	draw_text(1480, 365, "- 0", env);
 	draw_text(1480, 515, "x -", env);
 	draw_text(1480, 550, "y -", env);
+	if (env->textures->selected >= 0)
+		draw_texture(env->textures->cords[env->textures->selected], env->textures->selected, 0xf98d8d, env);
 }
 
 void	draw_texture(t_xy cords ,uint32_t num_tex, uint32_t color,t_env *env)
