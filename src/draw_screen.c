@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/02 21:38:26 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/18 21:21:51 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/18 21:26:30 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	print_data_ds(t_player *p)
 	printf("| cur_s = %u | num_s = %u|\n", p->sector, p->num_scts);
 	printf("| ground = %i | falling = %i | moving = %i | ducking = %i | eyeheight = %5f|\n", p->ground, p->falling, p->moving, p->ducking,p->eyeheight);
 	printf("| move_x = %5f | move_y = %5f |\n", p->mv.x, p->mv.y);
-	printf("| mouse_aim_x = %i | mouse_aim_y = %i | mouse_aim_yaw = %5f |\n", p->ms.x, p->ms.y, p->ms.yaw);
+	printf("| mouse_aim_x = %i | mouse_aim_y = %i | mouse_aim_yaw = %5f |\n",p->ms.x, p->ms.y, p->ms_yaw);
 	printf("---------------------\n");
 }
 

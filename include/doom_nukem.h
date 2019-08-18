@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/18 18:33:23 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/18 23:10:05 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,6 @@ typedef struct	s_xy_i
 {
 	int			x;
 	int			y;
-	float 		yaw;
 }				t_xy_i;
 
 /* Sectors: Floor and ceiling height; list of edge vertices and neighbors */
@@ -153,6 +152,7 @@ typedef struct		s_player
 	int 			pushing;
 	float			aclrt;		// acceleration / прискорення
 	t_xy_i			ms;			// mouse aiming
+	float 			ms_yaw;
 	t_sdl_main		*sdl;
 
 	bool			draw_look; // для перегляду відмальовування полінійно
@@ -251,8 +251,35 @@ typedef struct		s_draw_screen_calc
 	t_item				*que;
 }					t_draw_screen_calc;
 
-void			draw_screen(t_sector *sector, t_player plr);
+typedef struct		s_font
+{
+	SDL_Color		color;
+	TTF_Font		*font;
+	t_xy_i			pos;
+
+}					t_font;
+
+typedef struct		s_game
+{
+	t_player	plr;
+	t_sdl_main	sdl;
+	t_sector	*sectors;
+	int			error;
+}					t_game;
+
+
+/*
+** Initialize functions
+*/
+
+void			init_sdl(t_sdl_main *sdl);
 void 			load_data(t_player *player, t_sector **sectors);
+
+/*
+** Draw functions
+*/
+
+void			draw_screen(t_sector *sector, t_player plr);
 void			vline(int x, int y1, int y2, int color, t_player *player);
 t_xy			vv_to_v(float x0, float y0, float x1, float y1);
 float			len_vector(t_xy		free_vector);
@@ -292,19 +319,16 @@ void			do_fall(t_player *plr, t_sector **sectors);
 **	Quit
 */
 
-int				exit_doom(t_sector **sectors, t_player *plr);
+int				exit_doom(t_game *g);
 
-//void			init_sdl(t_sdl_main *sdl);
-//SDL_Texture	*load_texture(char *path, t_sdl_main *sdl);
 char			*ft_itof(long double k);
 
-int g_x; //temp global iterator, delete it at the end
+int				g_x; //temp global iterator, todo delete it at the end
 
 /*
-** Font functions
+** Font and text functions
 */
 
-SDL_Surface		*renderFontToSurface(TTF_Font *font, char *text);
-TTF_Font		*getFont(char *filename, int size);
+void		show_msg(t_sdl_main *sdl, char *text, t_font font);
 
 #endif

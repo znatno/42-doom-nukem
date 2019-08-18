@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:05:45 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/18 16:37:49 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/18 23:27:54 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ void	UnloadData(t_sector **sectors, t_player *plr)
 	free(*sectors);
 	*sectors = NULL;
 	plr->num_scts = 0;
+	//todo All Font Closing
 }
 
 /*
@@ -56,9 +57,13 @@ void	vline(int x, int y1, int y2, int color, t_player *plr)
 **	Quit
 */
 
-int		exit_doom(t_sector **sectors, t_player *plr)
+int		exit_doom(t_game *g)
 {
-	UnloadData(&(*sectors), &(*plr));
+	if (g->error)
+		ft_putendl_fd("text", 2);
+	else
+		ft_putendl("text");
+	UnloadData(&g->sectors, &g->plr);
 	SDL_Quit();
 	TTF_Quit();
 	exit(0);
