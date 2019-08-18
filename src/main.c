@@ -220,6 +220,7 @@ t_sounds *init_music_n_sounds() {
 int 		main(void)
 {
 	t_player	plr;
+	t_textures	tex;
 	t_sdl_main	sdl;
 	t_sector	*sectors;
 	t_sounds	*sounds;
@@ -229,6 +230,7 @@ int 		main(void)
 						.eyeheight = EyeHeight };
 	plr.key = (t_keys){ .w = 0, .s = 0, .a = 0, .d = 0 };
 	plr.sdl = &sdl;
+	sdl.textures = &tex;
 	plr.num_scts = 0;
 
 	//
@@ -236,6 +238,7 @@ int 		main(void)
 	//
 
 	load_data(&plr, &sectors);
+	textures_init(&sdl);
 
 	if (SDL_Init(SDL_INIT_EVERYTHING != 0) || TTF_Init() == -1)
 		printf("init");

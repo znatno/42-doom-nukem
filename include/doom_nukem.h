@@ -23,14 +23,15 @@
 # include "SDL.h"
 # include "SDL_mixer.h"
 # include "SDL_image.h"
+# include "SDL_surface.h"
+# include "SDL_pixels.h"
 # include "SDL_ttf.h"
 
 /* Define window size */
-#define W 640
-#define H 480
-
-#define Yaw(y, z) (y + z * plr.yaw) // Y-axis angle of player camera
-#define MaxQue	32			// max num of sectors what will be rendered
+#define W 1024
+#define H 768
+#define Yaw(y, z) (y + z * plr.yaw)
+#define MaxQue	32
 #define EyeHeight  6		// Camera height from floor when standing
 #define DuckHeight 2.5		// And when crouching
 #define HeadMargin 1		// How much room there is above camera before the head hits the ceiling
@@ -38,11 +39,28 @@
 #define hfov (0.73f * H)	// Affects the horizontal field of vision
 #define vfov (.2f * H)		// Affects the vertical field of vision
 #define isdigit(c) (c >= '0' && c <= '9')
-#define SEC_COLOR	0x0000ff00
-#define BLACK_COLOR	0x00
-#define FILE_NAME "../test.txt"
-#define GET_ANGLE_V0_V1(xy0, xy1) (radian_to_grades(acosf(angle_vv(scalar_product(xy0, xy1), len_vector(xy0), len_vector(xy1)))))
-
+#define SEC_COLOR 0x0000ff00
+#define BLACK_COLOR 0x00
+#define ANGLE_V0_V1(xy0, xy1) (radian_to_grades(acosf(angle_vv(scalar_product(xy0, xy1), len_vector(xy0), len_vector(xy1)))))
+#define CeilingFloorScreenCoordinatesToMapCoordinates(mapY, screenX,screenY, X,Z) \
+                    do { Z = (mapY)*H*vfov / ((H/2 - (screenY)) - p->yaw*H*vfov); \
+                         X = (Z) * (W/2 - (screenX)) / (W*hfov); \
+                         RelativeMapCoordinatesToAbsoluteOnes(X,Z); } while(0)
+//
+#define RelativeMapCoordinatesToAbsoluteOnes(X,Z) \
+                    do { float rtx = (Z) * ds->f->pcos + (X) * ds->f->psin; \
+                         float rtz = (Z) * ds->f->psin - (X) * ds->f->pcos; \
+                         X = rtx + p->where.x; Z = rtz + p->where.y; \
+                    } while(0)
+#define FILE_NAME "map-clear.txt"
+#define RED					0
+#define GREEN				1
+#define BLUE				2
+#define TOP_PORTAL_WALL	0
+#define BOTTOM_PORTAL_WALL 1
+#define FULL_WALL			2
+#define CEIL				3
+#define FLOOR				4
 //	Utility functions. Because C doesn't have templates,
 //	we use the slightly less safe preprocessor macros to
 //	implement these functions that work with multiple types.
@@ -117,12 +135,23 @@ typedef struct		s_move_vec
 	float 			y;
 }					t_move_vec;
 
+typedef struct		s_textures
+{
+	SDL_Surface		**arr_tex;
+	uint32_t 		txt_y;
+	uint32_t		txt_x;
+	float 			perc_x;
+	float 			perc_y;
+}					t_textures;
+
+
 typedef struct			s_sdl_main
 {
 	SDL_DisplayMode		display_mode;
 	SDL_Window			*window;
 	SDL_Renderer		*renderer;
-	SDL_Surface			*w_surface;
+	SDL_Surface			*win_surface;
+	t_textures			*textures;
 }						t_sdl_main;
 
 typedef struct		s_sounds
@@ -190,6 +219,10 @@ typedef struct	s_calc_tmp_float
 	float yfloor;
 	float nyceil;
 	float nyfloor;
+	float perc_light;
+	float hei;
+	float mapx;
+	float mapz;
 }				t_calc_tmp_float;
 
 typedef struct	s_calc_tmp_int
@@ -219,6 +252,11 @@ typedef struct	s_calc_tmp_int
 	int 		cnya;
 	int 		nyb;
 	int 		cnyb;
+	int 		u0;
+	int 		u1;
+	int 		txtx;
+	int 		txty;
+	int 		pel;
 	unsigned	r1;
 	unsigned 	r2;
 	unsigned	r;
@@ -232,12 +270,27 @@ typedef struct	s_item
 	int sx2;
 }				t_item;
 
+typedef struct		s_scaler
+{
+	int				result;
+	int 			bop;
+	int 			fd;
+	int 			ca;
+	int 			cache;
+}					t_scaler;
+
 typedef struct		s_calc_tmp_struct
 {
 	t_item				now;
+	t_scaler			ya_int;
+	t_scaler			yb_int;
+	t_scaler			nya_int;
+	t_scaler			nyb_int;
 	const t_sector 		*sect;
 	t_xy				i1;
 	t_xy				i2;
+	t_xy				org1;
+	t_xy				org2;
 	t_item				*head;
 	t_item				*tail;
 	t_sector			*sector;
@@ -252,16 +305,28 @@ typedef struct		s_draw_screen_calc
 	t_item				*que;
 }					t_draw_screen_calc;
 
-void			draw_screen(t_sector *sector, t_player plr);
-void 			load_data(t_player *player, t_sector **sectors);
-void			vline(int x, int y1, int y2, int color, t_player *player);
-t_xy			vv_to_v(float x0, float y0, float x1, float y1);
-float			len_vector(t_xy		free_vector);
-float			scalar_product(t_xy xy0, t_xy xy1);
-float			angle_vv(float scalar_product, float len0, float len1);
-float			radian_to_grades(float rad);
-float			vector_product(t_xy xy0, t_xy xy1);
-int				move_or_not(t_xyz where ,t_sector sector, unsigned sect_num);
+void		draw_screen(t_sector *sector, t_player plr);
+void 		load_data(t_player *player, t_sector **sectors);
+char		*ft_itof(long double k);
+void	vline(int y1, int y2, int color, t_player *player, t_draw_screen_calc *ds);
+void	vline_texture(int y1, int y2, int text_num, t_player *plr, t_draw_screen_calc *ds);
+t_xy Intersect(float x1, float y1, float x2, float y2, float x3, float y3,
+			   float x4, float y4);
+void					init_sdl(t_sdl_main *sdl);
+t_xy	vv_to_v(float x0, float y0, float x1, float y1);
+float	len_vector(t_xy		free_vector);
+float	scalar_product(t_xy xy0, t_xy xy1);
+float	angle_vv(float scalar_product, float len0, float len1);
+float	radian_to_grades(float rad);
+float	vector_product(t_xy xy0, t_xy xy1);
+int		move_or_not(t_xyz where ,t_sector sector, unsigned sect_num);
+void	textures_init(t_sdl_main *sdl);
+float		percentage(int start, int end, int curr);
+void	render(int draw_mode ,int texture_num, t_player *p, t_draw_screen_calc *ds);
+int 	scaler_next(t_scaler *i);
+t_scaler scaler_init(int a, int b, int c, int d, int f);
+int		ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);
+void vline2(int y1,int y2, t_scaler ty, unsigned txtx, t_player *p, t_draw_screen_calc *ds, int tn);
 
 /*
 **  "math_fts.c" Math functions for vectors and other things
