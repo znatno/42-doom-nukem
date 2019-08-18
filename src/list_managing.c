@@ -263,7 +263,7 @@ t_sector *last_in_list(t_draw *draw)
 	t_sector *cur;
 
 	cur = draw->head;
-	while (cur->next && (cur = cur->next))
+	while (cur && cur->next && (cur = cur->next))
 		;
 	return (cur);
 }
@@ -272,22 +272,42 @@ void 	malloc_list(t_sector *sect)
 {
 	sect = sect->next;
 	sect->vertexes = ft_memalloc(sizeof(t_vertex));
+	sect->vertexes->next = NULL;
 	sect->next = NULL;
 }
 
 void 	malloc_list_first(t_sector *sect)
 {
 	sect->vertexes = ft_memalloc(sizeof(t_vertex));
+	sect->vertexes->next = NULL;
 	sect->next = NULL;
 }
 
-void	pop_from_stack_to_list(t_draw *draw, t_stack *stack)
+void	malloc_vertex(t_vertex *vert)
+{
+
+}
+
+void	pop_from_stack_to_list(t_draw *draw, t_stack **head)
 {
 	t_sector *cur_s;
 	t_vertex *cur_v;
+	t_xy   cur_data[4];
+	t_xy   first_data;
+
 
 	cur_s = last_in_list(draw);
-
+	first_data = (*head)->xy;
+	cur_data[0] = stack_pop(head);
+	cur_data[1] = stack_pop(head);
+	cur_data[2] = stack_pop(head);
+	cur_data[3] = stack_pop(head);
+	printf("cur_data[0] = %d %d\n",cur_data[0].x, cur_data[0].y);
+	printf("cur_data[1] = %d %d\n",cur_data[1].x, cur_data[1].y);
+	printf("cur_data[2] = %d %d\n",cur_data[2].x, cur_data[2].y);
+	printf("cur_data[3] = %d %d\n",cur_data[3].x, cur_data[3].y);
+	printf("first_data = %d %d\n",first_data.x, first_data.y);
+	exit(1);
 }
 
 void save_stack_to_list (t_env *env, t_draw *draw, t_stack **head)

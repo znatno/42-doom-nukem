@@ -110,7 +110,8 @@ typedef struct s_env
 
     SDL_Window *window;
     SDL_Surface *win_surface;
-	uint32_t *buffergitint zoom;
+	uint32_t *buffer;
+	int zoom;
     int sdl_error;
 } t_env;
 
@@ -176,6 +177,14 @@ void 	malloc_list(t_sector *sect);
 void 	malloc_list_first(t_sector *sect);
 
 t_sector *last_in_list(t_draw *draw);
+
+
+/*
+ * list comb with stack
+ */
+
+
+void	pop_from_stack_to_list(t_draw *draw, t_stack **head);
 
 #endif
 

@@ -54,7 +54,7 @@ void	stack_draw(t_env *env, t_draw *draw, t_stack **head)
 			while (temp->next)
 				temp = temp->next;
 			line((*head)->xy, temp->xy, env, BLUE);
-//			save_stack_to_list(env, draw, head);
+			save_stack_to_list(env, draw, head);
 		}
 		else
 		{
