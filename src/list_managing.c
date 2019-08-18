@@ -307,15 +307,16 @@ void	pop_from_stack_to_list(t_draw *draw, t_stack **head)
 
 	while (cur_data.x != -42)
 	{
-		head_v->next = ft_memalloc(sizeof(t_vertex));
-		head_v = head_v->next;
 		head_v->xy1 = cur_data;
 		cur_data = stack_pop(head);
-		(cur_data.x != -42) ? (head_v->xy2 = cur_data) : cur_data;
+		(cur_data.x != -42) ? (head_v->xy2 = cur_data) : (head_v->xy2 = first_data);
+		if (cur_data.x != -42)
+		{
+			head_v->next = ft_memalloc(sizeof(t_vertex));
+			head_v = head_v->next;
+		}
 	}
-	head_v->xy2 = first_data;
-	head_v->next = NULL;
-	print_all_sectors(draw, draw->head);
+	head_v = NULL;
 }
 
 void save_stack_to_list (t_env *env, t_draw *draw, t_stack **head)

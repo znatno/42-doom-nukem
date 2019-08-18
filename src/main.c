@@ -160,7 +160,7 @@ t_env *sdl_main_loop(t_env *env)
 			{
 				if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
 				{
-//					print_all_portals(draw);
+					print_all_sectors(draw, draw->head);
 //					stack_print(head);
 				loop = 0;
 				}
