@@ -21,6 +21,18 @@
 #define W_HEIGHT 950
 #define W_DRAW 1400
 #define H_DRAW 800
+#define X		0
+#define Y		1
+#define CEIL		0
+#define DRAW_MODE	1
+#define FLOOR		2
+#define	LEFT		3
+#define	OBJECTS		4
+#define	PLAYER		5
+#define	REFRESH		6
+#define RIGHT		7
+#define SELECT_MODE 8
+#define WALL_MODE	9
 
 #define NONE 0
 #define LOOP_START 1
@@ -105,15 +117,21 @@ typedef struct s_draw
     char key;
 } t_draw;
 
+typedef struct		s_textures
+{
+	SDL_Surface		**arr_tex;
+	t_xy			*cords;
+}					t_textures;
+
 typedef struct s_env
 {
 
     SDL_Window *window;
     SDL_Event window_e;
-    SDL_Renderer *renderer;
-    SDL_Texture *texture;
+    SDL_Surface	*win_surface;
+    t_textures	*textures;
 //    SDL_Event       event;
-    int *buffer;
+    uint32_t *buffer;
     int zoom;
     int sdl_error;
 } t_env;
@@ -130,7 +148,19 @@ void draw_frame(t_env *env);
 
 void draw_desk(t_env *env);
 
+void	draw_tools(t_env *env);
+
+void	draw_texture(t_xy cords ,uint32_t num_tex, uint32_t color,t_env *env);
+
 void    clear_screen(t_env *env);
+
+void	texture_load(t_env *env);
+
+void	texture_cords(t_env *env);
+
+void	draw_text(uint32_t cord_x, uint32_t cord_y, char *text, t_env *env);
+
+uint32_t	get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y, uint32_t color);
 
 
 /*
