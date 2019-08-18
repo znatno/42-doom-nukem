@@ -115,6 +115,7 @@ typedef struct s_env
     int sdl_error;
 } t_env;
 
+
 void line(t_xy pt1, t_xy pt2, t_env *env, u_int color);
 
 /*

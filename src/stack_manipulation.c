@@ -25,7 +25,8 @@ t_xy    stack_pop(struct s_stack **head)
 		*head = temp;
 		return (data);
 	}
-	data.x = -9e9;
+	data.x = -42;
+	data.y = -42;
 	return (data);
 }
 
