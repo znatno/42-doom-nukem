@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/16 18:40:50 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/18 15:12:14 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,8 @@
 #define max(a, b)             (((a) > (b)) ? (a) : (b))		// max: Choose greater of two scalars.
 
 // мінімальне з {"ma", максимальне з {a, mi}}
-#define clamp(a, mi, ma)      min(max(a,mi),ma)				// clamp: Clamp value into set range.
+#define clamp(a, mi, ma)      min(max(a,mi),ma)				// clamp: Clamp
+// value into set range.x
 
 // Векторний добуток
 #define vxs(x0, y0, x1, y1)   ((x0)*(y1) - (x1)*(y0))		// vxs: Vector cross product

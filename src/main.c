@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/16 19:32:03 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/18 16:38:33 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,9 @@ void		events(t_sector **sectors, t_player *plr)
 				TTF_Font *font = getFont("../Lato-Regular.ttf", 26);
 				plr->sdl->w_surface = renderFontToSurface(font, "xyi");
 				SDL_UpdateWindowSurface(plr->sdl->window);
-				SDL_Delay(20000);
-				exit_doom(sectors, plr);
+
+				SDL_Delay(100);
+				//exit_doom(sectors, plr);
 
 				printf("\n\t---------------------------\n");
 				printf("\t\t\t[print msg]\n");
@@ -80,40 +81,45 @@ void		events(t_sector **sectors, t_player *plr)
 	}
 }
 
-void		showmsg(t_sdl_main *sdl)
+void		showmsg(t_sdl_main *sdl, char *text)
 {
-	TTF_Font* Sans = TTF_OpenFont("Sans.ttf", 24);
+	TTF_Font *font = TTF_OpenFont("../Lato-Regular.ttf", 24);
 	//this opens a font style and sets a size
 
 	SDL_Color White = {255, 255, 255};
-	// this is the color in rgb format, maxing out all would give you the color
-	// white, and it will be your text's color
+	/* this is the color in rgb format, maxing out all would give you the color
+	** white, and it will be your text's color */
 
-	SDL_Surface* surfaceMessage = TTF_RenderText_Solid(Sans, "put your text here", White);
-	// as TTF_RenderText_Solid could only be used on SDL_Surface then you have
-	// to create the surface first
+	SDL_Surface *surfaceMessage = TTF_RenderText_Solid(font, text, White);
+	/* as TTF_RenderText_Solid could only be used on SDL_Surface then you have
+	** to create the surface first */
 
-	//SDL_Texture* Message = SDL_CreateTextureFromSurface(renderer,surfaceMessage);
-	//now you can convert it into a texture
+	SDL_Texture *Message = SDL_CreateTextureFromSurface(sdl->renderer, surfaceMessage);
+	/* now you can convert it into a texture */
 
-	SDL_Rect Message_rect; //create a rect
-	Message_rect.x = 0;  //controls the rect's x coordinate
-	Message_rect.y = 0; // controls the rect's y coordinte
-	Message_rect.w = 100; // controls the width of the rect
-	Message_rect.h = 100; // controls the height of the rect
+	SDL_Rect Message_rect;	// create a rect
+	Message_rect.x = 0;		// controls the rect's x coordinate
+	Message_rect.y = 0;		// controls the rect's y coordinte
+	TTF_SizeText(font, text, &Message_rect.w, &Message_rect.h);
+	/* Message_rect.w = 100; // controls the width of the rect
+	** Message_rect.h = 100; // controls the height of the rect */
 
-	//Mind you that (0,0) is on the top left of the window/screen, think a rect as
-	// the text's box, that way it would be very simple to understance
+	/* Mind you that (0,0) is on the top left of the window/screen, think a
+	** rect as the text's box, that way it would be very simple to understance
+	**
+	** Now since it's a texture, you have to put RenderCopy in your game loop
+	** area, the area where the whole code executes
+	*/
 
-	//Now since it's a texture, you have to put RenderCopy in your game loop area,
-	// the area where the whole code executes
+	SDL_RenderCopy(sdl->renderer, Message, NULL, &Message_rect);
+	/* you put the renderer's name first, the Message, the crop size(you can
+	** ignore this if you don't want to dabble with cropping), and the rect
+	** which is the size and coordinate of your texture
+	**
+	**Don't forget too free your surface and texture
+	*/
 
-	//SDL_RenderCopy(renderer, Message, NULL, &Message_rect);
-	//you put the renderer's name first, the Message, the crop size(you can
-	// ignore this if you don't want to dabble with cropping), and the rect
-	// which is the size and coordinate of your texture
-
-	//Don't forget too free your surface and texture
+	TTF_CloseFont(font);
 }
 
 void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
@@ -185,12 +191,10 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors)
 		plr->vlct.y = plr->vlct.y * (1 - plr->aclrt) + plr->mv.y * plr->aclrt;
 		if (plr->pushing)
 			plr->moving = 1;
-		/*else // припинення ходьби після відтиску клавіші
-			plr->moving = 0;*/
 
 		draw_screen(sectors, *plr);
-		//showmsg("Game Loop");
 		SDL_UpdateWindowSurface(sdl->window);
+		//showmsg(sdl, "TEST");
 		SDL_Delay(20);
 	}
 }
@@ -215,15 +219,23 @@ int 		main(void)
 	load_data(&plr, &sectors);
 
 	if (SDL_Init(SDL_INIT_EVERYTHING != 0) || TTF_Init() == -1)
-		printf("init");
+		printf("init error");
 	sdl.window = SDL_CreateWindow("Doom Nukem", SDL_WINDOWPOS_CENTERED,
 			SDL_WINDOWPOS_CENTERED, W, H,  SDL_WINDOW_SHOWN);
+	//SDL_CreateWindowAndRenderer(W, H, SDL_WINDOW_SHOWN, &sdl.window, &sdl.renderer);
 	if (!sdl.window)
-		printf("win");
+		printf("win error");
+	//sdl.renderer = SDL_CreateRenderer(sdl.window, 0, 0);
 	sdl.w_surface = SDL_GetWindowSurface(sdl.window);
 	plr.ms.yaw = 0;
 	game_loop(&sdl, &plr, sectors);
+
+	//
+
+	//
+
 	SDL_DestroyWindow(sdl.window);
 	SDL_Quit();
+	TTF_Quit();
 	return (0);
 }

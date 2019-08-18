@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:05:45 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/12 16:07:41 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/18 16:37:49 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,9 @@ void	UnloadData(t_sector **sectors, t_player *plr)
 
 void	vline(int x, int y1, int y2, int color, t_player *plr)
 {
-	int *pix = (int *)plr->sdl->w_surface->pixels;
+	int *pix;
+
+	pix = (int *)plr->sdl->w_surface->pixels;
 	y1 = clamp(y1, 0, H - 1);
 	y2 = clamp(y2, 0, H - 1);
 	if (y2 == y1)
@@ -58,5 +60,6 @@ int		exit_doom(t_sector **sectors, t_player *plr)
 {
 	UnloadData(&(*sectors), &(*plr));
 	SDL_Quit();
+	TTF_Quit();
 	exit(0);
 }

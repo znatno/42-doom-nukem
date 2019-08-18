@@ -47,8 +47,8 @@ SDL_Surface *renderFontToSurface(TTF_Font *font, char *text)
 	SDL_Rect text_rect;
 	text_rect.x = 2;
 	text_rect.y = 1;
-	text_rect.w = textw->w;
-	text_rect.h = textw->h;
+	text_rect.w = W;
+	text_rect.h = H;
 
 	SDL_UpperBlit(textw, NULL, surface, NULL);
 	text_rect.x = 0;
