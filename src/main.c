@@ -212,10 +212,7 @@ t_env *sdl_main_loop(t_env *env)
 			}
 		}
 		draw_frame(env);
-		SDL_UpdateTexture(env->texture, NULL, env->buffer,
-						  W_WIDTH * (sizeof(int)));
-		SDL_RenderCopy(env->renderer, env->texture, NULL, NULL);
-		SDL_RenderPresent(env->renderer);
+		SDL_UpdateWindowSurface(env->window);
 		SDL_Delay(10);
 	}
 	return (env);
@@ -233,20 +230,8 @@ t_env *sdl_init(t_env *env)
 	init_vars(env);
 	env->window = SDL_CreateWindow("doom-nukem-editor", 910, 510, W_WIDTH,
 								   W_HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
-	env->buffer = (int *) malloc(sizeof(int) * W_HEIGHT * W_WIDTH);
-	if (!env->window)
-	{
-		//env->sdl_error = ERROR_WINDOW;
-		SDL_GetError();
-	}
-	env->renderer = SDL_CreateRenderer(env->window, -1,
-									   SDL_RENDERER_ACCELERATED |
-									   SDL_RENDERER_PRESENTVSYNC);
-
-	env->texture = SDL_CreateTexture(env->renderer,
-									 SDL_PIXELFORMAT_ARGB32,
-									 SDL_TEXTUREACCESS_STREAMING,
-									 W_WIDTH, W_HEIGHT);
+	env->win_surface = SDL_GetWindowSurface(env->window);
+	env->buffer = (uint32_t *)env->win_surface->pixels;
 	return (env);
 }
 

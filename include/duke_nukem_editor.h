@@ -109,12 +109,8 @@ typedef struct s_env
 {
 
     SDL_Window *window;
-    SDL_Event window_e;
-    SDL_Renderer *renderer;
-    SDL_Texture *texture;
-//    SDL_Event       event;
-    int *buffer;
-    int zoom;
+    SDL_Surface *win_surface;
+	uint32_t *buffergitint zoom;
     int sdl_error;
 } t_env;
 
@@ -168,6 +164,18 @@ void    stack_print(struct s_stack **head);
 void    draw_dot(t_env *env, t_draw *draw, t_stack **head);
 
 void	stack_draw(t_env *env, t_draw *draw, t_stack **head);
+
+/*
+ * new list managing
+ */
+
+void save_stack_to_list (t_env *env, t_draw *draw, t_stack **head);
+
+void 	malloc_list(t_sector *sect);
+
+void 	malloc_list_first(t_sector *sect);
+
+t_sector *last_in_list(t_draw *draw);
 
 #endif
 
