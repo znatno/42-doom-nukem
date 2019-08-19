@@ -41,14 +41,9 @@ void	draw_select_text(t_env *env)
 
 	if (text_select > -1)
 	{
-		if (env->textures->pre >= 0)
-			draw_texture(env->textures->cords[env->textures->pre], env->textures->pre, 0xffffff, env);
 		env->textures->selected = text_select;
 		draw_texture(env->textures->cords[text_select], text_select, 0xf98d8d, env);
-		env->textures->pre = text_select;
-		SDL_UpdateWindowSurface(env->window);
 	}
 	env->mouse_x = -1;
 	env->mouse_y = -1;
-	printf("mouse_x - %d| mouse_y - %d\n", env->mouse_x, env->mouse_y);
 }
