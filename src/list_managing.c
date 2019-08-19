@@ -14,21 +14,14 @@ void print_sector(t_sector *temp)
 	// free(cur);
 }
 
-//void print_all_portals(t_draw *draw)
-//{
-//	t_portals *cur_s;
-//	t_vertex *cur_line;
-//
-//	cur_s = draw->portals;
-//	while (cur_s)
-//	{
-//		cur_line = cur_s->line;
-//			printf("x1 = %d y1 = %d \n x2 = %d y2 = %d\n\n",
-//				   cur_line->xy1.x, cur_line->xy1.y, cur_line->xy2.x,
-//				   cur_line->xy2.y);
-//		cur_s = cur_s->next;
-//	}
-//}
+void	draw_all_portals(t_env *env, t_draw *draw)
+{
+	t_portals *cur;
+
+	cur = draw->portals;
+	while (cur && (cur = cur->next))
+		line(cur->xy1, cur->xy2, env, RED);
+}
 
 void print_all_sectors(t_draw *draw, t_sector *temp)
 {
@@ -49,11 +42,67 @@ void print_all_sectors(t_draw *draw, t_sector *temp)
 	}
 }
 
+
+
+t_sector *last_portal(t_draw *draw)
+{
+	t_portals *cur;
+
+	cur = draw->portals;
+	while (cur->next)
+		cur = cur->next;
+	return (cur);
+}
+void 	malloc_portal(t_portals *portal, t_vertex *data, t_sector *temp_s, t_sector *cur_s)
+{
+	portal = portal->next;
+	portal->sec_a = cur_s;
+	portal->sec_b = temp_s;
+	portal->xy1 = data->xy1;
+	portal->xy2 = data->xy2;
+	portal->next = NULL;
+}
+
+void 	malloc_portal_first(t_portals *portal, t_vertex *data, t_sector *temp_s, t_sector *cur_s)
+{
+	portal->sec_a = cur_s;
+	portal->sec_b = temp_s;
+	portal->xy1 = data->xy1;
+	portal->xy2 = data->xy2;
+	portal->next = NULL;
+}
+
+
+void		new_portal(t_draw *draw, t_vertex *temp,t_sector *temp_s, t_sector *cur_s)
+{
+	t_portals *portal;
+
+	if (!draw->portals) // first element in list
+	{
+		portal = ft_memalloc(sizeof(t_portals));
+		draw->portals = portal;
+		malloc_portal_first(portal, temp, temp_s, cur_s);
+	}
+	else
+	{
+		portal = last_portal(draw);
+		portal->next = ft_memalloc(sizeof(t_sector));
+		malloc_portal(portal, temp, temp_s, cur_s);
+	}
+//	draw->s_count++;
+}
+
+
+
+
 void find_portal(t_env *env, t_draw *draw, t_vertex *temp, t_sector *temp_s)
 {
 	t_sector *cur_s;
 	t_vertex *cur_v;
 	int i;
+//				*** ***
+// 				 -   -
+//				\_____/
 
 	i = 0;
 	cur_s = draw->head;
@@ -75,51 +124,15 @@ void find_portal(t_env *env, t_draw *draw, t_vertex *temp, t_sector *temp_s)
 					temp->xy2.x == cur_v->xy1.x &&
 					temp->xy2.y == cur_v->xy1.y)) && (cur_s != temp_s))
 			{
-				line(temp->xy1, temp->xy2, env, RED);
-				printf("\n>>>>OCCURANCE<<<<\n", temp->xy1.x,temp->xy1.y,temp->xy2.x,temp->xy2.y);
+				new_portal(draw, temp, temp_s, cur_s);
+//				line(temp->xy1, temp->xy2, env, RED);
+//				printf("\n>>>>OCCURANCE<<<<\n", temp->xy1.x,temp->xy1.y,temp->xy2.x,temp->xy2.y);
 			}
 			cur_v = cur_v->next;
 		}
 		cur_s = cur_s->next;
 	}
 }
-
-//void add_sector_to_list(t_sector *temp, t_draw *draw)
-//{
-//	int i;
-//	t_vertex *head;
-//
-//	while (temp->next != NULL)
-//		temp = temp->next;
-//	if (!(temp->next = (t_sector *) malloc(sizeof(t_sector))))
-//		exit(111);
-//	temp = temp->next;
-//	if (!(temp->vertexes = (t_vertex *) malloc(sizeof(t_vertex))))
-//		exit(167);
-//	head = temp->vertexes;
-//	i = 0;
-//	while (++i < I)
-//	{
-//		temp->vertexes->xy1.x = draw->f_p[i - 1].x;
-//		temp->vertexes->xy1.y = draw->f_p[i - 1].y;
-//		temp->vertexes->xy2.x = draw->f_p[i].x;
-//		temp->vertexes->xy2.y = draw->f_p[i].y;
-//		temp->vertexes->next = NULL;
-//		temp->next = NULL;
-//		find_portal(draw, temp);
-//		if (!(temp->vertexes->next = (t_vertex *) malloc(sizeof(t_vertex))))
-//			exit(168);
-//		temp->vertexes = temp->vertexes->next;
-//	}
-//	temp->vertexes->xy1.x = draw->f_p[i - 1].x;
-//	temp->vertexes->xy1.y = draw->f_p[i - 1].y;
-//	temp->vertexes->xy2.x = draw->f_p[0].x;
-//	temp->vertexes->xy2.y = draw->f_p[0].y;
-//	temp->vertexes->next = NULL;
-//	temp->vertexes = head;
-//	temp->next = NULL;
-//	draw->s_count++;
-//}
 
 t_sector *check_if_deleted_sector(t_draw *draw, t_vertex *tmp,
 								  t_vertex *cur_v, t_sector *cur_s)

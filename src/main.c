@@ -43,6 +43,14 @@ void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head)
 		}
 		cur_s = cur_s->next;
 	}
+	if (draw->portals != NULL)
+	{
+		t_portals *cur;
+
+		cur = draw->portals;
+		while (cur && (cur = cur->next))
+			line(cur->xy1, cur->xy2, env, RED);
+	}
 }
 
 //void 				redraw_screen(t_draw *draw, t_env *env)
