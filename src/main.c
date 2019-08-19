@@ -148,7 +148,7 @@ t_env *sdl_main_loop(t_env *env)
 					delete_sector_from_list(draw);
 					select_sector_mode(env, draw, cur_s);
 				}
-				else if (kstate[SDL_SCANCODE_BACKSPACE] && !draw->s_mode && I == 0)
+				else if (kstate[SDL_SCANCODE_BACKSPACE] && !draw->s_mode)
 				{
 					stack_pop(head);
 					clear_screen(env);
@@ -157,9 +157,10 @@ t_env *sdl_main_loop(t_env *env)
 //					redraw_screen(draw, env);
 //					I = 0;
 				}
-				else if (kstate[SDL_SCANCODE_S] && I == 0)
+				else if (kstate[SDL_SCANCODE_S])
 				{
 					draw->s_mode = (draw->s_mode) ? 0 : 1;
+					(draw->s_mode) ? 0 == 0 : stack_draw(env, draw, head);
 				}
 				else if (kstate[SDL_SCANCODE_RIGHT] && draw->s_mode)
 				{
