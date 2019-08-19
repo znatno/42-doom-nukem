@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:05:45 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/19 19:49:22 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/19 19:51:12 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,17 @@ void	unload_data(t_game *g)
 	g->sectors = NULL;
 	g->plr.num_scts = 0;
 
+	/*
 	for (unsigned a = 0; a < FONTS_NUM; ++a)
 		clear_font(&g->fonts[a]);
 	free(g->fonts);
+	*/
 
+	/*
 	for (unsigned a = 0; a < MAX_MSGS; ++a)
 		clear_msg(&g->msgs[a]);
 	free(g->msgs);
+	*/
 }
 
 /*
