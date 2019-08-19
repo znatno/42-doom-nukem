@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/19 19:23:26 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/19 21:47:57 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ void		events(t_game *g)
 				g->plr.falling = 1;
 			}
 
-			if (ev.key.keysym.sym == 'p') //TODO: вивід корисної інфи для дебаґу
+			if (ev.key.keysym.sym == 'p')
 			{
 				g->msgs[1] = create_msg("Between two girls & one cup",
 						FONT_M_SM, (t_xy_i){64, 96}, 5);
@@ -82,11 +82,11 @@ void		events(t_game *g)
 	}
 }
 
-
-
 void		game_loop(t_game *g)
 {
-	g->msgs[0] = create_msg("Episode 1", FONT_M_MD, (t_xy_i){64, 64}, 5);
+	g->msgs[0] = create_msg("Episode 1", FONT_M_BG, (t_xy_i){40, 64}, 5);
+	g->msgs[1] = create_msg("HP: 100/100", FONT_M_MD, (t_xy_i){32, 380}, -1);
+	g->msgs[2] = create_msg("Notes: 0/10", FONT_M_MD, (t_xy_i){32, 420}, -1);
 	while (true)
 	{
 		/* Очищує буфер чорним кольором */
@@ -151,15 +151,12 @@ void		game_loop(t_game *g)
 		/* update window */
 		SDL_UpdateTexture(g->sdl.texture, NULL, g->sdl.buffer, W * (sizeof(int)));
 		SDL_RenderCopy(g->sdl.renderer, g->sdl.texture, NULL, NULL);
-		//SDL_RenderPresent(sdl->renderer);
 
-		//get_msgs
-		//if (g->tmp)
-		//init_font();
-		//show_msg(&g->sdl, "Test", pos);
+		/* place texts */
 		get_messages(g);
+
 		SDL_RenderPresent(g->sdl.renderer);
-		SDL_Delay(15);
+		SDL_Delay(20);
 		//printf("clock: %lu\n", clock());
 	}
 }
@@ -176,7 +173,7 @@ int 		main(void)
 	init_msgs(&g);
 
 	//Framework initialization
-	init_sdl(&g.sdl);
+	init_sdl(&g);
 
 	//Load map
 	load_data(&g.plr, &g.sectors);

@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/19 19:25:38 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/19 21:47:44 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,17 +28,17 @@
 # include "SDL_ttf.h"
 
 /* Define window size */
-#define W 640
-#define H 480
+# define W 640
+# define H 480
 
-#define YAW(y, z) (y + z * plr.yaw) // Y-axis angle of player camera
-#define MAX_QUE	32			// max num of sectors what will be rendered
-#define EYE_H  6		// Camera height from floor when standing
-#define DUCK_H 2.5		// And when crouching
-#define HEAD_MARGIN 1		// How much room there is above camera before the head hits the ceiling
-#define KNEE_H 2		// How tall obstacles the player can simply walk over without jumping
-#define HFOV (0.73f * H)	// Affects the horizontal field of vision
-#define VFOV (.2f * H)		// Affects the vertical field of vision
+#define YAW(y, z) (y + z * plr.yaw)	// Y-axis angle of player camera
+#define MAX_QUE	32					// max num of sectors what will be rendered
+#define EYE_H  6					// Camera height from floor when standing
+#define DUCK_H 2.5					// And when crouching
+#define HEAD_MARGIN 1				// How much room there is above camera before the head hits the ceiling
+#define KNEE_H 2					// How tall obstacles the player can simply walk over without jumping
+#define HFOV (0.73f * H)			// Affects the horizontal field of vision
+#define VFOV (.2f * H)				// Affects the vertical field of vision
 #define ISDIGIT(c) (c >= '0' && c <= '9')
 #define SEC_COLOR	0x0000ff00
 #define BLACK_COLOR	0x00
@@ -161,7 +161,7 @@ typedef struct		s_player
 	float			eyeheight;
 	t_keys			key;		// WASD провірка натиску клавіш
 	t_move_vec		mv;			// вектор руху
-	float 			speed;		// швидкість, менша для присяду, todo більша shift
+	float 			speed;		// швидкість, менша для присяду
 	int 			pushing;
 	float			aclrt;		// acceleration / прискорення
 	t_xy_i			ms;			// mouse aiming
@@ -279,6 +279,7 @@ typedef struct		s_msg
 	t_xy_i			pos;
 	double			seconds;
 	double 			start_t;
+	bool			constant;
 }					t_msg;
 
 typedef struct		s_game
@@ -290,8 +291,6 @@ typedef struct		s_game
 	t_msg		msgs[MAX_MSGS];
 
 	int			error;		// для виводу тексту помилки при виході
-
-	int			tmp; //todo delete
 }					t_game;
 
 
@@ -299,7 +298,7 @@ typedef struct		s_game
 ** Initialize functions
 */
 
-void			init_sdl(t_sdl_main *sdl);
+void			init_sdl(t_game *g);
 void 			load_data(t_player *player, t_sector **sectors);
 char			*ft_itof(long double k);
 

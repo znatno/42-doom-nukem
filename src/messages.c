@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/19 17:10:24 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/19 19:20:41 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/19 19:44:51 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,12 @@ t_msg	create_msg(char *text, uint8_t fontname, t_xy_i pos, int sec)
 	t_msg	m;
 
 	m.start_t = clock();
+	m.constant = false;
 	if (sec == -1)
-		m.seconds = sec * 250000;
+	{
+		m.seconds = 1;
+		m.constant = true;
+	}
 	else
 		m.seconds = sec * 250000;
 	m.text = text;
@@ -62,7 +66,7 @@ void	get_messages(t_game *g)
 	while (++i < MAX_MSGS)
 	{
 		if (cur_t > g->msgs[i].start_t + g->msgs[i].seconds
-			&& g->msgs[i].seconds)
+			&& g->msgs[i].seconds && !g->msgs[i].constant)
 			clear_msg(&g->msgs[i]);
 		else
 			show_msg(g, g->msgs[i], g->fonts[g->msgs[i].font_num]);

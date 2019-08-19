@@ -6,22 +6,22 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 20:18:22 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/18 23:36:36 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/19 21:47:44 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "doom_nukem.h"
 
-void	init_sdl(t_sdl_main *sdl)
+void	init_sdl(t_game *g)
 {
 	if (SDL_Init(SDL_INIT_EVERYTHING != 0) || TTF_Init() == -1)
 		printf("SDL_Init || TTF_Init error");
-	sdl->window = SDL_CreateWindow("Doom Nukem", SDL_WINDOWPOS_CENTERED,
+	g->sdl.window = SDL_CreateWindow("Doom Nukem", SDL_WINDOWPOS_CENTERED,
 			SDL_WINDOWPOS_CENTERED, W, H,  SDL_WINDOW_SHOWN);
-	sdl->renderer = SDL_CreateRenderer(sdl->window, 0, 0);
-	sdl->texture = SDL_CreateTexture(sdl->renderer, SDL_PIXELFORMAT_ARGB32,
+	g->sdl.renderer = SDL_CreateRenderer(g->sdl.window, 0, 0);
+	g->sdl.texture = SDL_CreateTexture(g->sdl.renderer, SDL_PIXELFORMAT_ARGB32,
 			SDL_TEXTUREACCESS_STREAMING, W, H);
-	sdl->buffer = (int *)malloc(sizeof(int) * W * H);
-	if (!sdl->window || !sdl->renderer || !sdl->buffer || !sdl->texture)
-		exit_doom(NULL); //todo remake
+	g->sdl.buffer = (int *)malloc(sizeof(int) * W * H);
+	if (!g->sdl.window || !g->sdl.renderer || !g->sdl.buffer || !g->sdl.texture)
+		exit_doom(g);
 }
