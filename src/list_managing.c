@@ -70,11 +70,12 @@ void find_portal(t_draw *draw, t_vertex *temp, t_sector *temp_s)
 				 temp->xy1.y == cur_v->xy1.y &&
 				 temp->xy2.x == cur_v->xy2.x &&
 				 temp->xy2.y == cur_v->xy2.y)
-				&& (temp->xy1.x == cur_v->xy2.x &&
-					temp->xy2.y == cur_v->xy1.y &&
+				|| (temp->xy1.x == cur_v->xy2.x &&
+					temp->xy1.y == cur_v->xy2.y &&
 					temp->xy2.x == cur_v->xy1.x &&
-					temp->xy2.y == cur_v->xy1.y)) 	&& cur_s != temp_s)
+					temp->xy2.y == cur_v->xy1.y)) && (cur_s != temp_s))
 			{
+
 				printf("\n>>>>OCCURANCE<<<<\n", temp->xy1.x,temp->xy1.y,temp->xy2.x,temp->xy2.y);
 			}
 			cur_v = cur_v->next;
