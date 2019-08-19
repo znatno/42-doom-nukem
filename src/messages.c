@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/19 17:10:24 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/19 19:12:09 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/19 19:20:41 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,10 @@ t_msg	create_msg(char *text, uint8_t fontname, t_xy_i pos, int sec)
 	t_msg	m;
 
 	m.start_t = clock();
-	m.seconds = sec * 250000;
+	if (sec == -1)
+		m.seconds = sec * 250000;
+	else
+		m.seconds = sec * 250000;
 	m.text = text;
 	m.pos = pos;
 	m.font_num = fontname;

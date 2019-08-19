@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/19 19:25:10 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/19 19:25:38 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -355,10 +355,11 @@ int				exit_doom(t_game *g);
 */
 
 void			load_fonts(t_game *g);
+void			clear_font(t_font *t);
 void			init_msgs(t_game *g);
 void			show_msg(t_game *g, t_msg m, t_font font);
 void			get_messages(t_game *g);
 t_msg			create_msg(char *text, uint8_t fontname, t_xy_i pos, int sec);
-
+void			clear_msg(t_msg *m);
 
 #endif

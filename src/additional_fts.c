@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:05:45 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/18 23:27:54 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/19 19:49:22 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,17 +16,23 @@
 **	Needs to prevent leaks on exit
 */
 
-void	UnloadData(t_sector **sectors, t_player *plr)
+void	unload_data(t_game *g)
 {
-	for (unsigned a = 0; a < plr->num_scts; ++a)
-		free((*sectors)[a].vertex);
-	for (unsigned a = 0; a < plr->num_scts; ++a)
-		free((*sectors)[a].neighbors);
-	free(*sectors);
-	*sectors = NULL;
-	plr->num_scts = 0;
-	//TTF_CloseFont()
-	//todo All Font Closing
+	for (unsigned a = 0; a < g->plr.num_scts; ++a)
+		free(g->sectors[a].vertex);
+	for (unsigned a = 0; a < g->plr.num_scts; ++a)
+		free(g->sectors[a].neighbors);
+	free(g->sectors);
+	g->sectors = NULL;
+	g->plr.num_scts = 0;
+
+	for (unsigned a = 0; a < FONTS_NUM; ++a)
+		clear_font(&g->fonts[a]);
+	free(g->fonts);
+
+	for (unsigned a = 0; a < MAX_MSGS; ++a)
+		clear_msg(&g->msgs[a]);
+	free(g->msgs);
 }
 
 /*
@@ -64,7 +70,7 @@ int		exit_doom(t_game *g)
 		ft_putendl_fd("text", 2);
 	else
 		ft_putendl("text");
-	UnloadData(&g->sectors, &g->plr);
+	unload_data(g);
 	SDL_Quit();
 	TTF_Quit();
 	exit(0);

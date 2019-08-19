@@ -6,13 +6,11 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/16 18:32:05 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/19 17:10:22 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/19 19:14:28 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "doom_nukem.h"
-
-
 
 t_font		get_font(char *name, int size, SDL_Color color)
 {
@@ -36,4 +34,12 @@ void		load_fonts(t_game *g)
 	g->fonts[FONT_S_SM] = get_font("../fonts/script.ttf", 14, white);
 	g->fonts[FONT_S_MD] = get_font("../fonts/script.ttf", 21, white);
 	g->fonts[FONT_S_BG] = get_font("../fonts/script.ttf", 32, white);
+}
+
+void		clear_font(t_font *t)
+{
+	t->name = 0;
+	t->size = 0;
+	t->color = (SDL_Color){0, 0, 0, 0};
+	TTF_CloseFont(t->ttf);
 }
