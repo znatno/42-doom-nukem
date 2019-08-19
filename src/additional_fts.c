@@ -25,6 +25,7 @@ void	UnloadData(t_sector **sectors, t_player *plr)
 	free(*sectors);
 	*sectors = NULL;
 	plr->num_scts = 0;
+	//TTF_CloseFont()
 	//todo All Font Closing
 }
 
@@ -38,8 +39,8 @@ void	vline(int x, int y1, int y2, int color, t_player *plr)
 	int *pix;
 
 	pix = (int *)plr->sdl->buffer;
-	y1 = clamp(y1, 0, H - 1);
-	y2 = clamp(y2, 0, H - 1);
+	y1 = CLAMP(y1, 0, H - 1);
+	y2 = CLAMP(y2, 0, H - 1);
 	if (y2 == y1)
 		pix[y1 * W + x] = BLACK_COLOR; //нижня межа вікна
 	else if (y2 > y1)

@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/19 15:23:41 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/19 19:25:10 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@
 # include <pthread.h>
 # include <stdio.h>
 # include <stdbool.h>
+# include <time.h>
+# include <sys/wait.h>
 # include "libft.h"
 # include "SDL.h"
 # include "SDL_mixer.h"
@@ -29,15 +31,15 @@
 #define W 640
 #define H 480
 
-#define Yaw(y, z) (y + z * plr.yaw) // Y-axis angle of player camera
-#define MaxQue	32			// max num of sectors what will be rendered
-#define EyeHeight  6		// Camera height from floor when standing
-#define DuckHeight 2.5		// And when crouching
-#define HeadMargin 1		// How much room there is above camera before the head hits the ceiling
-#define KneeHeight 2		// How tall obstacles the player can simply walk over without jumping
-#define hfov (0.73f * H)	// Affects the horizontal field of vision
-#define vfov (.2f * H)		// Affects the vertical field of vision
-#define isdigit(c) (c >= '0' && c <= '9')
+#define YAW(y, z) (y + z * plr.yaw) // Y-axis angle of player camera
+#define MAX_QUE	32			// max num of sectors what will be rendered
+#define EYE_H  6		// Camera height from floor when standing
+#define DUCK_H 2.5		// And when crouching
+#define HEAD_MARGIN 1		// How much room there is above camera before the head hits the ceiling
+#define KNEE_H 2		// How tall obstacles the player can simply walk over without jumping
+#define HFOV (0.73f * H)	// Affects the horizontal field of vision
+#define VFOV (.2f * H)		// Affects the vertical field of vision
+#define ISDIGIT(c) (c >= '0' && c <= '9')
 #define SEC_COLOR	0x0000ff00
 #define BLACK_COLOR	0x00
 #define FILE_NAME "../test.txt"
@@ -48,20 +50,31 @@
 //	implement these functions that work with multiple types.
 //	TODO: DELETE ALL OF THESE — MAKE FUNCTIONS
 
-#define min(a, b)             (((a) < (b)) ? (a) : (b))		// min: Choose smaller of two scalars.
-#define max(a, b)             (((a) > (b)) ? (a) : (b))		// max: Choose greater of two scalars.
+#define MIN(a, b)             (((a) < (b)) ? (a) : (b))		// min: Choose smaller of two scalars.
+#define MAX(a, b)             (((a) > (b)) ? (a) : (b))		// max: Choose greater of two scalars.
 
 // мінімальне з {"ma", максимальне з {a, mi}}
-#define clamp(a, mi, ma)      min(max(a,mi),ma)				// clamp: Clamp
+#define CLAMP(a, mi, ma)      MIN(MAX(a,mi),ma)				// clamp: Clamp
 // value into set range.x
 
 // Векторний добуток
-#define vxs(x0, y0, x1, y1)   ((x0)*(y1) - (x1)*(y0))		// vxs: Vector cross product
+#define VXS(x0, y0, x1, y1)   ((x0)*(y1) - (x1)*(y0))		// vxs: Vector cross product
 
 //	Overlap:  Determine whether the two number ranges overlap.
 //	Overlap(a0, a1, b0, b1) (min(a0,a1) <= max(b0,b1) && min(b0,b1) <= max(a0,a1))
 
+#define MAX_MSGS 100
 
+typedef enum	e_fonts
+{
+	FONT_M_SM = 0,
+	FONT_M_MD,
+	FONT_M_BG,
+	FONT_S_SM,
+	FONT_S_MD,
+	FONT_S_BG,
+	FONTS_NUM
+}				t_fonts;
 
 //Coordinates
 typedef struct	s_xyz
@@ -259,12 +272,26 @@ typedef struct		s_font
 	SDL_Color		color;
 }					t_font;
 
+typedef struct		s_msg
+{
+	char			*text;
+	uint8_t 		font_num;
+	t_xy_i			pos;
+	double			seconds;
+	double 			start_t;
+}					t_msg;
+
 typedef struct		s_game
 {
 	t_player	plr;
 	t_sdl_main	sdl;
 	t_sector	*sectors;
+	t_font		fonts[FONTS_NUM];
+	t_msg		msgs[MAX_MSGS];
+
 	int			error;		// для виводу тексту помилки при виході
+
+	int			tmp; //todo delete
 }					t_game;
 
 
@@ -274,6 +301,7 @@ typedef struct		s_game
 
 void			init_sdl(t_sdl_main *sdl);
 void 			load_data(t_player *player, t_sector **sectors);
+char			*ft_itof(long double k);
 
 /*
 ** Draw functions
@@ -312,8 +340,8 @@ float			point_side(float px, float py, float x0, float y0,
 void			move_player(t_player *plr, t_sector **sectors,
 							float dx, float dy);
 
-void			do_move(t_player *plr, t_sector **sc);
-void			do_fall(t_player *plr, t_sector **sectors);
+void			check_move(t_player *plr, t_sector **sc);
+void			check_fall(t_player *plr, t_sector **sectors);
 
 /*
 **	Quit
@@ -321,16 +349,16 @@ void			do_fall(t_player *plr, t_sector **sectors);
 
 int				exit_doom(t_game *g);
 
-char			*ft_itof(long double k);
-
-int				g_x; //temp global iterator, todo delete it at the end
 
 /*
 ** Font and text functions
 */
 
-void		show_msg(t_sdl_main *sdl, char *text, t_xy_i pos);
-TTF_Font	*get_font(char *filename, int size);
+void			load_fonts(t_game *g);
+void			init_msgs(t_game *g);
+void			show_msg(t_game *g, t_msg m, t_font font);
+void			get_messages(t_game *g);
+t_msg			create_msg(char *text, uint8_t fontname, t_xy_i pos, int sec);
 
 
 #endif

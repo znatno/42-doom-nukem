@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/19 15:30:23 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/19 19:23:26 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void		events(t_game *g)
 			if (ev.key.keysym.sym == 'f' && !g->plr.ducking)
 				g->plr.fly = !g->plr.fly ? 1 : 0;
 			if (ev.key.keysym.sym == ' ' && g->plr.ground
-				&& g->plr.where.z == g->sectors[g->plr.sector].floor + EyeHeight)
+				&& g->plr.where.z == g->sectors[g->plr.sector].floor + EYE_H)
 			{
 				g->plr.vlct.z += 0.5;
 				g->plr.falling = 1;
@@ -43,6 +43,12 @@ void		events(t_game *g)
 
 			if (ev.key.keysym.sym == 'p') //TODO: вивід корисної інфи для дебаґу
 			{
+				g->msgs[1] = create_msg("Between two girls & one cup",
+						FONT_M_SM, (t_xy_i){64, 96}, 5);
+
+				//create_msg(text, font, seconds);
+
+				/*
 				printf("\n\t---------------------------\n");
 				printf("\t\t\t[print msg]\n");
 				// поточний сектор
@@ -57,20 +63,21 @@ void		events(t_game *g)
 				printf("\tangle: %f\t\tyaw: %f\n",
 					   g->plr.angle, g->plr.yaw);
 				printf("\n\t---------------------------\n\n");
+				*/
 			}
 
 			if (ev.key.keysym.sym == SDLK_LCTRL && !g->plr.fly)
 				g->plr.ducking = !g->plr.ducking ? 1 : 0;
 		}
-		if (g->sectors[g->plr.sector].ceil < g->plr.where.z + HeadMargin)
+		if (g->sectors[g->plr.sector].ceil < g->plr.where.z + HEAD_MARGIN)
 			g->plr.ducking = true;
 		if (g->plr.ducking)
 		{
 			g->plr.falling = 1;
-			g->plr.eyeheight = DuckHeight;
+			g->plr.eyeheight = DUCK_H;
 		}
 		g->plr.run = kstate[SDL_SCANCODE_LSHIFT];
-		g->plr.speed = g->plr.run && g->plr.eyeheight != DuckHeight ? 0.28f : 0.20f;
+		g->plr.speed = g->plr.run && g->plr.eyeheight != DUCK_H ? 0.28f : 0.20f;
 		SDL_PumpEvents(); // обработчик событий
 	}
 }
@@ -79,6 +86,7 @@ void		events(t_game *g)
 
 void		game_loop(t_game *g)
 {
+	g->msgs[0] = create_msg("Episode 1", FONT_M_MD, (t_xy_i){64, 64}, 5);
 	while (true)
 	{
 		/* Очищує буфер чорним кольором */
@@ -89,30 +97,30 @@ void		game_loop(t_game *g)
 		events(g);
 
 		/* Камера при присяді і її підняття */
-		if (g->plr.ducking || g->plr.eyeheight == DuckHeight)
+		if (g->plr.ducking || g->plr.eyeheight == DUCK_H)
 			g->plr.speed /= 1.5f;
-		if (g->plr.eyeheight != EyeHeight && !g->plr.ducking &&
-				g->sectors[g->plr.sector].ceil > g->sectors[g->plr.sector].floor + EyeHeight)
+		if (g->plr.eyeheight != EYE_H && !g->plr.ducking &&
+				g->sectors[g->plr.sector].ceil > g->sectors[g->plr.sector].floor + EYE_H)
 			g->plr.eyeheight += 0.5f;
-		else if (g->plr.eyeheight != DuckHeight && g->sectors[g->plr.sector].ceil
-					<= g->sectors[g->plr.sector].floor + EyeHeight)
+		else if (g->plr.eyeheight != DUCK_H && g->sectors[g->plr.sector].ceil
+					<= g->sectors[g->plr.sector].floor + EYE_H)
 			g->plr.eyeheight -= 0.5f;
 
 		/* Vertical collision detection */
 		g->plr.ground = !g->plr.falling;
 		if (g->plr.falling)
-			do_fall(&g->plr, &g->sectors);
+			check_fall(&g->plr, &g->sectors);
 
 		/* Horizontal collision detection */
 		if (g->plr.moving)
-			do_move(&g->plr, &g->sectors);
+			check_move(&g->plr, &g->sectors);
 
 		/* mouse aiming */
 		g->plr.ms.x = 0;
 		g->plr.ms.y = 0;
 		SDL_GetRelativeMouseState(&g->plr.ms.x, &g->plr.ms.y);
 		g->plr.angle += g->plr.ms.x * 0.03f;
-		g->plr.ms_yaw = clamp(g->plr.ms_yaw - g->plr.ms.y * 0.05f, -5, 5);
+		g->plr.ms_yaw = CLAMP(g->plr.ms_yaw - g->plr.ms.y * 0.05f, -5, 5);
 		g->plr.yaw = g->plr.ms_yaw - g->plr.vlct.z * 0.5f;
 
 		/* player moving */
@@ -145,11 +153,14 @@ void		game_loop(t_game *g)
 		SDL_RenderCopy(g->sdl.renderer, g->sdl.texture, NULL, NULL);
 		//SDL_RenderPresent(sdl->renderer);
 
-		t_xy_i pos = {10, 10};
-
-		show_msg(&g->sdl, "TEST", pos);
+		//get_msgs
+		//if (g->tmp)
+		//init_font();
+		//show_msg(&g->sdl, "Test", pos);
+		get_messages(g);
 		SDL_RenderPresent(g->sdl.renderer);
-		SDL_Delay(20);
+		SDL_Delay(15);
+		//printf("clock: %lu\n", clock());
 	}
 }
 
@@ -160,14 +171,18 @@ int 		main(void)
 	//Structs initialization
 	g.sectors = NULL;
 	g.plr = (t_player){ .ground = 0, .falling = 1, .moving = 0, .ducking = 0,
-				   .eyeheight = EyeHeight, .num_scts = 0, .ms_yaw = 0,
+				   .eyeheight = EYE_H, .num_scts = 0, .ms_yaw = 0,
 				   .sdl = &g.sdl, .key = { .w = 0, .s = 0, .a = 0, .d = 0 }};
+	init_msgs(&g);
 
 	//Framework initialization
 	init_sdl(&g.sdl);
 
 	//Load map
 	load_data(&g.plr, &g.sectors);
+
+	//Load fonts
+	load_fonts(&g);
 
 	//Cursor lock
 	SDL_ShowCursor(SDL_DISABLE);

@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:00:35 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/18 19:14:40 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/19 19:24:08 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,12 +96,12 @@ void		chholebump(t_sector **sectors, t_sector sect, const unsigned int *s,
 
 	printf("Check Bump.\n");
 	hole_low = sect.neighbors[*s] <
-			0 ? 9e9 : max(sect.floor, (*sectors)[sect.neighbors[*s]].floor);
+			0 ? 9e9 : MAX(sect.floor, (*sectors)[sect.neighbors[*s]].floor);
 	hole_high = sect.neighbors[*s] <
-			0 ? -9e9 : min(sect.ceil, (*sectors)[sect.neighbors[*s]].ceil);
+			0 ? -9e9 : MIN(sect.ceil, (*sectors)[sect.neighbors[*s]].ceil);
 	/* Check whether we're bumping into a wall. */
-	if (hole_high < plr->where.z + HeadMargin
-		|| hole_low > plr->where.z - plr->eyeheight + KneeHeight)
+	if (hole_high < plr->where.z + HEAD_MARGIN
+		|| hole_low > plr->where.z - plr->eyeheight + KNEE_H)
 	{
 		xd = (*vert)[*s + 1].x - (*vert)[*s + 0].x;
 		yd = (*vert)[*s + 1].y - (*vert)[*s + 0].y;
@@ -111,7 +111,7 @@ void		chholebump(t_sector **sectors, t_sector sect, const unsigned int *s,
 	}
 }
 
-void		do_move(t_player *plr, t_sector **sc)
+void		check_move(t_player *plr, t_sector **sc)
 {
 	unsigned int	s;
 	float 			px;
@@ -141,7 +141,7 @@ void		do_move(t_player *plr, t_sector **sc)
 	plr->falling = 1;
 }
 
-void		do_fall(t_player *plr, t_sector **sc)
+void		check_fall(t_player *plr, t_sector **sectors)
 {
 	float	nextz;
 
@@ -150,14 +150,14 @@ void		do_fall(t_player *plr, t_sector **sc)
 	else
 		plr->vlct.z += 0.001f;
 	nextz = plr->where.z + plr->vlct.z;
-	if (plr->vlct.z < 0 && nextz < (*sc)[plr->sector].floor + plr->eyeheight) // When going down
+	if (plr->vlct.z < 0 && nextz < (*sectors)[plr->sector].floor + plr->eyeheight) // When going down
 	{
-		plr->where.z = (*sc)[plr->sector].floor + plr->eyeheight; /* Fix to ground */
+		plr->where.z = (*sectors)[plr->sector].floor + plr->eyeheight; /* Fix to ground */
 		plr->vlct.z = 0;
 		plr->falling = 0;
 		plr->ground = 1;
 	}
-	else if (plr->vlct.z > 0 && nextz > (*sc)[plr->sector].ceil) // When going up
+	else if (plr->vlct.z > 0 && nextz > (*sectors)[plr->sector].ceil) // When going up
 	{
 		plr->vlct.z = 0; /* Prevent jumping above ceiling */
 		plr->falling = 1;

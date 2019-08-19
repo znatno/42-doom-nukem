@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/07 19:06:01 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/11 21:55:10 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/19 19:23:08 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,19 +56,19 @@ t_posf	atof_posf(const char *s, t_posf posf)
 		sign = -1;
 		posf.pos++;
 	}
-	while ((c = s[0 + posf.pos++]) != '\0' && isdigit(c))
+	while ((c = s[0 + posf.pos++]) != '\0' && ISDIGIT(c))
 	{
 		posf.value = posf.value * 10.0 + (c - '0');
 	}
 	if (c == '.')
 	{
-		while ((c = s[0 + posf.pos++]) != '\0' && isdigit(c))
+		while ((c = s[0 + posf.pos++]) != '\0' && ISDIGIT(c))
 		{
 			posf.value = posf.value * 10.0 + (c - '0');
 			exp = exp - 1;
 		}
 	}
-	while (isdigit(c))
+	while (ISDIGIT(c))
 	{
 		i = i * 10 + (c - '0');
 		c = s[0 + posf.pos++];
@@ -206,7 +206,7 @@ void	reader(char *line, int fd, t_player *p, t_sector **sectors)
 			p->anglecos = 0;
 			p->yaw = 0;
 			p->sector = n;
-			p->where.z = (*sectors)[p->sector].floor + EyeHeight;
+			p->where.z = (*sectors)[p->sector].floor + EYE_H;
 		}
 	}
 	free(vert);

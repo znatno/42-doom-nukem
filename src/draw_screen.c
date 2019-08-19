@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/02 21:38:26 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/18 21:26:30 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/19 19:25:10 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ void	pick_sector_slice(t_draw_screen_calc *ds)
 {
 	/* Pick a sector & slice from the queue to draw */
 	ds->s->now = *ds->s->tail;
-	if (++ds->s->tail == ds->que + MaxQue)
+	if (++ds->s->tail == ds->que + MAX_QUE)
 		ds->s->tail = ds->que;
 }
 
@@ -140,13 +140,13 @@ void	find_intersect(t_draw_screen_calc *ds)
 void	perspective(t_draw_screen_calc *ds)
 {
 	/* Do perspective transformation */
-	ds->f->xscale1 = hfov / ds->f->tz1;
-	ds->f->yscale1 = vfov / ds->f->tz1;
+	ds->f->xscale1 = HFOV / ds->f->tz1;
+	ds->f->yscale1 = VFOV / ds->f->tz1;
 
 	ds->i->x1 = W / 2 - (int)(ds->f->tx1 * ds->f->xscale1);
 
-	ds->f->xscale2 = hfov / ds->f->tz2;
-	ds->f->yscale2 = vfov / ds->f->tz2;
+	ds->f->xscale2 = HFOV / ds->f->tz2;
+	ds->f->yscale2 = VFOV / ds->f->tz2;
 
 	ds->i->x2 = W / 2 - (int)(ds->f->tx2 * ds->f->xscale2);
 }
@@ -165,18 +165,18 @@ void	render_walls(t_draw_screen_calc *ds, t_sector *sector, t_player plr)
 		ds->f->nyfloor = sector[ds->i->neightbor].floor - plr.where.z;
 	}
 	/* Project our ceiling & floor heights into screen coordinates (Y coordinate) */
-	ds->i->y1a = H / 2 - (int)(Yaw(ds->f->yceil, ds->f->tz1) * ds->f->yscale1);
-	ds->i->y1b = H / 2 - (int)(Yaw(ds->f->yfloor, ds->f->tz1) * ds->f->yscale1);
-	ds->i->y2a = H / 2 - (int)(Yaw(ds->f->yceil, ds->f->tz2) * ds->f->yscale2);
-	ds->i->y2b = H / 2 - (int)(Yaw(ds->f->yfloor, ds->f->tz2) * ds->f->yscale2);
+	ds->i->y1a = H / 2 - (int)(YAW(ds->f->yceil, ds->f->tz1) * ds->f->yscale1);
+	ds->i->y1b = H / 2 - (int)(YAW(ds->f->yfloor, ds->f->tz1) * ds->f->yscale1);
+	ds->i->y2a = H / 2 - (int)(YAW(ds->f->yceil, ds->f->tz2) * ds->f->yscale2);
+	ds->i->y2b = H / 2 - (int)(YAW(ds->f->yfloor, ds->f->tz2) * ds->f->yscale2);
 	/* The same for the neighboring sector */
-	ds->i->ny1a = H / 2 - (int)(Yaw(ds->f->nyceil, ds->f->tz1) * ds->f->yscale1);
-	ds->i->ny1b = H / 2 - (int)(Yaw(ds->f->nyfloor, ds->f->tz1) * ds->f->yscale1);
-	ds->i->ny2a = H / 2 - (int)(Yaw(ds->f->nyceil, ds->f->tz2) * ds->f->yscale2);
-	ds->i->ny2b = H / 2 - (int)(Yaw(ds->f->nyfloor, ds->f->tz2) * ds->f->yscale2);
+	ds->i->ny1a = H / 2 - (int)(YAW(ds->f->nyceil, ds->f->tz1) * ds->f->yscale1);
+	ds->i->ny1b = H / 2 - (int)(YAW(ds->f->nyfloor, ds->f->tz1) * ds->f->yscale1);
+	ds->i->ny2a = H / 2 - (int)(YAW(ds->f->nyceil, ds->f->tz2) * ds->f->yscale2);
+	ds->i->ny2b = H / 2 - (int)(YAW(ds->f->nyfloor, ds->f->tz2) * ds->f->yscale2);
 	/* Render the wall-> */
-	ds->i->beginx = max(ds->i->x1, ds->s->now.sx1);
-	ds->i->endx = min(ds->i->x2, ds->s->now.sx2);
+	ds->i->beginx = MAX(ds->i->x1, ds->s->now.sx1);
+	ds->i->endx = MIN(ds->i->x2, ds->s->now.sx2);
 	ds->it->x = ds->i->beginx;
 }
 
@@ -188,10 +188,10 @@ void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p)
 	ds->i->z = (ds->i->z > 250) ? (250) : (ds->i->z);
 	/* Acquire the Y coordinates for our ceiling & floor for this X coordinate-> Clamp them-> */
 	ds->i->ya = (ds->it->x - ds->i->x1) * (ds->i->y2a - ds->i->y1a) / (ds->i->x2 - ds->i->x1) + ds->i->y1a;
-	ds->i->cya = clamp(ds->i->ya, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // top
+	ds->i->cya = CLAMP(ds->i->ya, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // top
 
 	ds->i->yb = (ds->it->x - ds->i->x1) * (ds->i->y2b - ds->i->y1b) / (ds->i->x2 - ds->i->x1) + ds->i->y1b;
-	ds->i->cyb = clamp(ds->i->yb, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // bottom
+	ds->i->cyb = CLAMP(ds->i->yb, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // bottom
 
 	/* Render ceiling: everything above this sector's ceiling height-> */
 //	SDL_UpdateWindowSurface(p->sdl->window);
@@ -206,10 +206,10 @@ void	render_ceil_floor(t_draw_screen_calc *ds, t_player *p)
 {
 	/* Same for _their_ floor and ceiling */
 	ds->i->nya = (ds->it->x - ds->i->x1) * (ds->i->ny2a - ds->i->ny1a) / (ds->i->x2 - ds->i->x1) + ds->i->ny1a;
-	ds->i->cnya = clamp(ds->i->nya, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]);
+	ds->i->cnya = CLAMP(ds->i->nya, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]);
 
 	ds->i->nyb = (ds->it->x - ds->i->x1) * (ds->i->ny2b - ds->i->ny1b) / (ds->i->x2 - ds->i->x1) + ds->i->ny1b;
-	ds->i->cnyb = clamp(ds->i->nyb, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]);
+	ds->i->cnyb = CLAMP(ds->i->nyb, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]);
 
 	/* If our ceiling is higher than their ceiling, render upper wall */
 	ds->i->r1 = 0x01010100 * (255 - ds->i->z); // top portal wall color
@@ -218,11 +218,11 @@ void	render_ceil_floor(t_draw_screen_calc *ds, t_player *p)
 	vline(ds->it->x, ds->i->cya, ds->i->cnya - 1, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r1), p); // Between our and their ceiling
 	if (p->draw_look)
 		SDL_UpdateWindowSurface(p->sdl->window);
-	ds->i->y_top[ds->it->x] = clamp(max(ds->i->cya, ds->i->cnya), ds->i->y_top[ds->it->x], H - 1); // Shrink the remaining window below these ceilings
+	ds->i->y_top[ds->it->x] = CLAMP(MAX(ds->i->cya, ds->i->cnya), ds->i->y_top[ds->it->x], H - 1); // Shrink the remaining window below these ceilings
 	/* If our floor is lower than their floor, render bottom wall */
 	vline(ds->it->x, ds->i->cnyb + 1, ds->i->cyb, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r2), p); // Between their and our floor
 //	SDL_UpdateWindowSurface(p->sdl->window);
-	ds->i->y_bottom[ds->it->x] = clamp(min(ds->i->cyb, ds->i->cnyb), 0, ds->i->y_bottom[ds->it->x]); // Shrink the remaining window above these floors
+	ds->i->y_bottom[ds->it->x] = CLAMP(MIN(ds->i->cyb, ds->i->cnyb), 0, ds->i->y_bottom[ds->it->x]); // Shrink the remaining window above these floors
 }
 
 void	render_sector(t_draw_screen_calc *ds, t_player *p)
@@ -242,16 +242,16 @@ void	render_sector(t_draw_screen_calc *ds, t_player *p)
 }
 
 void	render_sector_walls(t_draw_screen_calc *ds , t_sector *sectore,
-							t_item queue[MaxQue], t_player *plr)
+							t_item queue[MAX_QUE], t_player *plr)
 {
 	render_walls(ds, sectore, *plr);
 	for (ds->it->x = ds->i->beginx; ds->it->x <= ds->i->endx; ++ds->it->x)
 		render_sector(ds, plr);
 	/* Schedule the neighboring sector for rendering within the window formed by this wall-> */
-	if (ds->i->neightbor >= 0 && ds->i->endx >= ds->i->beginx && (ds->s->head  + MaxQue + 1 - ds->s->tail) % MaxQue)
+	if (ds->i->neightbor >= 0 && ds->i->endx >= ds->i->beginx && (ds->s->head  + MAX_QUE + 1 - ds->s->tail) % MAX_QUE)
 	{
 		*ds->s->head  = (t_item) {ds->i->neightbor, ds->i->beginx, ds->i->endx};
-		if (++ds->s->head == queue + MaxQue)
+		if (++ds->s->head == queue + MAX_QUE)
 			ds->s->head = queue;
 	}
 }
@@ -259,7 +259,7 @@ void	render_sector_walls(t_draw_screen_calc *ds , t_sector *sectore,
 void	draw_screen(t_sector *sector, t_player plr)
 {
 	t_tmp_iter			it;
-	t_item				qe[MaxQue];
+	t_item				qe[MAX_QUE];
 	t_calc_tmp_int		i;
 	t_calc_tmp_float	f;
 	t_calc_tmp_struct	s;
@@ -275,7 +275,7 @@ void	draw_screen(t_sector *sector, t_player plr)
 	ds.s->tail = ds.que;
 
 	init_draw(&ds, plr);
-	if (++ds.s->head  == ds.que + MaxQue)
+	if (++ds.s->head  == ds.que + MAX_QUE)
 		ds.s->head = ds.que;
 	while (main_loop_condition(&ds))
 	{
