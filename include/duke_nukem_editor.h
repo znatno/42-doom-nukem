@@ -54,12 +54,29 @@
 typedef struct s_xy {
     int x;
     int y;
-} t_xy;
+
+} 			t_xy;
+
+typedef struct s_xy_l
+{
+	int 			x;
+	int 			y;
+	int 			index;
+	struct s_xy_l 	*next;
+}				t_xy_l;
+
 
 typedef struct s_stack {
 	struct s_xy xy;
 	struct t_stack *next;
 }				t_stack;
+
+typedef struct s_vertex
+{
+	t_xy xy1;
+	t_xy xy2;
+	struct s_vertex *next;
+} t_vertex;
 
 typedef struct s_portals
 {
@@ -68,6 +85,36 @@ typedef struct s_portals
 	struct t_sector *sec_b;
 	struct t_portals *next;
 } t_portals;
+
+typedef struct	s_index
+{
+	int				index;
+	struct s_index	*next;
+}				t_index;
+
+typedef struct	s_portal
+{
+	int 			wall_portal;
+	struct s_portal	*next;
+}				t_portal;
+
+typedef struct s_rec_sec
+{
+	float 		ceil;
+	float 		floor;
+	t_index		*head_ver;
+	t_portal	*head_por;
+}				t_rec_sec;
+
+typedef struct	s_record
+{
+	int 		least_x;
+	int 		least_y;
+	t_xy_l		*head_ver;
+	t_rec_sec	*head_sec;
+	float 		player_x;
+	float 		player_y;
+}				t_record;
 
 typedef struct s_line {
     int start;
@@ -81,37 +128,11 @@ typedef struct s_line {
     int py;
 } t_line;
 
-
-typedef struct s_vertex
-{
-    t_xy xy1;
-    t_xy xy2;
-    struct s_vertex *next;
-} t_vertex;
-
 typedef struct s_sector
 {
     t_vertex *vertexes;
     struct s_sector *next;
 } t_sector;
-
-typedef struct s_posf_t
-{
-    int pos;
-    bool is_y;
-    float value;
-    float y;
-} t_posf;
-
-//typedef struct		s_sector
-//{
-//	float			floor;
-//	float			ceil;
-//	t_xy			*vertex;
-//	signed char		*neighbors;       // Each edge may have a corresponding neighboring sector
-//	unsigned		npoints;          // How many vertexes there are
-//	t_xy			*vert;
-//}					t_sector;
 
 typedef struct s_draw
 {
