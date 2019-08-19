@@ -1,24 +1,24 @@
 #include "duke_nukem_editor.h"
 
-void save_sector(t_env *env, t_draw *draw)
-{
-	t_sector *temp;
-
-	if (!(temp = draw->head))
-	{
-		if (!(temp = (t_sector *) malloc(sizeof(t_sector))))
-			exit(166);
-		create_sectors_list(env, draw, temp);
-//        print_sector(temp);
-	}
-	else
-	{
-		add_sector_to_list(temp, draw);
-//		print_all_sectors(draw, temp);
-	}
-
-	//free(temp);
-}
+//void save_sector(t_env *env, t_draw *draw)
+//{
+//	t_sector *temp;
+//
+//	if (!(temp = draw->head))
+//	{
+//		if (!(temp = (t_sector *) malloc(sizeof(t_sector))))
+//			exit(166);
+////		create_sectors_list(env, draw, temp);
+////        print_sector(temp);
+//	}
+//	else
+//	{
+//		add_sector_to_list(temp, draw);
+////		print_all_sectors(draw, temp);
+//	}
+//
+//	//free(temp);
+//}
 
 //void				is_portal(t_draw *draw, t_env *env, t_vertex *cur_v)
 //{
@@ -121,6 +121,7 @@ t_env *sdl_main_loop(t_env *env)
 	draw_desk(env);
 	loop = 1;
 	draw->s_mode = false;
+	draw->d_mode = false;
 	draw->s_count = 0;
 	cur_s = 0;
 	while (loop && env->sdl_error == NONE)
@@ -132,9 +133,8 @@ t_env *sdl_main_loop(t_env *env)
 			{
 				if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
 				{
-					print_all_sectors(draw, draw->head);
-//					stack_print(head);
-				loop = 0;
+//					print_all_sectors(draw, draw->head);к
+					loop = 0;
 				}
 				else if (kstate[SDL_SCANCODE_SPACE] && !draw->s_mode)
 				{
@@ -142,7 +142,11 @@ t_env *sdl_main_loop(t_env *env)
 					if (stack_more_than_two(head))
 					draw_dot(env,draw,head);
 					draw->key = 0;
-				}
+				} // TODO: WALL SELECTION
+//				else if (kstate[SDL_SCANCODE_RETURN] && !draw->d_mode)
+//				{
+//					cur_v = find_wall_in_list()
+//				}
 				else if (kstate[SDL_SCANCODE_DELETE] && draw->s_mode)
 				{
 					delete_sector_from_list(draw);
@@ -168,22 +172,12 @@ t_env *sdl_main_loop(t_env *env)
 					printf("%d\n",cur_s);
 						select_sector_mode(env, draw, cur_s);
 				}
-//				else if (kstate[SDL_SCANCODE_LEFT] && draw->s_mode)
-//				{
-//					if (draw->s_count > cur_s && cur_s > 1)
-//						cur_s -= 1;
-//					else
-//						cur_s = 1;
-//					printf("%d\n",cur_s);
-////						select_sector_mode(env, draw);
-//				}
 			}
 			if (ev.type == SDL_MOUSEBUTTONDOWN && !draw->s_mode)
 			{
 				if (ev.button.clicks)
 				{
 					draw_dot(env, draw, head);
-//					draw_vertex(env, draw);
 				}
 			}
 		}

@@ -50,7 +50,8 @@ typedef struct s_stack {
 
 typedef struct s_portals
 {
-	struct s_vertex *line;
+	struct s_xy 	xy1;
+	struct s_xy 	xy2;
 	struct t_sector *sec_a;
 	struct t_sector *sec_b;
 	struct t_portals *next;
@@ -109,6 +110,7 @@ typedef struct s_draw
     int counter;
   	int s_count;
     bool s_mode;
+    bool d_mode;
     char key;
 } t_draw;
 
@@ -150,7 +152,7 @@ void            add_sector_to_list(t_sector *temp, t_draw *draw);
 
 void            delete_sector_from_list(t_draw *draw);
 
-void            create_sectors_list(t_env *env, t_draw *draw, t_sector *temp);
+//void            create_sectors_list(t_env *env, t_draw *draw, t_sector *temp);
 
 void			free_sect(t_draw *draw, t_sector *del_me, t_sector *cur_s);
 
