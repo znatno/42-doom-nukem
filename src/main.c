@@ -24,25 +24,26 @@ void save_sector(t_env *env, t_draw *draw)
 //{
 //
 //}
-void 				refresh_screen(t_draw *draw, t_env *env)
-{
-	t_sector *cur_s;
-	t_vertex *cur_v;
-
-	cur_s = draw->head;
-	clear_screen(env);
-	draw_desk(env);
-	while (draw->head != NULL && cur_s)
-	{
-		cur_v = cur_s->vertexes;
-		while (cur_v)
-		{
-			line(cur_v->xy1, cur_v->xy2, env, 0xFF00FF);
-			cur_v = cur_v->next;
-		}
-		cur_s = cur_s->next;
-	}
-}
+//void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head)
+//{
+//	t_sector *cur_s;
+//	t_vertex *cur_v;
+//
+//	cur_s = draw->head;
+//	clear_screen(env);
+//	draw_desk(env);
+//	stack_draw(env,draw ,head);
+//	while (draw->head != NULL && cur_s)
+//	{
+//		cur_v = cur_s->vertexes;
+//		while (cur_v)
+//		{
+//			line(cur_v->xy1, cur_v->xy2, env, 0xFF00FF);
+//			cur_v = cur_v->next;
+//		}
+//		cur_s = cur_s->next;
+//	}
+//}
 
 //void 				redraw_screen(t_draw *draw, t_env *env)
 //{
@@ -124,7 +125,6 @@ t_env *sdl_main_loop(t_env *env)
 	cur_s = 0;
 	while (loop && env->sdl_error == NONE)
 	{
-		refresh_screen(draw, env);
 		kstate = SDL_GetKeyboardState(NULL);
 		while (SDL_PollEvent(&ev))
 		{
@@ -143,10 +143,10 @@ t_env *sdl_main_loop(t_env *env)
 					draw_dot(env,draw,head);
 					draw->key = 0;
 				}
-				else if (kstate[SDL_SCANCODE_DELETE] && !draw->s_mode)
+				else if (kstate[SDL_SCANCODE_DELETE] && draw->s_mode)
 				{
 					delete_sector_from_list(draw);
-					stack_draw(env, draw, head);
+					select_sector_mode(env, draw, cur_s);
 				}
 				else if (kstate[SDL_SCANCODE_BACKSPACE] && !draw->s_mode && I == 0)
 				{
