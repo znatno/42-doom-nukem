@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/18 23:27:54 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/19 15:30:23 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ void		events(t_game *g)
 				// кути погляду
 				printf("\tangle: %f\t\tyaw: %f\n",
 					   g->plr.angle, g->plr.yaw);
-
 				printf("\n\t---------------------------\n\n");
 			}
 
@@ -76,21 +75,7 @@ void		events(t_game *g)
 	}
 }
 
-void		show_msg(t_sdl_main *sdl, char *text, t_font t)
-{
-	static SDL_Color white = {255, 255, 255, 0};
-	SDL_Surface *surface_msg;
-	SDL_Texture *msg;
-	SDL_Rect msg_rect;
 
-	surface_msg = TTF_RenderText_Solid(t.font, text, white);
-	msg = SDL_CreateTextureFromSurface(sdl->renderer, surface_msg);
-	msg_rect.x = t.pos.x;
-	msg_rect.y = t.pos.y;
-	TTF_SizeText(t.font, text, &msg_rect.w, &msg_rect.h);
-	SDL_FreeSurface(surface_msg);
-	SDL_DestroyTexture(msg);
-}
 
 void		game_loop(t_game *g)
 {
@@ -160,7 +145,9 @@ void		game_loop(t_game *g)
 		SDL_RenderCopy(g->sdl.renderer, g->sdl.texture, NULL, NULL);
 		//SDL_RenderPresent(sdl->renderer);
 
-		//show_msg(sdl, "TEST", (t_font){(Uint8)NULL});
+		t_xy_i pos = {10, 10};
+
+		show_msg(&g->sdl, "TEST", pos);
 		SDL_RenderPresent(g->sdl.renderer);
 		SDL_Delay(20);
 	}

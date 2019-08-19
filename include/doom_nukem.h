@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/18 23:10:05 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/19 15:23:41 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,10 +253,10 @@ typedef struct		s_draw_screen_calc
 
 typedef struct		s_font
 {
+	TTF_Font		*ttf;
+	char 			*name;
+	int 			size;
 	SDL_Color		color;
-	TTF_Font		*font;
-	t_xy_i			pos;
-
 }					t_font;
 
 typedef struct		s_game
@@ -264,7 +264,7 @@ typedef struct		s_game
 	t_player	plr;
 	t_sdl_main	sdl;
 	t_sector	*sectors;
-	int			error;
+	int			error;		// для виводу тексту помилки при виході
 }					t_game;
 
 
@@ -329,6 +329,8 @@ int				g_x; //temp global iterator, todo delete it at the end
 ** Font and text functions
 */
 
-void		show_msg(t_sdl_main *sdl, char *text, t_font font);
+void		show_msg(t_sdl_main *sdl, char *text, t_xy_i pos);
+TTF_Font	*get_font(char *filename, int size);
+
 
 #endif
