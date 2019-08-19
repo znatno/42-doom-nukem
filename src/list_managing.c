@@ -49,7 +49,7 @@ void print_all_sectors(t_draw *draw, t_sector *temp)
 	}
 }
 
-void find_portal(t_draw *draw, t_vertex *temp, t_sector *temp_s)
+void find_portal(t_env *env, t_draw *draw, t_vertex *temp, t_sector *temp_s)
 {
 	t_sector *cur_s;
 	t_vertex *cur_v;
@@ -75,7 +75,7 @@ void find_portal(t_draw *draw, t_vertex *temp, t_sector *temp_s)
 					temp->xy2.x == cur_v->xy1.x &&
 					temp->xy2.y == cur_v->xy1.y)) && (cur_s != temp_s))
 			{
-
+				line(temp->xy1, temp->xy2, env, RED);
 				printf("\n>>>>OCCURANCE<<<<\n", temp->xy1.x,temp->xy1.y,temp->xy2.x,temp->xy2.y);
 			}
 			cur_v = cur_v->next;
@@ -212,7 +212,7 @@ void 	malloc_list_first(t_sector *sect)
 	sect->next = NULL;
 }
 
-void	pop_from_stack_to_list(t_draw *draw, t_stack **head)
+void	pop_from_stack_to_list(t_env *env, t_draw *draw, t_stack **head)
 {
 	t_sector *cur_s;
 	t_vertex *cur_v;
@@ -234,7 +234,7 @@ void	pop_from_stack_to_list(t_draw *draw, t_stack **head)
 		head_v->xy1 = cur_data;
 		cur_data = stack_pop(head);
 		(cur_data.x != -42) ? (head_v->xy2 = cur_data) : (head_v->xy2 = first_data);
-		(draw->head->next != NULL) ? find_portal(draw, head_v, cur_s) : 0 == 0;
+		(draw->head->next != NULL) ? find_portal(env, draw, head_v, cur_s) : 0 == 0;
 		if (cur_data.x != -42)
 		{
 			head_v->next = ft_memalloc(sizeof(t_vertex));
@@ -260,6 +260,6 @@ void save_stack_to_list (t_env *env, t_draw *draw, t_stack **head)
 		sect->next = ft_memalloc(sizeof(t_sector));
 		malloc_list(sect);
 	}
-	pop_from_stack_to_list(draw, head);
+	pop_from_stack_to_list(env, draw, head);
 	draw->s_count++;
 }
