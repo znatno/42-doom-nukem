@@ -142,13 +142,13 @@ void	find_intersect(t_draw_screen_calc *ds)
 	}
 	if (fabsf(ds->f->tx2 - ds->f->tx1) > fabsf(ds->f->tz2 - ds->f->tz1))
 	{
-		ds->i->u0 = (ds->f->tx1 - ds->s->org1.x) * 1023 / (ds->s->org2.x - ds->s->org1.x);
-		ds->i->u1 = (ds->f->tx2 - ds->s->org1.x) * 1023 / (ds->s->org2.x - ds->s->org1.x);
+		ds->i->u0 = (int)((ds->f->tx1 - ds->s->org1.x) * 1023 / (ds->s->org2.x - ds->s->org1.x));
+		ds->i->u1 =(int)((ds->f->tx2 - ds->s->org1.x) * 1023 / (ds->s->org2.x - ds->s->org1.x));
 	}
 	else
 	{
-		ds->i->u0 = (ds->f->tz1 - ds->s->org1.y) * 1023 / (ds->s->org2.y - ds->s->org1.y);
-		ds->i->u1 = (ds->f->tz2 - ds->s->org1.y) * 1023 / (ds->s->org2.y - ds->s->org1.y);
+		ds->i->u0 =(int)((ds->f->tz1 - ds->s->org1.y) * 1023 / (ds->s->org2.y - ds->s->org1.y));
+		ds->i->u1 = (int)((ds->f->tz2 - ds->s->org1.y) * 1023 / (ds->s->org2.y - ds->s->org1.y));
 	}
 }
 
@@ -210,27 +210,27 @@ void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p)
 	ds->i->cya = clamp(ds->i->ya, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // top
 	ds->i->cyb = clamp(ds->i->yb, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // bottom
 
-//	for (int y = ds->i->y_top[ds->it->x]; y <= ds->i->y_bottom[ds->it->x]; ++y)
-//	{
-//		if (y >= ds->i->cya && y <= ds->i->cyb)
-//		{
-//			y = ds->i->cyb;
-//			continue;
-//		}
-//		ds->f->hei = (y < ds->i->cya) ? (ds->f->yceil) : (ds->f->yfloor);
-//		ds->f->mapx = 0;
-//		ds->f->mapz = 0;
-//		CeilingFloorScreenCoordinatesToMapCoordinates(ds->f->hei, ds->it->x, y,  ds->f->mapx, ds->f->mapz);
-//		unsigned txtx =(unsigned)(ds->f->mapx * 256);
-//		unsigned txtz = (unsigned )(ds->f->mapz * 256);
-//		if (y < ds->i->cya)
-//			ds->i->pel = ft_get_pixel(p->sdl->textures->arr_tex[1], txtx % p->sdl->textures->arr_tex[1]->w, txtz % p->sdl->textures->arr_tex[1]->w);
-//		else
-//			ds->i->pel = ft_get_pixel(p->sdl->textures->arr_tex[0], txtx % p->sdl->textures->arr_tex[0]->w, txtz % p->sdl->textures->arr_tex[0]->w);
-//		((uint32_t *)p->sdl->win_surface->pixels)[y * W + ds->it->x] = ds->i->pel;
-//	}
-	render(CEIL, 0, p, ds);
-	render(FLOOR, 0, p, ds);
+	for (int y = ds->i->y_top[ds->it->x]; y <= ds->i->y_bottom[ds->it->x]; ++y)
+	{
+		if (y >= ds->i->cya && y <= ds->i->cyb)
+		{
+			y = ds->i->cyb;
+			continue;
+		}
+		ds->f->hei = (y < ds->i->cya) ? (ds->f->yceil) : (ds->f->yfloor);
+		ds->f->mapx = 0;
+		ds->f->mapz = 0;
+		CeilingFloorScreenCoordinatesToMapCoordinates(ds->f->hei, ds->it->x, y,  ds->f->mapx, ds->f->mapz);
+		unsigned txtx =(unsigned)(ds->f->mapx * 256);
+		unsigned txtz = (unsigned )(ds->f->mapz * 256);
+		if (y < ds->i->cya)
+			ds->i->pel = ft_get_pixel(p->sdl->textures->arr_tex[1], txtx % p->sdl->textures->arr_tex[1]->w, txtz % p->sdl->textures->arr_tex[1]->w);
+		else
+			ds->i->pel = ft_get_pixel(p->sdl->textures->arr_tex[0], txtx % p->sdl->textures->arr_tex[0]->w, txtz % p->sdl->textures->arr_tex[0]->w);
+		((uint32_t *)p->sdl->win_surface->pixels)[y * W + ds->it->x] = ds->i->pel;
+	}
+//	render(CEIL, 0, p, ds);
+//	render(FLOOR, 0, p, ds);
 	/* Render ceiling: everything above this sector's ceiling height-> */
 //	SDL_UpdateWindowSurface(p->sdl->window);
 	/* Render floor: everything below this ssector's floor height-> */
