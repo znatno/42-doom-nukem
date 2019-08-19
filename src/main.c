@@ -24,26 +24,26 @@ void save_sector(t_env *env, t_draw *draw)
 //{
 //
 //}
-//void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head)
-//{
-//	t_sector *cur_s;
-//	t_vertex *cur_v;
-//
-//	cur_s = draw->head;
-//	clear_screen(env);
-//	draw_desk(env);
-//	stack_draw(env,draw ,head);
-//	while (draw->head != NULL && cur_s)
-//	{
-//		cur_v = cur_s->vertexes;
-//		while (cur_v)
-//		{
-//			line(cur_v->xy1, cur_v->xy2, env, 0xFF00FF);
-//			cur_v = cur_v->next;
-//		}
-//		cur_s = cur_s->next;
-//	}
-//}
+void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head)
+{
+	t_sector *cur_s;
+	t_vertex *cur_v;
+
+	cur_s = draw->head;
+	clear_screen(env);
+	draw_desk(env);
+	stack_draw(env,draw ,head);
+	while (draw->head != NULL && cur_s)
+	{
+		cur_v = cur_s->vertexes;
+		while (cur_v)
+		{
+			line(cur_v->xy1, cur_v->xy2, env, WHITE);
+			cur_v = cur_v->next;
+		}
+		cur_s = cur_s->next;
+	}
+}
 
 //void 				redraw_screen(t_draw *draw, t_env *env)
 //{
@@ -97,9 +97,9 @@ void 		select_sector_mode(t_env *env, t_draw *draw, int key)
 		while (cur_v)
 		{
 			if (i == key)
-			line(cur_v->xy1, cur_v->xy2, env, 0xFFFFFF);
+			line(cur_v->xy1, cur_v->xy2, env, VIOLET);
 			else
-				line(cur_v->xy1, cur_v->xy2, env, 0xFF00FF);
+				line(cur_v->xy1, cur_v->xy2, env, WHITE);
 			cur_v = cur_v->next;
 		}
 		cur_s = cur_s->next;
@@ -151,16 +151,13 @@ t_env *sdl_main_loop(t_env *env)
 				else if (kstate[SDL_SCANCODE_BACKSPACE] && !draw->s_mode)
 				{
 					stack_pop(head);
-					clear_screen(env);
-					draw_desk(env);
-					stack_draw(env, draw, head);
-//					redraw_screen(draw, env);
-//					I = 0;
+					refresh_screen(draw, env, head);
 				}
 				else if (kstate[SDL_SCANCODE_S])
 				{
 					draw->s_mode = (draw->s_mode) ? 0 : 1;
-					(draw->s_mode) ? 0 == 0 : stack_draw(env, draw, head);
+					(draw->s_mode) ? 0 == 0 : refresh_screen(draw, env, head);
+
 				}
 				else if (kstate[SDL_SCANCODE_RIGHT] && draw->s_mode)
 				{

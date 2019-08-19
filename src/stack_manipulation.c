@@ -71,7 +71,7 @@ void	stack_draw(t_env *env, t_draw *draw, t_stack **head)
 		{
 			while (temp->next)
 				temp = temp->next;
-			line((*head)->xy, temp->xy, env, BLUE);
+			line((*head)->xy, temp->xy, env, WHITE);
 			save_stack_to_list(env, draw, head);
 		}
 		else
@@ -80,7 +80,7 @@ void	stack_draw(t_env *env, t_draw *draw, t_stack **head)
 			{
 				prev = temp;
 				temp = temp->next;
-				line(prev->xy, temp->xy, env, BLUE);
+				line(prev->xy, temp->xy, env, WHITE);
 			}
 		}
 

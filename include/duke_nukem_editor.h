@@ -29,7 +29,14 @@
 # define SPACE ' '
 # define I draw->counter
 
-# define BLUE (255555555 << 8)
+# define RED (255 << 16)
+# define GREEN (255 << 8)
+# define BLUE (255)
+# define VIOLET (BLUE | RED)
+# define RANDOM (BLUE << RED)
+# define WHITE (VIOLET | CYAN)
+# define YELLOW (RED | GREEN)
+# define CYAN (BLUE | GREEN)
 
 typedef struct s_xy {
     int x;
