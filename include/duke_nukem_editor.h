@@ -42,7 +42,14 @@
 # define SPACE ' '
 # define I draw->counter
 
-# define BLUE (255555555 << 8)
+# define RED (255 << 16)
+# define GREEN (255 << 8)
+# define BLUE (255)
+# define VIOLET (BLUE | RED)
+# define RANDOM (BLUE << RED)
+# define WHITE (VIOLET | CYAN)
+# define YELLOW (RED | GREEN)
+# define CYAN (BLUE | GREEN)
 
 typedef struct s_xy {
     int x;
@@ -142,6 +149,7 @@ typedef struct s_env
     int sdl_error;
 } t_env;
 
+
 void line(t_xy pt1, t_xy pt2, t_env *env, u_int color);
 
 /*
@@ -208,6 +216,27 @@ void    stack_print(struct s_stack **head);
 void    draw_dot(t_env *env, t_draw *draw, t_stack **head);
 
 void	stack_draw(t_env *env, t_draw *draw, t_stack **head);
+
+int    stack_more_than_two(struct s_stack **head);
+/*
+ * new list managing
+ */
+
+void save_stack_to_list (t_env *env, t_draw *draw, t_stack **head);
+
+void 	malloc_list(t_sector *sect);
+
+void 	malloc_list_first(t_sector *sect);
+
+t_sector *last_in_list(t_draw *draw);
+
+
+/*
+ * list comb with stack
+ */
+
+
+void	pop_from_stack_to_list(t_draw *draw, t_stack **head);
 
 #endif
 

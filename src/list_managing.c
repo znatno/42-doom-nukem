@@ -220,8 +220,6 @@ void delete_sector_from_list(t_draw *draw)
 	}
 	free_sect(draw, del_me, cur_s);
 }
-
-
 void create_sectors_list(t_env *env, t_draw *draw, t_sector *temp)
 {
 	int i;
@@ -251,5 +249,90 @@ void create_sectors_list(t_env *env, t_draw *draw, t_sector *temp)
 	temp->vertexes = head;
 	temp->next = NULL;
 	draw->head = temp;
+	draw->s_count++;
+}
+
+/*
+ * NEW FUNCTIONS TODO: implement new functions
+ */
+
+t_sector *last_in_list(t_draw *draw)
+{
+	t_sector *cur;
+
+	cur = draw->head;
+	while (cur && cur->next && (cur = cur->next))
+		;
+	return (cur);
+}
+
+void 	malloc_list(t_sector *sect)
+{
+	sect = sect->next;
+	sect->vertexes = ft_memalloc(sizeof(t_vertex));
+	sect->vertexes->next = NULL;
+	sect->next = NULL;
+}
+
+void 	malloc_list_first(t_sector *sect)
+{
+	sect->vertexes = ft_memalloc(sizeof(t_vertex));
+	sect->vertexes->next = NULL;
+	sect->next = NULL;
+}
+
+//void	malloc_vertex(t_vertex *vert)
+//{
+//
+//}
+
+void	pop_from_stack_to_list(t_draw *draw, t_stack **head)
+{
+	t_sector *cur_s;
+	t_vertex *cur_v;
+	t_vertex *head_v;
+	t_xy cur_data;
+	t_xy prev_data;
+	t_xy first_data;
+
+	cur_s = last_in_list(draw);
+	first_data = stack_pop(head);
+	cur_data = first_data; //
+
+	head_v = cur_s->vertexes;
+	head_v->xy1 = first_data;
+	head_v->xy2 = cur_data;
+
+	while (cur_data.x != -42)
+	{
+		head_v->xy1 = cur_data;
+		cur_data = stack_pop(head);
+		(cur_data.x != -42) ? (head_v->xy2 = cur_data) : (head_v->xy2 = first_data);
+		if (cur_data.x != -42)
+		{
+			head_v->next = ft_memalloc(sizeof(t_vertex));
+			head_v = head_v->next;
+		}
+	}
+	head_v = NULL;
+}
+
+void save_stack_to_list (t_env *env, t_draw *draw, t_stack **head)
+{
+	t_sector *sect;
+
+	if (!draw->head) // first element in list
+	{
+		sect = ft_memalloc(sizeof(t_sector));
+		draw->head = sect;
+		malloc_list_first(sect);
+	}
+	else
+	{
+		sect = last_in_list(draw);
+		sect->next = ft_memalloc(sizeof(t_sector));
+		malloc_list(sect);
+	}
+	pop_from_stack_to_list(draw, head);
 	draw->s_count++;
 }

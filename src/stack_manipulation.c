@@ -12,6 +12,23 @@ void    stack_print(struct s_stack **head)
 	}
 }
 
+int    stack_more_than_two(struct s_stack **head)
+{
+	struct s_stack *temp;
+	int 	i;
+
+	temp = *head;
+	i = 0;
+	while((temp))
+	{
+		i++;
+		if (i > 2)
+			return (true);
+		temp = temp->next;
+	}
+	return (false);
+}
+
 t_xy    stack_pop(struct s_stack **head)
 {
 	t_stack *temp;
@@ -25,7 +42,8 @@ t_xy    stack_pop(struct s_stack **head)
 		*head = temp;
 		return (data);
 	}
-	data.x = -9e9;
+	data.x = -42;
+	data.y = -42;
 	return (data);
 }
 
@@ -53,7 +71,8 @@ void	stack_draw(t_env *env, t_draw *draw, t_stack **head)
 		{
 			while (temp->next)
 				temp = temp->next;
-			line((*head)->xy, temp->xy, env, BLUE);
+			line((*head)->xy, temp->xy, env, WHITE);
+			save_stack_to_list(env, draw, head);
 		}
 		else
 		{
@@ -61,7 +80,7 @@ void	stack_draw(t_env *env, t_draw *draw, t_stack **head)
 			{
 				prev = temp;
 				temp = temp->next;
-				line(prev->xy, temp->xy, env, BLUE);
+				line(prev->xy, temp->xy, env, WHITE);
 			}
 		}
 
@@ -76,7 +95,7 @@ void    draw_dot(t_env *env, t_draw *draw, t_stack **head)
 	data.x = ROUND(data.x);
 	data.y = ROUND(data.y);
 	(draw->key != SPACE) ? stack_push(head, data) : 0 == 0;
-	if ((*head)->next != NULL)
+	if (*head && (*head)->next != NULL)
 		stack_draw(env, draw, head);
 //	SDL_WarpMouseInWindow(env->window, data.x, data.y);
 //	check_drawer(env, draw);
