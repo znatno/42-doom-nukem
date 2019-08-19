@@ -122,6 +122,9 @@ typedef struct		s_textures
 {
 	SDL_Surface		**arr_tex;
 	t_xy			*cords;
+	t_xy			*cords_end;
+	int				selected;
+	int				pre;
 }					t_textures;
 
 typedef struct s_env
@@ -133,6 +136,8 @@ typedef struct s_env
     t_textures	*textures;
 //    SDL_Event       event;
     uint32_t *buffer;
+    int		mouse_x;
+    int		mouse_y;
     int zoom;
     int sdl_error;
 } t_env;
@@ -158,6 +163,8 @@ void    clear_screen(t_env *env);
 void	texture_load(t_env *env);
 
 void	texture_cords(t_env *env);
+
+void	texture_cords_end(t_env *env);
 
 void	draw_text(uint32_t cord_x, uint32_t cord_y, char *text, t_env *env);
 
@@ -185,6 +192,8 @@ t_sector 		*check_if_deleted_sector(t_draw *draw,  t_vertex *tmp,
 
 										 t_vertex *cur_v, t_sector *cur_s);
 void 			print_all_portals(t_draw *draw);
+
+void	draw_select_text(t_env *env);
 
 
 /*
