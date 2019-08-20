@@ -49,7 +49,9 @@ void	del_cur_portal(t_draw *draw, t_portals *cur)
 	else
 	{
 		del_me = draw->portals;
-		free()
+		draw->portals->next = NULL;
+		free(del_me);
+		draw->portals = NULL;
 	}
 }
 
