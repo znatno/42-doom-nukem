@@ -12,28 +12,82 @@
 
 #include "duke_nukem_editor.h"
 
-int		find_smallest_x(t_sector *sector, int y, t_record rec)
+void	print_list_vec(t_xy_l *head)
+{
+	t_xy_l	*walk;
+
+	walk = head;
+	while (walk)
+	{
+		printf("*******\n");
+		printf("*%5d*\n");
+		printf("******\n");
+		printf("\\ | /\n");
+		printf(" \\|/\n");
+		printf("   |\n");
+		printf("   v\n");
+		walk = walk->next;
+	}
+}
+
+int		find_smallest_x(t_sector *sector, int y, int x)
 {
 	t_sector	*walk_sec;
 	t_vertex	*walk_ver;
 	int 		least_x;
 
 	walk_sec = sector;
-	least_x = 100000000;
+	least_x = 1000000000;
 	while (walk_sec)
 	{
 		walk_ver = walk_sec->vertexes;
 		while (walk_ver)
 		{
-			if (least_x > walk_ver->xy1.x && walk_ver->xy1.y == y && rec.least_x > least_x)
+			if (least_x > walk_ver->xy1.x && walk_ver->xy1.x > x && walk_ver->xy1.y == y)
 				least_x = walk_ver->xy1.x;
-			if (least_x > walk_ver->xy2.x && walk_ver->xy2.y == y && rec.least_x > least_x)
+			if (least_x > walk_ver->xy2.x && walk_ver->xy2.x > x && walk_ver->xy2.y == y)
 				least_x = walk_ver->xy2.x;
 			walk_ver = walk_ver->next;
 		}
 		walk_sec = walk_sec->next;
 	}
-	return (-1);
+	return (least_x);
+}
+
+int		create_vertex(t_sector *sector, int y, t_record *rec)
+{
+	t_sector	*walk_sec;
+	t_vertex	*walk_ver;
+	t_xy_l		*tail;
+	t_xy_l		*curr;
+	t_xy_l		*pre;
+	int 		least_x_curr;
+	int 		value;
+
+	walk_sec = sector;
+	least_x_curr = -1;
+	value = -1;
+	tail = NULL;
+	while (walk_sec)
+	{
+		walk_ver = walk_sec->vertexes;
+		while (walk_ver)
+		{
+			least_x_curr = find_smallest_x(sector, y, value);
+			curr = (t_xy_l *)malloc(sizeof(t_xy_l));
+			curr->y = y;
+			curr->x = least_x_curr;
+			if (tail == NULL)
+				tail = tail;
+			else
+			{
+				 curr
+			}
+			walk_ver = walk_ver->next;
+		}
+		walk_sec = walk_sec->next;
+	}
+	return (least_x_curr);
 }
 
 int		find_smallest_y(t_sector *sector, t_record rec)
@@ -49,21 +103,21 @@ int		find_smallest_y(t_sector *sector, t_record rec)
 		walk_ver = walk_sec->vertexes;
 		while (walk_ver)
 		{
-			if (least_y > walk_ver->xy1.y && rec.least_y > least_y)
+			if (least_y > walk_ver->xy1.y && rec.least_y < least_y)
 				least_y = walk_ver->xy1.y;
-			if (least_y > walk_ver->xy2.y && rec.least_y > least_y)
+			if (least_y > walk_ver->xy2.y && rec.least_y < least_y)
 				least_y = walk_ver->xy2.y;
 			walk_ver = walk_ver->next;
 		}
 		walk_sec = walk_sec->next;
 	}
-	return (-1);
+	return (least_y);
 }
 
 t_record	*create_vertex_list(t_sector *sectors)
 {
 	t_xy_l		*curr;
-	t_xy_l		*last;
+	t_xy_l		*pre;
 	t_sector	*walk;
 	t_record	*record;
 
@@ -75,25 +129,7 @@ t_record	*create_vertex_list(t_sector *sectors)
 	while(walk)
 	{
 		record->least_y = find_smallest_y(sectors, *record);
-		record->least_x = find_smallest_x(sectors, record->least_y, *record);
-		if (record->least_y >= 0 && record->least_x >= 0)
-		{
-			curr = (t_xy_l *)malloc(sizeof(t_xy_l));
-			curr->y = record->least_y;
-			curr->x = record->least_x;
-			curr->next = NULL;
-			if (record->head_ver == NULL)
-			{
-				curr->index = 0;
-				record->head_ver = curr;
-			}
-			else
-			{
-				curr->index = last->index + 1;
-				last->next = curr;
-			}
-			last = curr;
-		}
+		create_vertex(walk, record->least_y, record);
 		walk = walk->next;
 	}
 	return (record);
@@ -174,12 +210,15 @@ t_rec_sec	*create_sector_list(t_sector *sectors, t_record *record)
 
 }
 
-void	transform_data(t_sector *sectors)
+t_record *transform_data(t_draw *draw)
 {
 	t_record	*record;
+	t_portals   *head_p;
+	t_sector    *head_s;
 
-	record = create_vertex_list(sectors);
-	record->head_sec = create_sector_list(sectors, record);
-
-
+	head_s = draw->head;
+	head_p = draw->portals;
+	record = create_vertex_list(head_s);
+	print_list_vec(record->head_ver);
+//	record->head_sec = create_sector_list(head_s, record);
 }

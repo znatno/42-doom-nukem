@@ -63,6 +63,7 @@ typedef struct s_xy_l
 	int 			y;
 	int 			index;
 	struct s_xy_l 	*next;
+	struct s_xy_l	*tail;
 }				t_xy_l;
 
 
@@ -262,6 +263,14 @@ t_sector *last_in_list(t_draw *draw);
 void	pop_from_stack_to_list(t_env *env, t_draw *draw, t_stack **head);
 
 void	draw_all_portals(t_env *env, t_draw *draw);
+
+/*
+ * transform and record data to map_file.duke
+ */
+
+t_record *transform_data(t_draw *draw);
+
+void	record_to_file(t_record *rec);
 
 #endif
 

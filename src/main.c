@@ -43,8 +43,6 @@ void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head)
 		}
 		cur_s = cur_s->next;
 	}
-
-		printf("%p\n %p\n",draw->portals, draw->portals->next);
 	if (draw->portals != NULL)
 	{
 		draw_all_portals(env, draw);
@@ -141,6 +139,7 @@ t_env *sdl_main_loop(t_env *env)
 				if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
 				{
 //					print_all_sectors(draw, draw->head);к
+					record_to_file(transform_data(draw));
 					loop = 0;
 				}
 				else if (kstate[SDL_SCANCODE_SPACE] && !draw->s_mode)

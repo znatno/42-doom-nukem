@@ -85,6 +85,11 @@ void	player_record()
 	//record player to file
 }
 
+void	record_to_file(t_record *rec)
+{
+
+}
+
 //void	record_data(t_xy *vertex, int num_vertex, t_sector *sectors, int num_sectors)
 //{
 //	int fd;
