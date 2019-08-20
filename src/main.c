@@ -39,7 +39,8 @@ void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head)
 		while (cur_v)
 		{
 			// DRAW PORTALS
-//			if (find_portal_for_draw(env, draw, cur_v, cur_s))
+			if (!(find_portal_for_draw(env, draw, cur_v, cur_s)))
+				delete_portal(draw, cur_v);
 //			line(cur_v->xy1, cur_v->xy2, env, RED);
 //			else
 				line(cur_v->xy1, cur_v->xy2, env, WHITE);
@@ -48,7 +49,6 @@ void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head)
 		cur_s = cur_s->next;
 	}
 
-		printf("%p\n %p\n",draw->portals, draw->portals->next);
 	if (draw->portals != NULL)
 	{
 		draw_all_portals(env, draw);

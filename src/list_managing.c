@@ -27,15 +27,65 @@ void print_sector(t_sector *temp)
 //		return (0);
 //}
 
+void	del_cur_portal(t_draw *draw, t_portals *cur)
+{
+	t_portals *head;
+	t_portals *del_me;
+	t_portals *prev;
+
+	if (draw->portals->next)
+	{
+		head = draw->portals;
+		while (head->next != cur)
+		{
+			head = head->next;
+		}
+		del_me = head->next;
+		prev = del_me->next;
+		head->next = prev;
+		free(del_me);
+		del_me = NULL;
+	}
+	else
+	{
+		del_me = draw->portals;
+		free()
+	}
+}
+
+void	delete_portal(t_draw *draw, t_vertex *cur_v)
+{
+	t_portals *cur;
+	int i;
+
+	i = 0;
+	cur = draw->portals;
+	while (cur)
+	{
+		if (((cur->xy1.x == cur_v->xy1.x &&
+			  cur->xy1.y == cur_v->xy1.y &&
+			  cur->xy2.x == cur_v->xy2.x &&
+			  cur->xy2.y == cur_v->xy2.y)
+			 || (cur->xy1.x == cur_v->xy2.x &&
+				 cur->xy1.y == cur_v->xy2.y &&
+				 cur->xy2.x == cur_v->xy1.x &&
+				 cur->xy2.y == cur_v->xy1.y)))
+				del_cur_portal(draw,cur);
+			cur = cur->next;
+	}
+}
+
+
 void	draw_all_portals(t_env *env, t_draw *draw)
 {
 		t_portals *cur;
+		int i;
 
-
+		i = 0;
 		cur = draw->portals;
 		while (cur)
 		{
-//			if(!check_if_deleted_portal(draw, cur))
+			printf("%d\n",++i);
 			line(cur->xy1, cur->xy2, env, RED);
 			cur = cur->next;
 		}
@@ -227,6 +277,23 @@ void free_sect(t_draw *draw, t_sector *del_me, t_sector *cur_s)
 	free(del_me);
 }
 
+
+//void delete_portal(t_env *env, t_draw *draw, t_vertex *temp, t_sector *temp_s)
+//{
+//	t_portals *cur;
+//
+//
+//	cur = draw->portals;
+//	while (cur)
+//	{
+//		cur = cur->next;
+////		if (cur-> == temp_s || cur->sec_b == temp_s)
+//			printf("DA DA YDALI\n");
+//	}
+//	printf("\n---------\n");
+//
+//}
+
 void delete_sector_from_list(t_env *env, t_draw *draw)
 {
 	t_sector *cur_s;
@@ -243,7 +310,9 @@ void delete_sector_from_list(t_env *env, t_draw *draw)
 	cur_v = cur_s->next->vertexes;
 	while (cur_v != NULL)
 	{
-		find_portal_for_draw(env, draw, cur_v, cur_s->next);
+//		if(find_portal_for_draw(env, draw, cur_v, cur_s->next))
+		//	printf("YDALI MENYA YA PORTAL\n");
+//		delete_portal(draw, env, cur_v, cur_s->next);
 		tmp = cur_v->next;
 		free(cur_v);
 		cur_v = tmp;

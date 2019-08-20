@@ -202,6 +202,8 @@ void	pop_from_stack_to_list(t_env *env, t_draw *draw, t_stack **head);
 
 void	draw_all_portals(t_env *env, t_draw *draw);
 
+void	delete_portal(t_draw *draw, t_vertex *cur_v);
+
 #endif
 
 
