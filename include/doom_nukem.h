@@ -37,6 +37,8 @@
 #define KneeHeight 2		// How tall obstacles the player can simply walk over without jumping
 #define hfov (0.73f * H)	// Affects the horizontal field of vision
 #define vfov (.2f * H)		// Affects the vertical field of vision
+# define H_FOV		(1.0 * 0.73f * H / W)
+# define V_FOV		(1.0 * .2f)
 #define isdigit(c) (c >= '0' && c <= '9')
 #define SEC_COLOR 0x0000ff00
 #define BLACK_COLOR 0x00

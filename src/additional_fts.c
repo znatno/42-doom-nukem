@@ -144,7 +144,7 @@ t_scaler scaler_init(int a, int b, int c, int d, int f)
 
 int		ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y)
 {
-	int32_t		*pixel;
+	int		*pixel;
 
 	pixel = 0;
 	pixel = sur->pixels + y * sur->pitch + x * sur->format->BytesPerPixel;

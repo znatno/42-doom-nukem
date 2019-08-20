@@ -210,27 +210,39 @@ void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p)
 	ds->i->cya = clamp(ds->i->ya, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // top
 	ds->i->cyb = clamp(ds->i->yb, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // bottom
 
-//	for (int y = ds->i->y_top[ds->it->x]; y <= ds->i->y_bottom[ds->it->x]; ++y)
-//	{
-//		if (y >= ds->i->cya && y <= ds->i->cyb)
-//		{
-//			y = ds->i->cyb;
-//			continue;
-//		}
-//		ds->f->hei = (y < ds->i->cya) ? (ds->f->yceil) : (ds->f->yfloor);
-//		ds->f->mapx = 0;
-//		ds->f->mapz = 0;
-//		CeilingFloorScreenCoordinatesToMapCoordinates(ds->f->hei, ds->it->x, y,  ds->f->mapx, ds->f->mapz);
-//		unsigned txtx =(unsigned)(ds->f->mapx * 256);
-//		unsigned txtz = (unsigned )(ds->f->mapz * 256);
-//		if (y < ds->i->cya)
-//			ds->i->pel = ft_get_pixel(p->sdl->textures->arr_tex[1], txtx % p->sdl->textures->arr_tex[1]->w, txtz % p->sdl->textures->arr_tex[1]->w);
-//		else
-//			ds->i->pel = ft_get_pixel(p->sdl->textures->arr_tex[0], txtx % p->sdl->textures->arr_tex[0]->w, txtz % p->sdl->textures->arr_tex[0]->w);
-//		((uint32_t *)p->sdl->win_surface->pixels)[y * W + ds->it->x] = ds->i->pel;
-//	}
-	render(CEIL, 0, p, ds);
-	render(FLOOR, 0, p, ds);
+	uint32_t *pix= (uint32_t *)p->sdl->win_surface->pixels;
+	for(int y = ds->i->y_top[ds->it->x] - 1; y <= ds->i->y_bottom[ds->it->x]; ++y)
+	{
+		if (y >= ds->i->cya && y <= ds->i->cyb) {
+			y = ds->i->cyb;
+			continue;
+		}
+		float hei = y < ds->i->cya ? ds->f->yceil : ds->f->yfloor;
+		float mapx, mapz;
+
+		mapz = hei * H * V_FOV / ((H / 2 - (float)y) - p->yaw * H * V_FOV);
+		mapx = mapz * (W / 2 - (float)ds->it->x) / W * H_FOV;
+		float rtx = mapz * ds->f->pcos + mapx * ds->f->psin;
+		float rtz = mapz * ds->f->psin - mapx * ds->f->pcos;
+		mapx = rtx + p->where.x;
+		mapz = rtz + p->where.y;
+
+		unsigned txtx = mapx * 256;
+		unsigned txtz = mapz * 256;
+		uint32_t pel;
+		if (y < ds->i->cya)
+		{
+			pel = ft_get_pixel(p->sdl->textures->arr_tex[2], txtx % p->sdl->textures->arr_tex[3]->w, txtz % p->sdl->textures->arr_tex[3]->h);
+		}
+		else
+		{
+			pel = ft_get_pixel(p->sdl->textures->arr_tex[5], txtx % p->sdl->textures->arr_tex[5]->w, txtz % p->sdl->textures->arr_tex[5]->h);
+		}
+		((uint32_t *)pix)[y * W + ds->it->x] = pel;
+	}
+
+//	render(CEIL, 0, p, ds);
+//	render(FLOOR, 0, p, ds);
 	/* Render ceiling: everything above this sector's ceiling height-> */
 //	SDL_UpdateWindowSurface(p->sdl->window);
 	/* Render floor: everything below this ssector's floor height-> */
