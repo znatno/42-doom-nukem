@@ -150,7 +150,7 @@ void            print_all_sectors(t_draw *draw, t_sector *temp);
 
 void            add_sector_to_list(t_sector *temp, t_draw *draw);
 
-void            delete_sector_from_list(t_draw *draw);
+void            delete_sector_from_list(t_env *env, t_draw *draw);
 
 //void            create_sectors_list(t_env *env, t_draw *draw, t_sector *temp);
 
@@ -194,6 +194,9 @@ t_sector *last_in_list(t_draw *draw);
  * list comb with stack
  */
 
+void find_portal(t_env *env, t_draw *draw, t_vertex *temp, t_sector *temp_s);
+
+int find_portal_for_draw(t_env *env, t_draw *draw, t_vertex *temp, t_sector *temp_s);
 
 void	pop_from_stack_to_list(t_env *env, t_draw *draw, t_stack **head);
 

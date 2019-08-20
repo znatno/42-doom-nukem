@@ -119,7 +119,43 @@ void		new_portal(t_draw *draw, t_vertex *temp,t_sector *temp_s, t_sector *cur_s)
 }
 
 
+int find_portal_for_draw(t_env *env, t_draw *draw, t_vertex *temp, t_sector *temp_s)
+{
+	t_sector *cur_s;
+	t_vertex *cur_v;
+	int i;
+//				*** ***
+// 				 -   -
+//				\_____/
 
+	i = 0;
+	cur_s = draw->head;
+	while (cur_s)
+	{
+		i++;
+//		printf("sectors %d | %p  |  %p\n", i, cur_s, temp_s);
+		cur_v = cur_s->vertexes;
+		while (cur_v)
+		{
+//			printf("|---------------------\nx1 = %d y1 = %d\n x2 = %d y2 = %d\n", cur_v->xy1.x, cur_v->xy1.y,cur_v->xy2.x,cur_v->xy2.y);
+//			printf("---------------------|\nx1 = %d y1 = %d\n x2 = %d y2 = %d\n\n\n", temp->xy1.x,temp->xy1.y,temp->xy2.x,temp->xy2.y);
+			if (((temp->xy1.x == cur_v->xy1.x &&
+				  temp->xy1.y == cur_v->xy1.y &&
+				  temp->xy2.x == cur_v->xy2.x &&
+				  temp->xy2.y == cur_v->xy2.y)
+				 || (temp->xy1.x == cur_v->xy2.x &&
+					 temp->xy1.y == cur_v->xy2.y &&
+					 temp->xy2.x == cur_v->xy1.x &&
+					 temp->xy2.y == cur_v->xy1.y)) && (cur_s != temp_s))
+			{
+				return (1);
+			}
+			cur_v = cur_v->next;
+		}
+		cur_s = cur_s->next;
+	}
+	return (0);
+}
 
 void find_portal(t_env *env, t_draw *draw, t_vertex *temp, t_sector *temp_s)
 {
@@ -176,7 +212,6 @@ t_sector *check_if_deleted_sector(t_draw *draw, t_vertex *tmp,
 		}
 		cur_s = NULL;
 		draw->head = NULL;
-		draw->head->next = NULL;
 		free(cur_s);
 		draw->s_count--;
 		return (NULL);
@@ -192,7 +227,7 @@ void free_sect(t_draw *draw, t_sector *del_me, t_sector *cur_s)
 	free(del_me);
 }
 
-void delete_sector_from_list(t_draw *draw)
+void delete_sector_from_list(t_env *env, t_draw *draw)
 {
 	t_sector *cur_s;
 	t_vertex *cur_v;
@@ -208,6 +243,7 @@ void delete_sector_from_list(t_draw *draw)
 	cur_v = cur_s->next->vertexes;
 	while (cur_v != NULL)
 	{
+		find_portal_for_draw(env, draw, cur_v, cur_s->next);
 		tmp = cur_v->next;
 		free(cur_v);
 		cur_v = tmp;

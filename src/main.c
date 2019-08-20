@@ -38,7 +38,11 @@ void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head)
 		cur_v = cur_s->vertexes;
 		while (cur_v)
 		{
-			line(cur_v->xy1, cur_v->xy2, env, WHITE);
+			// DRAW PORTALS
+//			if (find_portal_for_draw(env, draw, cur_v, cur_s))
+//			line(cur_v->xy1, cur_v->xy2, env, RED);
+//			else
+				line(cur_v->xy1, cur_v->xy2, env, WHITE);
 			cur_v = cur_v->next;
 		}
 		cur_s = cur_s->next;
@@ -156,7 +160,7 @@ t_env *sdl_main_loop(t_env *env)
 //				}
 				else if (kstate[SDL_SCANCODE_DELETE] && draw->s_mode)
 				{
-					delete_sector_from_list(draw);
+					delete_sector_from_list(env, draw);
 					select_sector_mode(env, draw, cur_s);
 				}
 				else if (kstate[SDL_SCANCODE_BACKSPACE] && !draw->s_mode)
