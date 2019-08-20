@@ -113,22 +113,44 @@ int		get_index(t_xy ab, t_xy_l *list)
 	return (-1);
 }
 
+t_portal	*create_sector_portal_list(t_sector curr, t_record *rec)
+{
+
+}
+
 t_index		*create_sector_edge_list(t_sector curr, t_record *rec)
 {
 	t_vertex	*walk;
+	t_index		*in_l;
+	t_index		*pre;
+	int			index[2];
 
 
 	walk = curr.vertexes;
+	pre = NULL;
 	while (walk)
 	{
-		index = get_index(walk->xy1, rec->head_ver);
-
+		index[0] = get_index(walk->xy1, rec->head_ver);
+		index[1] = get_index(walk->xy2, rec->head_ver);
+		if (index[0] > -1 && index[1] > -1 && pre == NULL)
+		{
+			in_l = (t_index *)malloc(sizeof(t_index));
+			in_l->index = index[0];
+			in_l->next = (t_index *)malloc(sizeof(t_index));
+			in_l->next->index = index[1];
+			pre = in_l->next;
+		}
+		else if (index[0] > -1 && index[1] > -1)
+		{
+			pre->next = (t_index *)malloc(sizeof(t_index));
+			pre->index = index[1];
+		}
 		walk = walk->next;
 	}
 
 }
 
-t_rec_sec	*create_sector_list(t_sector *sectors)
+t_rec_sec	*create_sector_list(t_sector *sectors, t_record *record)
 {
 	t_sector	*walk_sec;
 	t_vertex	*walk_ver;
@@ -141,7 +163,10 @@ t_rec_sec	*create_sector_list(t_sector *sectors)
 		walk_ver = walk_sec->vertexes;
 		while (walk_ver)
 		{
-			rec_sec->head_ver = create_sector_edge_list();
+			rec_sec->head_ver = create_sector_edge_list(*walk_sec, record);
+			rec_sec->head_por = create_sector_portal_list(*walk_sec, record);
+			rec_sec->ceil = 20;
+			rec_sec->floor = 0;
 			walk_ver = walk_ver->next;
 		}
 		walk_sec = walk_sec->next;
@@ -154,7 +179,7 @@ void	transform_data(t_sector *sectors)
 	t_record	*record;
 
 	record = create_vertex_list(sectors);
-	record = create_sector_list(sectors);
+	record->head_sec = create_sector_list(sectors, record);
 
 
 }
