@@ -176,6 +176,7 @@ t_sector *check_if_deleted_sector(t_draw *draw, t_vertex *tmp,
 		}
 		cur_s = NULL;
 		draw->head = NULL;
+		draw->head->next = NULL;
 		free(cur_s);
 		draw->s_count--;
 		return (NULL);
