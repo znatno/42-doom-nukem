@@ -33,18 +33,26 @@ void	del_cur_portal(t_draw *draw, t_portals *cur)
 	t_portals *del_me;
 	t_portals *prev;
 
-	if (draw->portals->next)
+	if (draw->portals)
 	{
 		head = draw->portals;
-		while (head->next != cur)
+	while  head->next != cur)
 		{
 			head = head->next;
 		}
-		del_me = head->next;
-		prev = del_me->next;
-		head->next = prev;
-		free(del_me);
-		del_me = NULL;
+		if (head == draw->portals)
+		{
+			free(draw->portals);
+			draw->portals = NULL;
+		}
+		else
+		{
+			del_me = head->next;
+			prev = del_me->next;
+			head->next = prev;
+			del_me = NULL;
+			free(del_me);
+		}
 	}
 	else
 	{

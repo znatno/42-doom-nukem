@@ -111,9 +111,15 @@ void 		select_sector_mode(t_env *env, t_draw *draw, int key)
 			line(cur_v->xy1, cur_v->xy2, env, VIOLET);
 			else
 				line(cur_v->xy1, cur_v->xy2, env, WHITE);
+			if (!(find_portal_for_draw(env, draw, cur_v, cur_s)))
+				delete_portal(draw, cur_v);
 			cur_v = cur_v->next;
 		}
 		cur_s = cur_s->next;
+	}
+	if (draw->portals != NULL)
+	{
+		draw_all_portals(env, draw);
 	}
 }
 
