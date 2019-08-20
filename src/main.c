@@ -43,14 +43,13 @@ void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head)
 		}
 		cur_s = cur_s->next;
 	}
+
+		printf("%p\n %p\n",draw->portals, draw->portals->next);
 	if (draw->portals != NULL)
 	{
-		t_portals *cur;
-
-		cur = draw->portals;
-		while (cur && (cur = cur->next))
-			line(cur->xy1, cur->xy2, env, RED);
+		draw_all_portals(env, draw);
 	}
+//	draw_all_portals(env, draw);
 }
 
 //void 				redraw_screen(t_draw *draw, t_env *env)
@@ -177,7 +176,7 @@ t_env *sdl_main_loop(t_env *env)
 						cur_s += (draw->s_count > cur_s) ? 1 : (-cur_s + 1);
 					else
 						cur_s = 1;
-					printf("%d\n",cur_s);
+//					printf("%d\n",cur_s);
 						select_sector_mode(env, draw, cur_s);
 				}
 			}

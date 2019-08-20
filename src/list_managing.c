@@ -14,13 +14,31 @@ void print_sector(t_sector *temp)
 	// free(cur);
 }
 
+//int	check_if_deleted_portal(t_draw *draw, t_portals *cur)
+//{
+//	printf("cur->sec_a = %p\n cur->sec_b = %p\n\n", cur->sec_a->vertexes, cur->sec_b->vertexs);
+//	//	if (cur->sec_a == NULL || cur->sec_b == NULL)
+////	{
+////		free(cur);
+////		cur = NULL;
+////		return (1);
+////	}
+////	else
+//		return (0);
+//}
+
 void	draw_all_portals(t_env *env, t_draw *draw)
 {
-	t_portals *cur;
+		t_portals *cur;
 
-	cur = draw->portals;
-	while (cur && (cur = cur->next))
-		line(cur->xy1, cur->xy2, env, RED);
+
+		cur = draw->portals;
+		while (cur)
+		{
+//			if(!check_if_deleted_portal(draw, cur))
+			line(cur->xy1, cur->xy2, env, RED);
+			cur = cur->next;
+		}
 }
 
 void print_all_sectors(t_draw *draw, t_sector *temp)
@@ -50,26 +68,29 @@ t_sector *last_portal(t_draw *draw)
 
 	cur = draw->portals;
 	while (cur->next)
+	{
 		cur = cur->next;
+//		printf("IM HERE\n");
+	}
+//	printf("%p",cur);
 	return (cur);
 }
-void 	malloc_portal(t_portals *portal, t_vertex *data, t_sector *temp_s, t_sector *cur_s)
+t_portals 	*malloc_portal(t_portals *portal, t_vertex *data, t_sector *temp_s, t_sector *cur_s)
 {
-	portal = portal->next;
 	portal->sec_a = cur_s;
 	portal->sec_b = temp_s;
 	portal->xy1 = data->xy1;
 	portal->xy2 = data->xy2;
-	portal->next = NULL;
+	return (portal);
 }
 
-void 	malloc_portal_first(t_portals *portal, t_vertex *data, t_sector *temp_s, t_sector *cur_s)
+t_portals 	*malloc_portal_first(t_portals *portal, t_vertex *data, t_sector *temp_s, t_sector *cur_s)
 {
 	portal->sec_a = cur_s;
 	portal->sec_b = temp_s;
 	portal->xy1 = data->xy1;
 	portal->xy2 = data->xy2;
-	portal->next = NULL;
+	return (portal);
 }
 
 
@@ -79,15 +100,20 @@ void		new_portal(t_draw *draw, t_vertex *temp,t_sector *temp_s, t_sector *cur_s)
 
 	if (!draw->portals) // first element in list
 	{
-		portal = ft_memalloc(sizeof(t_portals));
-		draw->portals = portal;
-		malloc_portal_first(portal, temp, temp_s, cur_s);
+		draw->portals = ft_memalloc(sizeof(t_portals));
+		draw->portals = malloc_portal_first(draw->portals, temp, temp_s, cur_s);
+		draw->portals->next = NULL;
 	}
 	else
 	{
 		portal = last_portal(draw);
-		portal->next = ft_memalloc(sizeof(t_sector));
-		malloc_portal(portal, temp, temp_s, cur_s);
+		portal->next = ft_memalloc(sizeof(t_portals));
+		portal = portal->next;
+		portal->sec_a = cur_s;
+		portal->sec_b = temp_s;
+		portal->xy1 = temp->xy1;
+		portal->xy2 = temp->xy2;
+		portal->next = NULL;
 	}
 //	draw->s_count++;
 }
@@ -109,12 +135,12 @@ void find_portal(t_env *env, t_draw *draw, t_vertex *temp, t_sector *temp_s)
 	while (cur_s)
 	{
 		i++;
-		printf("sectors %d | %p  |  %p\n", i, cur_s, temp_s);
+//		printf("sectors %d | %p  |  %p\n", i, cur_s, temp_s);
 		cur_v = cur_s->vertexes;
 		while (cur_v)
 		{
-			printf("|---------------------\nx1 = %d y1 = %d\n x2 = %d y2 = %d\n", cur_v->xy1.x, cur_v->xy1.y,cur_v->xy2.x,cur_v->xy2.y);
-			printf("---------------------|\nx1 = %d y1 = %d\n x2 = %d y2 = %d\n\n\n", temp->xy1.x,temp->xy1.y,temp->xy2.x,temp->xy2.y);
+//			printf("|---------------------\nx1 = %d y1 = %d\n x2 = %d y2 = %d\n", cur_v->xy1.x, cur_v->xy1.y,cur_v->xy2.x,cur_v->xy2.y);
+//			printf("---------------------|\nx1 = %d y1 = %d\n x2 = %d y2 = %d\n\n\n", temp->xy1.x,temp->xy1.y,temp->xy2.x,temp->xy2.y);
 			if (((temp->xy1.x == cur_v->xy1.x &&
 				 temp->xy1.y == cur_v->xy1.y &&
 				 temp->xy2.x == cur_v->xy2.x &&
