@@ -30,22 +30,30 @@ void		events(t_sector **sectors, t_player *plr)
 		plr->draw_look = kstate[SDL_SCANCODE_L];
 		if (ev.type == SDL_KEYDOWN)
 		{
+			if (ev.key.keysym.sym == ' ')
+			{
+				Mix_HaltChannel(RUN);
+				Mix_HaltChannel(FAST_RUN);
+				if (!Mix_Playing(JUMP) && plr->ground && !plr->ducking)
+					Mix_PlayChannel(JUMP, sounds->jumpbreath, 0);
+			}
 			if (ev.key.keysym.sym == ' ' && plr->ground
 				&& plr->where.z == (*sectors)[plr->sector].floor + EyeHeight)
 			{
 				plr->vlct.z += 0.5;
 				plr->falling = 1;
+				plr->jump_check = true;
 			}
 
 			if (ev.key.keysym.sym == 'p') //TODO: вивід корисної інфи для дебаґу
 			{
 //				TTF_Font *font = getFont("../Lato-Regular.ttf", 26);
 //				plr->sdl->w_surface = renderFontToSurface(font, "xyi");
-				SDL_UpdateWindowSurface(plr->sdl->window);
-				SDL_Delay(20000);
-				exit_doom(sectors, plr);
+//				SDL_UpdateWindowSurface(plr->sdl->window);
+//				SDL_Delay(20000);
+//				exit_doom(sectors, plr);
 
-				printf("\n\t---------------------------\n");
+/*				printf("\n\t---------------------------\n");
 				printf("\t\t\t[print msg]\n");
 				// поточний сектор
 				printf("\tplr->speed: %f\n\n", plr->speed);
@@ -59,7 +67,9 @@ void		events(t_sector **sectors, t_player *plr)
 				printf("\tangle: %f\t\tyaw: %f\n",
 					   plr->angle, plr->yaw);
 
-				printf("\n\t---------------------------\n\n");
+				printf("\n\t---------------------------\n\n");*/
+
+				print_data_ds(plr);
 			}
 
 			if (ev.key.keysym.sym == SDLK_LCTRL)
@@ -123,7 +133,7 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors, t_sounds *sou
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 	while(!quit)
 	{
-		printf("Duck: %d\n", plr->ducking);
+//		printf("Duck: %d\n", plr->ducking);
 		//printf("x: %d\ty: %d\n", plr->ms.x, plr->ms.y);
 
 		/* Очищує буфер чорним кольором */
@@ -131,7 +141,7 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors, t_sounds *sou
 		//		SDL_MapRGB(sdl->w_surface->format, 0, 0, 0));
 
 		/* Key Events */
-		events(&sectors, plr);
+		events(&sectors, plr, sounds);
 		//printf("fall: %d\tground: %d\n", plr->falling, plr->ground);
 
 		//printf("DUCK: %d \n",plr->ducking);
@@ -151,7 +161,7 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors, t_sounds *sou
 
 		plr->ground = !plr->falling; /* Vertical collision detection */
 		if (plr->falling)
-			do_fall(plr, &sectors);
+			do_fall(plr, &sectors, sounds);
 		if (plr->moving) /* Horizontal collision detection */
 			do_move(plr, &sectors);
 
@@ -182,11 +192,15 @@ void		game_loop(t_sdl_main *sdl, t_player *plr, t_sector *sectors, t_sounds *sou
 		plr->aclrt = plr->pushing ? 0.4 : 0.2;
 		plr->vlct.x = plr->vlct.x * (1 - plr->aclrt) + plr->mv.x * plr->aclrt;
 		plr->vlct.y = plr->vlct.y * (1 - plr->aclrt) + plr->mv.y * plr->aclrt;
-		if (plr->pushing && !plr->ducking && plr->ground)
-		{
-			if (!Mix_Playing(2))
-				Mix_PlayChannel(2, sounds->run_sound, 0);
-		}
+
+		if (plr->pushing && !plr->ducking && plr->ground && !plr->run && !Mix_Playing(RUN))
+			Mix_PlayChannel(RUN, sounds->run_sound, 0);
+		if (plr->ducking && plr->pushing && !Mix_Playing(SEAT_RUN))
+			Mix_PlayChannel(SEAT_RUN, sounds->low_run, 0);
+		if (plr->speed == 0.28f && !Mix_Playing(FAST_RUN) && plr->pushing && !plr->jump_check)
+			Mix_PlayChannel(FAST_RUN, sounds->fast_run, 0);
+		if (!plr->pushing || plr->speed != 0.28f)
+			Mix_HaltChannel(FAST_RUN);
 		if (plr->pushing)
 			plr->moving = 1;
 		/*else // припинення ходьби після відтиску клавіші
@@ -209,10 +223,16 @@ t_sounds *init_music_n_sounds() {
 	sounds = (t_sounds *) malloc(sizeof(t_sounds));
 	SDL_Init(SDL_INIT_AUDIO);
 	Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers);
-	sounds->bg_music = Mix_LoadMUS("../bestmusic.wav");
-	sounds->run_sound = Mix_LoadWAV("../run.wav");
+	sounds->bg_music = Mix_LoadMUS("../sounds/bestmusic.wav");
+	sounds->run_sound = Mix_LoadWAV("../sounds/run.wav");
+	sounds->jumpbreath = Mix_LoadWAV("../sounds/jumpbreath.wav");
+	sounds->landing = Mix_LoadWAV("../sounds/land2.wav");
+	sounds->fast_run = Mix_LoadWAV("../sounds/fast_run.wav");
+	sounds->low_run = Mix_LoadWAV("../sounds/run.wav");
 	Mix_VolumeMusic(30);
-	Mix_Volume(2, 20);
+	Mix_Volume(RUN, 20);
+	Mix_Volume(SEAT_RUN, 10);
+	Mix_Volume(FAST_RUN, 20);
 	return (sounds);
 
 }
@@ -247,9 +267,9 @@ int 		main(void)
 	if (!sdl.window)
 		printf("win");
 	sounds = init_music_n_sounds();
-	sdl.w_surface = SDL_GetWindowSurface(sdl.window);
+	sdl.win_surface = SDL_GetWindowSurface(sdl.window);
 	plr.ms.yaw = 0;
-	Mix_PlayMusic(sounds->bg_music, 0);
+	Mix_PlayMusic(sounds->bg_music, -1);
 	game_loop(&sdl, &plr, sectors, sounds);
 	SDL_DestroyWindow(sdl.window);
 	SDL_Quit();

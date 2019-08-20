@@ -61,6 +61,11 @@
 #define FULL_WALL			2
 #define CEIL				3
 #define FLOOR				4
+#define RUN					1
+#define JUMP				2
+#define LANDING				3
+#define SEAT_RUN			4
+#define FAST_RUN			5
 //	Utility functions. Because C doesn't have templates,
 //	we use the slightly less safe preprocessor macros to
 //	implement these functions that work with multiple types.
@@ -158,6 +163,10 @@ typedef struct		s_sounds
 {
 	Mix_Music 		*bg_music;
 	Mix_Chunk 		*run_sound;
+	Mix_Chunk		*jumpbreath;
+	Mix_Chunk		*landing;
+	Mix_Chunk		*low_run;
+	Mix_Chunk		*fast_run;
 }					t_sounds;
 
 // Player: location
@@ -181,11 +190,13 @@ typedef struct		s_player
 	t_move_vec		mv;			// вектор руху
 	float 			speed;		// швидкість, менша для присяду, todo більша shift
 	int 			pushing;
-	float			aclrt;		// acceleration / прискорення
+	float			aclrt;
+	bool			first_land;// acceleration / прискорення
 	t_xy_i			ms;			// mouse aiming
 	t_sdl_main		*sdl;
 
 	bool			draw_look; // для перегляду відмальовування полінійно
+	bool			jump_check; //для звуку стрибка
 }					t_player;
 
 typedef struct	s_tmp_iter
@@ -352,7 +363,7 @@ void			move_player(t_player *plr, t_sector **sectors,
 							float dx, float dy);
 
 void			do_move(t_player *plr, t_sector **sc);
-void			do_fall(t_player *plr, t_sector **sectors);
+void			do_fall(t_player *plr, t_sector **sectors, t_sounds *sounds);
 
 /*
 **	Quit
@@ -373,4 +384,6 @@ int g_x; //temp global iterator, delete it at the end
 SDL_Surface		*renderFontToSurface(TTF_Font *font, char *text);
 TTF_Font		*getFont(char *filename, int size);
 
+
+void	print_data_ds(t_player *p); // todo delete
 #endif

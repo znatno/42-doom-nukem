@@ -19,19 +19,6 @@ void	print_player_pos(t_player *p)
 	printf("-------------------------------\n");
 }
 
-void	print_data_ds(t_player *p)
-{
-	printf("\n---------------------\n");
-	printf("| player_x = %5f | player_y = %5f |\n", p->where.x, p->where.y);
-	printf("| vlct_x = %5f | vlct_y = %5f | vlct_z = %5f|\n", p->vlct.x, p->vlct.y, p->vlct.z);
-	printf("| angle = %f | ang_sin = %5f | ang_cos = %5f | yaw = %5f|\n", p->angle, p->anglesin, p->anglecos, p->yaw);
-	printf("| cur_s = %u | num_s = %u|\n", p->sector, p->num_scts);
-	printf("| ground = %i | falling = %i | moving = %i | ducking = %i | eyeheight = %5f|\n", p->ground, p->falling, p->moving, p->ducking,p->eyeheight);
-	printf("| move_x = %5f | move_y = %5f |\n", p->mv.x, p->mv.y);
-	printf("| mouse_aim_x = %i | mouse_aim_y = %i | mouse_aim_yaw = %5f |\n", p->ms.x, p->ms.y, p->ms.yaw);
-	printf("---------------------\n");
-}
-
 int		main_loop_condition(t_draw_screen_calc *ds)
 {
 	if (ds->it->start_do == 1)
@@ -200,6 +187,8 @@ void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p)
 	/* Calculate the Z coordinate for this point. (Only used for lighting.) */
 	ds->i->z = (int)roundf(((ds->it->x - ds->i->x1) * (ds->f->tz2-ds->f->tz1) / (ds->i->x2-ds->i->x1) + ds->f->tz1) * 30);
 	ds->i->z = (ds->i->z > 250) ? (250) : (ds->i->z);
+//	printf("%d\n", ds->i->z);
+//	vline(W / 2, H / 2, 0xFFFFFF, p, ds);
 
 	ds->f->perc_light = percentage(250, 0, ds->i->z); //light percent by ds-i->z
 	/* Acquire the Y coordinates for our ceiling & floor for this X coordinate-> Clamp them-> */
