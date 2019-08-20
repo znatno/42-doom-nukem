@@ -56,6 +56,8 @@ int		color_transoform(int	color, float percent)
 
 void	render(int draw_mode ,int texture_num, t_player *p, t_draw_screen_calc *ds)
 {
+	uint32_t *pix= (uint32_t *)p->sdl->win_surface->pixels;
+	float tmp;
 	if (draw_mode == TOP_PORTAL_WALL)
 		vline2(ds->i->cya, ds->i->cnya - 1,
 			   scaler_init(ds->i->ya, ds->i->cya, ds->i->yb, 0,
@@ -70,8 +72,32 @@ void	render(int draw_mode ,int texture_num, t_player *p, t_draw_screen_calc *ds)
 						   p->sdl->textures->arr_tex[2]->w - 1), ds->i->txtx, p, ds, 5);
 	else if (draw_mode == CEIL)
 		vline(ds->i->y_top[ds->it->x], ds->i->cya - 1, 0x0, p, ds);
+//		vline2(ds->i->y_top[ds->it->x], ds->i->cya - 1,
+//		   scaler_init(ds->i->y_top[ds->it->x], ds->i->cny - 1, ds->i->yb, 0,
+//					   p->sdl->textures->arr_tex[2]->w - 1), ds->i->txtx, p, ds, 5);
 	else if (draw_mode == FLOOR)
-		vline(ds->i->cyb + 1, ds->i->y_bottom[ds->it->x], 0x0, p, ds);
+//		vline(ds->i->cyb + 1, ds->i->y_bottom[ds->it->x], 0x0, p, ds);
+		for(int y=ds->i->y_top[ds->it->x]; y<=ds->i->y_bottom[ds->it->x]; ++y)
+		{
+//			if (y >= ds->i->cya && y <= ds->i->cyb) {
+//				y = ds->i->cyb;
+//				continue;
+//			}
+			float hei = y < ds->i->cya ? ds->f->yceil : ds->f->yfloor;
+			float mapx, mapz;
+			mapz = ds->i->y_bottom[ds->it->x] * H * hfov / ((H >> 1) - y);
+			mapx = mapz * ((W >> 1) - ds->it->x) / (vfov * H);
+			tmp = mapx;
+
+			mapx = mapz * p->anglecos + tmp * p->anglesin;
+			mapz = mapz * p->anglesin - tmp * p->anglecos;
+//			CeilingFloorScreenCoordinatesToMapCoordinates(hei, ds->it->x, y, mapx, mapz);
+			unsigned txtx = (int)(mapx + p->where.x) * 50;
+			unsigned txtz = (int)(mapz + p->where.y) * 50;
+			uint32_t pel = ft_get_pixel(p->sdl->textures->arr_tex[5], txtx % p->sdl->textures->arr_tex[2]->w,
+								   txtz % p->sdl->textures->arr_tex[2]->h);
+			((int *)pix)[y * W + ds->it->x] = pel;
+		}
 }
 
 void vline2(int y1,int y2, t_scaler ty, unsigned txtx, t_player *p, t_draw_screen_calc *ds, int tn)
