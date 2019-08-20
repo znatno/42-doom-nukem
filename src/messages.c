@@ -28,7 +28,7 @@ void	show_msg(t_game *g, t_msg m, t_font font)
 	SDL_DestroyTexture(msg);
 }
 
-t_msg	create_msg(char *text, uint8_t fontname, t_xy_i pos, int sec)
+t_msg	create_msg(char *text, uint8_t fontname, t_xy_int pos, int sec)
 {
 	t_msg	m;
 
@@ -52,7 +52,7 @@ void	clear_msg(t_msg *m)
 	m->start_t = 0;
 	m->seconds = 0;
 	m->text = 0;
-	m->pos = (t_xy_i){0, 0};
+	m->pos = (t_xy_int){0, 0};
 	m->font_num = 0;
 }
 
@@ -83,7 +83,7 @@ void	init_msgs(t_game *g)
 		g->msgs[i].start_t = 0;
 		g->msgs[i].seconds = 0;
 		g->msgs[i].text = 0;
-		g->msgs[i].pos = (t_xy_i){0, 0};
+		g->msgs[i].pos = (t_xy_int){0, 0};
 		g->msgs[i].font_num = 0;
 	}
 }

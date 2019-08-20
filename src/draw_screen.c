@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/02 21:38:26 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/19 19:25:10 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/20 23:12:26 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,10 +99,13 @@ void	rotate_view(t_draw_screen_calc *ds, t_player plr)
 
 void	find_intersect(t_draw_screen_calc *ds)
 {
-	ds->f->nearz = 1e-4f;
-	ds->f->farz = 5;
-	ds->f->nearside = 1e-5f;
-	ds->f->farside = 20.f;
+	ds->f->nearz = 1e-4f;		//ds->f->nearz = 1e-4f;
+	ds->f->farz = 5;			//ds->f->farz = 5;
+	ds->f->nearside = 1e-5f;	//ds->f->nearside = 1e-5f;
+	ds->f->farside = 20.f;		//ds->f->farside = 20.f;
+	//todo тут значення відповідають за відмальовування тому ймовірно тут
+	// можна знайти чому відмальовує зайвого чи не відмальовує коли треба
+
 	// Find an intersection between the wall and the approximate edges of player's view
 	ds->s->i1 = intersect(ds->f->tx1, ds->f->tz1, ds->f->tx2, ds->f->tz2,
 						  -ds->f->nearside, ds->f->nearz, -ds->f->farside,
@@ -300,7 +303,7 @@ void	draw_screen(t_sector *sector, t_player plr)
 				continue; // Only render if it's visible
 			/* Acquire the floor and ceiling heights, relative to where the player's view is */
 			render_sector_walls(&ds, sector, ds.que, &plr);
-//			SDL_UpdateWindowSurface(plr.sdl->window);
+			//SDL_UpdateWindowSurface(plr.sdl->window);
 		} // for s in sector's edges
 		++ds.i->renderedsectors[ds.s->now.sectorno];
 	}

@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/19 21:47:44 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/20 23:03:16 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,11 +99,11 @@ typedef struct	s_xy
 	float	y;
 }				t_xy;
 
-typedef struct	s_xy_i
+typedef struct	s_xy_int
 {
 	int			x;
 	int			y;
-}				t_xy_i;
+}				t_xy_int;
 
 /* Sectors: Floor and ceiling height; list of edge vertices and neighbors */
 typedef struct		s_sector
@@ -164,7 +164,7 @@ typedef struct		s_player
 	float 			speed;		// швидкість, менша для присяду
 	int 			pushing;
 	float			aclrt;		// acceleration / прискорення
-	t_xy_i			ms;			// mouse aiming
+	t_xy_int			ms;			// mouse aiming
 	float 			ms_yaw;
 	t_sdl_main		*sdl;
 
@@ -276,11 +276,28 @@ typedef struct		s_msg
 {
 	char			*text;
 	uint8_t 		font_num;
-	t_xy_i			pos;
+	t_xy_int		pos;
 	double			seconds;
 	double 			start_t;
 	bool			constant;
 }					t_msg;
+
+/*
+t_obj			// прототип структури для об'єкта
+{
+ 	int sector	// номер сектора (звідти ще беремо висоту)
+	t_xy_int	// позиція X Y
+ 	texture_id	// масив текстури для різних боків і знищення
+
+ 	hp			// -1 - невразливий
+ 				// від 1 - потрібна к-сть пострілів/ударів для смерті
+ 				// 0 - вбито
+
+	animated	// 0 - анімація смерті відтворена
+ 				// від 1 - к-сть кадрів анімації (циклом пройдеться до нуля)
+
+}
+*/
 
 typedef struct		s_game
 {
@@ -289,6 +306,7 @@ typedef struct		s_game
 	t_sector	*sectors;
 	t_font		fonts[FONTS_NUM];
 	t_msg		msgs[MAX_MSGS];
+//	t_obj		*objs;		// масив зчитаних об'єктів
 
 	int			error;		// для виводу тексту помилки при виході
 }					t_game;
@@ -358,7 +376,7 @@ void			clear_font(t_font *t);
 void			init_msgs(t_game *g);
 void			show_msg(t_game *g, t_msg m, t_font font);
 void			get_messages(t_game *g);
-t_msg			create_msg(char *text, uint8_t fontname, t_xy_i pos, int sec);
+t_msg			create_msg(char *text, uint8_t fontname, t_xy_int pos, int sec);
 void			clear_msg(t_msg *m);
 
 #endif

@@ -44,7 +44,7 @@ void		events(t_game *g)
 			if (ev.key.keysym.sym == 'p')
 			{
 				g->msgs[1] = create_msg("Between two girls & one cup",
-						FONT_M_SM, (t_xy_i){64, 96}, 5);
+						FONT_M_SM, (t_xy_int){64, 96}, 5);
 
 				//create_msg(text, font, seconds);
 
@@ -84,9 +84,9 @@ void		events(t_game *g)
 
 void		game_loop(t_game *g)
 {
-	g->msgs[0] = create_msg("Episode 1", FONT_M_BG, (t_xy_i){40, 64}, 5);
-	g->msgs[1] = create_msg("HP: 100/100", FONT_M_MD, (t_xy_i){32, 380}, -1);
-	g->msgs[2] = create_msg("Notes: 0/10", FONT_M_MD, (t_xy_i){32, 420}, -1);
+	g->msgs[0] = create_msg("Episode 1", FONT_M_BG, (t_xy_int){40, 64}, 5);
+	g->msgs[1] = create_msg("HP: 100/100", FONT_M_MD, (t_xy_int){32, 380}, -1);
+	g->msgs[2] = create_msg("Notes: 0/10", FONT_M_MD, (t_xy_int){32, 420}, -1);
 	while (true)
 	{
 		/* Очищує буфер чорним кольором */
