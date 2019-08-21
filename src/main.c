@@ -140,6 +140,7 @@ t_env *sdl_main_loop(t_env *env)
 	draw->s_mode = false;
 	draw->d_mode = false;
 	draw->s_count = 0;
+	draw->p_count = 0;
 	cur_s = 0;
 	while (loop && env->sdl_error == NONE)
 	{
@@ -157,14 +158,17 @@ t_env *sdl_main_loop(t_env *env)
 				{
 					draw->key = SPACE; // space pressed
 					if (stack_more_than_two(head))
-					draw_dot(env,draw,head);
+					{
+						draw_dot(env, draw, head);
+						refresh_screen(draw, env, head);
+					}
 					draw->key = 0;
 				} // TODO: WALL SELECTION
 //				else if (kstate[SDL_SCANCODE_RETURN] && !draw->d_mode)
 //				{
 //					cur_v = find_wall_in_list()
 //				}
-				else if (kstate[SDL_SCANCODE_DELETE] && draw->s_mode)
+				else if (kstate[SDL_SCANCODE_DELETE])// && draw->s_mode)
 				{
 					delete_sector_from_list(env, draw);
 					select_sector_mode(env, draw, cur_s);

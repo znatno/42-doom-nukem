@@ -33,26 +33,17 @@ void	del_cur_portal(t_draw *draw, t_portals *cur)
 	t_portals *del_me;
 	t_portals *prev;
 
-	if (draw->portals)
+	if (draw->p_count > 1)
 	{
 		head = draw->portals;
-	while  head->next != cur)
+		while (head->next != cur)
 		{
 			head = head->next;
 		}
-		if (head == draw->portals)
-		{
-			free(draw->portals);
-			draw->portals = NULL;
-		}
-		else
-		{
-			del_me = head->next;
-			prev = del_me->next;
-			head->next = prev;
-			del_me = NULL;
-			free(del_me);
-		}
+		del_me = head->next;
+		prev = del_me->next;
+		head->next = prev;
+		free(del_me);
 	}
 	else
 	{
@@ -61,6 +52,7 @@ void	del_cur_portal(t_draw *draw, t_portals *cur)
 		free(del_me);
 		draw->portals = NULL;
 	}
+	draw->p_count--;
 }
 
 void	delete_portal(t_draw *draw, t_vertex *cur_v)
@@ -158,6 +150,7 @@ void		new_portal(t_draw *draw, t_vertex *temp,t_sector *temp_s, t_sector *cur_s)
 {
 	t_portals *portal;
 
+	draw->p_count++;
 	if (!draw->portals) // first element in list
 	{
 		draw->portals = ft_memalloc(sizeof(t_portals));

@@ -109,6 +109,7 @@ typedef struct s_draw
     t_xy temp;
     int counter;
   	int s_count;
+  	int p_count;
     bool s_mode;
     bool d_mode;
     char key;
