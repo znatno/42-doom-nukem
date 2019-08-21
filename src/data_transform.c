@@ -58,7 +58,7 @@ int		create_vertex(t_sector *sector, int y, t_record *rec)
 {
 	t_sector	*walk_sec;
 	t_vertex	*walk_ver;
-	t_xy_l		*tail;
+	t_xy_l		*head;
 	t_xy_l		*curr;
 	t_xy_l		*pre;
 	int 		least_x_curr;
@@ -67,21 +67,24 @@ int		create_vertex(t_sector *sector, int y, t_record *rec)
 	walk_sec = sector;
 	least_x_curr = -1;
 	value = -1;
-	tail = NULL;
+	head = NULL;
 	while (walk_sec)
 	{
 		walk_ver = walk_sec->vertexes;
 		while (walk_ver)
 		{
-			least_x_curr = find_smallest_x(sector, y, value);
+			least_x_curr = find_smallest_x(sector, y, least_x_curr);
 			curr = (t_xy_l *)malloc(sizeof(t_xy_l));
 			curr->y = y;
 			curr->x = least_x_curr;
-			if (tail == NULL)
-				tail = tail;
+			if (head == NULL)
+			{
+				head = curr;
+				head->next = NULL;
+			}
 			else
 			{
-				 curr
+
 			}
 			walk_ver = walk_ver->next;
 		}
