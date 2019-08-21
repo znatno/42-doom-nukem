@@ -152,6 +152,7 @@ typedef struct s_draw
   	int p_count;
     bool s_mode;
     bool d_mode;
+    bool ceil_mode;
     char key;
 } t_draw;
 

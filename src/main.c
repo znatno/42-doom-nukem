@@ -91,6 +91,30 @@ t_draw *init_draw(t_draw *draw)
 	return (draw);
 }
 
+void 		ceil_floor_changing(t_env *env, t_draw *draw, int key)
+{
+	t_sector 	*cur_s;
+	t_vertex 	*cur_v;
+	int 		i;
+
+	cur_s = draw->head;
+	i = 0;
+	while (draw->head != NULL && cur_s)
+	{
+		i++;
+		cur_v = cur_s->vertexes;
+		while (cur_v)
+		{
+			if (i == key)
+			{
+
+			}
+			cur_v = cur_v->next;
+		}
+		cur_s = cur_s->next;
+	}
+}
+
 void 		select_sector_mode(t_env *env, t_draw *draw, int key)
 {
 	t_sector 	*cur_s;
@@ -108,7 +132,9 @@ void 		select_sector_mode(t_env *env, t_draw *draw, int key)
 		while (cur_v)
 		{
 			if (i == key)
-			line(cur_v->xy1, cur_v->xy2, env, VIOLET);
+			{
+				line(cur_v->xy1, cur_v->xy2, env, VIOLET);
+			}
 			else
 				line(cur_v->xy1, cur_v->xy2, env, WHITE);
 			if (!(find_portal_for_draw(env, draw, cur_v, cur_s)))
@@ -194,6 +220,10 @@ t_env *sdl_main_loop(t_env *env)
 //					printf("%d\n",cur_s);
 						select_sector_mode(env, draw, cur_s);
 				}
+				// TOP BUTTTTTTTON
+				else if (kstate[SDL_SCANCODE_UP] && draw->ceil_mode && draw->s_mode){
+					select_sector_mode(env, draw, cur_s);
+				}
 			}
 			if (ev.type == SDL_MOUSEBUTTONDOWN)
 			{
@@ -206,6 +236,7 @@ t_env *sdl_main_loop(t_env *env)
 				}
 				draw_select_text(draw, env);
 				(draw->s_mode) ? select_sector_mode(env, draw, cur_s)
+
 				: refresh_screen(draw, env, head);
 			}
 		}
