@@ -83,8 +83,6 @@ typedef struct s_portals
 {
 	struct s_xy 	xy1;
 	struct s_xy 	xy2;
-	struct t_sector *sec_a;
-	struct t_sector *sec_b;
 	struct t_portals *next;
 } t_portals;
 

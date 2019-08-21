@@ -33,7 +33,7 @@ void	del_cur_portal(t_draw *draw, t_portals *cur)
 	t_portals *del_me;
 	t_portals *prev;
 
-	if (draw->p_count > 1)
+	if (draw->p_count > 1 && draw->s_count > 1)
 	{
 		head = draw->portals;
 		while (head->next != cur)
@@ -129,8 +129,6 @@ t_sector *last_portal(t_draw *draw)
 }
 t_portals 	*malloc_portal(t_portals *portal, t_vertex *data, t_sector *temp_s, t_sector *cur_s)
 {
-	portal->sec_a = cur_s;
-	portal->sec_b = temp_s;
 	portal->xy1 = data->xy1;
 	portal->xy2 = data->xy2;
 	return (portal);
@@ -138,8 +136,6 @@ t_portals 	*malloc_portal(t_portals *portal, t_vertex *data, t_sector *temp_s, t
 
 t_portals 	*malloc_portal_first(t_portals *portal, t_vertex *data, t_sector *temp_s, t_sector *cur_s)
 {
-	portal->sec_a = cur_s;
-	portal->sec_b = temp_s;
 	portal->xy1 = data->xy1;
 	portal->xy2 = data->xy2;
 	return (portal);
@@ -162,8 +158,8 @@ void		new_portal(t_draw *draw, t_vertex *temp,t_sector *temp_s, t_sector *cur_s)
 		portal = last_portal(draw);
 		portal->next = ft_memalloc(sizeof(t_portals));
 		portal = portal->next;
-		portal->sec_a = cur_s;
-		portal->sec_b = temp_s;
+//		portal->sec_a = cur_s;
+//		portal->sec_b = temp_s;
 		portal->xy1 = temp->xy1;
 		portal->xy2 = temp->xy2;
 		portal->next = NULL;

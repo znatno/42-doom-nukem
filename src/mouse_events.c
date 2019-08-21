@@ -43,6 +43,10 @@ void	draw_select_text(t_env *env)
 	{
 		env->textures->selected = text_select;
 		draw_texture(env->textures->cords[text_select], text_select, 0xf98d8d, env);
+		if (text_select == WALL_MODE)
+		{
+			printf("jopa");
+		}
 	}
 	env->mouse_x = -1;
 	env->mouse_y = -1;

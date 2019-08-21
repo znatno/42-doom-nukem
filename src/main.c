@@ -152,7 +152,7 @@ t_env *sdl_main_loop(t_env *env)
 				if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
 				{
 //					print_all_sectors(draw, draw->head);к
-					record_to_file(transform_data(draw));
+//					record_to_file(transform_data(draw));
 					loop = 0;
 				}
 				else if (kstate[SDL_SCANCODE_SPACE] && !draw->s_mode)
