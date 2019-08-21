@@ -27,15 +27,66 @@ void print_sector(t_sector *temp)
 //		return (0);
 //}
 
+void	del_cur_portal(t_draw *draw, t_portals *cur)
+{
+	t_portals *head;
+	t_portals *del_me;
+	t_portals *prev;
+
+	if (draw->p_count > 1 && draw->s_count > 1)
+	{
+		head = draw->portals;
+		while (head->next != cur)
+		{
+			head = head->next;
+		}
+		del_me = head->next;
+		prev = del_me->next;
+		head->next = prev;
+		free(del_me);
+	}
+	else
+	{
+		del_me = draw->portals;
+		draw->portals->next = NULL;
+		free(del_me);
+		draw->portals = NULL;
+	}
+	draw->p_count--;
+}
+void	delete_portal(t_draw *draw, t_vertex *cur_v)
+{
+	t_portals *cur;
+	int i;
+
+	i = 0;
+	cur = draw->portals;
+	while (cur)
+	{
+		if (((cur->xy1.x == cur_v->xy1.x &&
+			  cur->xy1.y == cur_v->xy1.y &&
+			  cur->xy2.x == cur_v->xy2.x &&
+			  cur->xy2.y == cur_v->xy2.y)
+			 || (cur->xy1.x == cur_v->xy2.x &&
+				 cur->xy1.y == cur_v->xy2.y &&
+				 cur->xy2.x == cur_v->xy1.x &&
+				 cur->xy2.y == cur_v->xy1.y)))
+				del_cur_portal(draw,cur);
+			cur = cur->next;
+	}
+}
+
+
 void	draw_all_portals(t_env *env, t_draw *draw)
 {
 		t_portals *cur;
+		int i;
 
-
+		i = 0;
 		cur = draw->portals;
 		while (cur)
 		{
-//			if(!check_if_deleted_portal(draw, cur))
+			printf("%d\n",++i);
 			line(cur->xy1, cur->xy2, env, RED);
 			cur = cur->next;
 		}
@@ -98,6 +149,7 @@ void		new_portal(t_draw *draw, t_vertex *temp,t_sector *temp_s, t_sector *cur_s)
 {
 	t_portals *portal;
 
+	draw->p_count++;
 	if (!draw->portals) // first element in list
 	{
 		draw->portals = ft_memalloc(sizeof(t_portals));
@@ -119,7 +171,43 @@ void		new_portal(t_draw *draw, t_vertex *temp,t_sector *temp_s, t_sector *cur_s)
 }
 
 
+int find_portal_for_draw(t_env *env, t_draw *draw, t_vertex *temp, t_sector *temp_s)
+{
+	t_sector *cur_s;
+	t_vertex *cur_v;
+	int i;
+//				*** ***
+// 				 -   -
+//				\_____/
 
+	i = 0;
+	cur_s = draw->head;
+	while (cur_s)
+	{
+		i++;
+//		printf("sectors %d | %p  |  %p\n", i, cur_s, temp_s);
+		cur_v = cur_s->vertexes;
+		while (cur_v)
+		{
+//			printf("|---------------------\nx1 = %d y1 = %d\n x2 = %d y2 = %d\n", cur_v->xy1.x, cur_v->xy1.y,cur_v->xy2.x,cur_v->xy2.y);
+//			printf("---------------------|\nx1 = %d y1 = %d\n x2 = %d y2 = %d\n\n\n", temp->xy1.x,temp->xy1.y,temp->xy2.x,temp->xy2.y);
+			if (((temp->xy1.x == cur_v->xy1.x &&
+				  temp->xy1.y == cur_v->xy1.y &&
+				  temp->xy2.x == cur_v->xy2.x &&
+				  temp->xy2.y == cur_v->xy2.y)
+				 || (temp->xy1.x == cur_v->xy2.x &&
+					 temp->xy1.y == cur_v->xy2.y &&
+					 temp->xy2.x == cur_v->xy1.x &&
+					 temp->xy2.y == cur_v->xy1.y)) && (cur_s != temp_s))
+			{
+				return (1);
+			}
+			cur_v = cur_v->next;
+		}
+		cur_s = cur_s->next;
+	}
+	return (0);
+}
 
 void find_portal(t_env *env, t_draw *draw, t_vertex *temp, t_sector *temp_s)
 {
@@ -191,7 +279,24 @@ void free_sect(t_draw *draw, t_sector *del_me, t_sector *cur_s)
 	free(del_me);
 }
 
-void delete_sector_from_list(t_draw *draw)
+
+//void delete_portal(t_env *env, t_draw *draw, t_vertex *temp, t_sector *temp_s)
+//{
+//	t_portals *cur;
+//
+//
+//	cur = draw->portals;
+//	while (cur)
+//	{
+//		cur = cur->next;
+////		if (cur-> == temp_s || cur->sec_b == temp_s)
+//			printf("DA DA YDALI\n");
+//	}
+//	printf("\n---------\n");
+//
+//}
+
+void delete_sector_from_list(t_env *env, t_draw *draw)
 {
 	t_sector *cur_s;
 	t_vertex *cur_v;
@@ -207,6 +312,9 @@ void delete_sector_from_list(t_draw *draw)
 	cur_v = cur_s->next->vertexes;
 	while (cur_v != NULL)
 	{
+//		if(find_portal_for_draw(env, draw, cur_v, cur_s->next))
+		//	printf("YDALI MENYA YA PORTAL\n");
+//		delete_portal(draw, env, cur_v, cur_s->next);
 		tmp = cur_v->next;
 		free(cur_v);
 		cur_v = tmp;
@@ -228,13 +336,13 @@ t_sector *last_in_list(t_draw *draw)
 	return (cur);
 }
 
-void	find_wall_in_list(t_draw *draw, int cur_s)
-{
-	int count;
-
-	count = 0;
-
-}
+//void	find_wall_in_list(t_draw *draw, int cur_s)
+//{
+//	int count;
+//
+//	count = 0;
+//
+//}
 
 void 	malloc_list(t_sector *sect)
 {
@@ -261,6 +369,8 @@ void	pop_from_stack_to_list(t_env *env, t_draw *draw, t_stack **head)
 	t_xy first_data;
 
 	cur_s = last_in_list(draw);
+	cur_s->floor = DEFAULT_FLOOR;
+	cur_s->ceil = DEFAULT_CEIL;
 	first_data = stack_pop(head);
 	cur_data = first_data; //
 

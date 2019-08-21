@@ -38,11 +38,17 @@ void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head)
 		cur_v = cur_s->vertexes;
 		while (cur_v)
 		{
-			line(cur_v->xy1, cur_v->xy2, env, WHITE);
+			// DRAW PORTALS
+			if (!(find_portal_for_draw(env, draw, cur_v, cur_s)))
+				delete_portal(draw, cur_v);
+//			line(cur_v->xy1, cur_v->xy2, env, RED);
+//			else
+				line(cur_v->xy1, cur_v->xy2, env, WHITE);
 			cur_v = cur_v->next;
 		}
 		cur_s = cur_s->next;
 	}
+
 	if (draw->portals != NULL)
 	{
 		draw_all_portals(env, draw);
@@ -105,9 +111,15 @@ void 		select_sector_mode(t_env *env, t_draw *draw, int key)
 			line(cur_v->xy1, cur_v->xy2, env, VIOLET);
 			else
 				line(cur_v->xy1, cur_v->xy2, env, WHITE);
+			if (!(find_portal_for_draw(env, draw, cur_v, cur_s)))
+				delete_portal(draw, cur_v);
 			cur_v = cur_v->next;
 		}
 		cur_s = cur_s->next;
+	}
+	if (draw->portals != NULL)
+	{
+		draw_all_portals(env, draw);
 	}
 }
 
@@ -128,6 +140,7 @@ t_env *sdl_main_loop(t_env *env)
 	draw->s_mode = false;
 	draw->d_mode = false;
 	draw->s_count = 0;
+	draw->p_count = 0;
 	cur_s = 0;
 	while (loop && env->sdl_error == NONE)
 	{
@@ -139,23 +152,26 @@ t_env *sdl_main_loop(t_env *env)
 				if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
 				{
 //					print_all_sectors(draw, draw->head);к
-					record_to_file(transform_data(draw));
+//					record_to_file(transform_data(draw));
 					loop = 0;
 				}
 				else if (kstate[SDL_SCANCODE_SPACE] && !draw->s_mode)
 				{
 					draw->key = SPACE; // space pressed
 					if (stack_more_than_two(head))
-					draw_dot(env,draw,head);
+					{
+						draw_dot(env, draw, head);
+						refresh_screen(draw, env, head);
+					}
 					draw->key = 0;
 				} // TODO: WALL SELECTION
 //				else if (kstate[SDL_SCANCODE_RETURN] && !draw->d_mode)
 //				{
 //					cur_v = find_wall_in_list()
 //				}
-				else if (kstate[SDL_SCANCODE_DELETE] && draw->s_mode)
+				else if (kstate[SDL_SCANCODE_DELETE])// && draw->s_mode)
 				{
-					delete_sector_from_list(draw);
+					delete_sector_from_list(env, draw);
 					select_sector_mode(env, draw, cur_s);
 				}
 				else if (kstate[SDL_SCANCODE_BACKSPACE] && !draw->s_mode)
@@ -163,12 +179,12 @@ t_env *sdl_main_loop(t_env *env)
 					stack_pop(head);
 					refresh_screen(draw, env, head);
 				}
-				else if (kstate[SDL_SCANCODE_S])
-				{
-					draw->s_mode = (draw->s_mode) ? 0 : 1;
-					(draw->s_mode) ? 0 == 0 : refresh_screen(draw, env, head);
-
-				}
+//				else if (kstate[SDL_SCANCODE_S])
+//				{
+//					draw->s_mode = (draw->s_mode) ? 0 : 1;
+//					(draw->s_mode) ? 0 == 0 : refresh_screen(draw, env, head);
+//
+//				}
 				else if (kstate[SDL_SCANCODE_RIGHT] && draw->s_mode)
 				{
 					if (draw->s_count > 1)
@@ -179,14 +195,18 @@ t_env *sdl_main_loop(t_env *env)
 						select_sector_mode(env, draw, cur_s);
 				}
 			}
-			if (ev.type == SDL_MOUSEBUTTONDOWN && !draw->s_mode)
+			if (ev.type == SDL_MOUSEBUTTONDOWN)
 			{
-				if (ev.button.clicks)
+				SDL_GetMouseState(&env->mouse_x, &env->mouse_y);
+				if (ev.button.clicks && env->mouse_x < W_DRAW - 20
+				&& env->mouse_y < H_DRAW - 20 && env->mouse_y > 20 &&
+						env->mouse_x > 20 && !draw->s_mode)
 				{
 					draw_dot(env, draw, head);
 				}
-				SDL_GetMouseState(&env->mouse_x, &env->mouse_y);
-				draw_select_text(env);
+				draw_select_text(draw, env);
+				(draw->s_mode) ? select_sector_mode(env, draw, cur_s)
+				: refresh_screen(draw, env, head);
 			}
 		}
 		draw_frame(env);

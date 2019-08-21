@@ -10,7 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <SDL_ttf.h>
 #include "duke_nukem_editor.h"
 
 uint32_t	get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y, uint32_t color)

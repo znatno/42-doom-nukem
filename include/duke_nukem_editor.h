@@ -43,6 +43,9 @@
 # define SPACE ' '
 # define I draw->counter
 
+# define DEFAULT_FLOOR 0
+# define DEFAULT_CEIL 20
+
 # define RED (255 << 16)
 # define GREEN (255 << 8)
 # define BLUE (255)
@@ -135,6 +138,8 @@ typedef struct s_line {
 typedef struct s_sector
 {
     t_vertex *vertexes;
+    int floor;
+    int ceil;
     struct s_sector *next;
 } t_sector;
 
@@ -146,6 +151,7 @@ typedef struct s_draw
     t_xy temp;
     int counter;
   	int s_count;
+  	int p_count;
     bool s_mode;
     bool d_mode;
     char key;
@@ -215,7 +221,7 @@ void            print_all_sectors(t_draw *draw, t_sector *temp);
 
 void            add_sector_to_list(t_sector *temp, t_draw *draw);
 
-void            delete_sector_from_list(t_draw *draw);
+void            delete_sector_from_list(t_env *env, t_draw *draw);
 
 //void            create_sectors_list(t_env *env, t_draw *draw, t_sector *temp);
 
@@ -227,7 +233,7 @@ t_sector 		*check_if_deleted_sector(t_draw *draw,  t_vertex *tmp,
 										 t_vertex *cur_v, t_sector *cur_s);
 void 			print_all_portals(t_draw *draw);
 
-void	draw_select_text(t_env *env);
+void	draw_select_text(t_draw *draw, t_env *env);
 
 
 /*
@@ -261,6 +267,9 @@ t_sector *last_in_list(t_draw *draw);
  * list comb with stack
  */
 
+void find_portal(t_env *env, t_draw *draw, t_vertex *temp, t_sector *temp_s);
+
+int find_portal_for_draw(t_env *env, t_draw *draw, t_vertex *temp, t_sector *temp_s);
 
 void	pop_from_stack_to_list(t_env *env, t_draw *draw, t_stack **head);
 
@@ -274,6 +283,7 @@ t_record *transform_data(t_draw *draw);
 
 void	record_to_file(t_record *rec);
 
+void	delete_portal(t_draw *draw, t_vertex *cur_v);
 #endif
 
 
