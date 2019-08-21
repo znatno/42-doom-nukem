@@ -54,7 +54,6 @@ void	del_cur_portal(t_draw *draw, t_portals *cur)
 	}
 	draw->p_count--;
 }
-
 void	delete_portal(t_draw *draw, t_vertex *cur_v)
 {
 	t_portals *cur;
@@ -129,6 +128,8 @@ t_sector *last_portal(t_draw *draw)
 }
 t_portals 	*malloc_portal(t_portals *portal, t_vertex *data, t_sector *temp_s, t_sector *cur_s)
 {
+	portal->sec_a = cur_s;
+	portal->sec_b = temp_s;
 	portal->xy1 = data->xy1;
 	portal->xy2 = data->xy2;
 	return (portal);
@@ -136,6 +137,8 @@ t_portals 	*malloc_portal(t_portals *portal, t_vertex *data, t_sector *temp_s, t
 
 t_portals 	*malloc_portal_first(t_portals *portal, t_vertex *data, t_sector *temp_s, t_sector *cur_s)
 {
+	portal->sec_a = cur_s;
+	portal->sec_b = temp_s;
 	portal->xy1 = data->xy1;
 	portal->xy2 = data->xy2;
 	return (portal);
@@ -158,8 +161,8 @@ void		new_portal(t_draw *draw, t_vertex *temp,t_sector *temp_s, t_sector *cur_s)
 		portal = last_portal(draw);
 		portal->next = ft_memalloc(sizeof(t_portals));
 		portal = portal->next;
-//		portal->sec_a = cur_s;
-//		portal->sec_b = temp_s;
+		portal->sec_a = cur_s;
+		portal->sec_b = temp_s;
 		portal->xy1 = temp->xy1;
 		portal->xy2 = temp->xy2;
 		portal->next = NULL;
@@ -333,13 +336,13 @@ t_sector *last_in_list(t_draw *draw)
 	return (cur);
 }
 
-void	find_wall_in_list(t_draw *draw, int cur_s)
-{
-	int count;
-
-	count = 0;
-
-}
+//void	find_wall_in_list(t_draw *draw, int cur_s)
+//{
+//	int count;
+//
+//	count = 0;
+//
+//}
 
 void 	malloc_list(t_sector *sect)
 {
@@ -366,6 +369,8 @@ void	pop_from_stack_to_list(t_env *env, t_draw *draw, t_stack **head)
 	t_xy first_data;
 
 	cur_s = last_in_list(draw);
+	cur_s->floor = DEFAULT_FLOOR;
+	cur_s->ceil = DEFAULT_CEIL;
 	first_data = stack_pop(head);
 	cur_data = first_data; //
 

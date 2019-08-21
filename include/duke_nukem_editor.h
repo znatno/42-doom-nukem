@@ -42,6 +42,9 @@
 # define SPACE ' '
 # define I draw->counter
 
+# define DEFAULT_FLOOR 0
+# define DEFAULT_CEIL 20
+
 # define RED (255 << 16)
 # define GREEN (255 << 8)
 # define BLUE (255)
@@ -83,6 +86,8 @@ typedef struct s_portals
 {
 	struct s_xy 	xy1;
 	struct s_xy 	xy2;
+	struct t_sector *sec_a;
+	struct t_sector *sec_b;
 	struct t_portals *next;
 } t_portals;
 
@@ -131,6 +136,8 @@ typedef struct s_line {
 typedef struct s_sector
 {
     t_vertex *vertexes;
+    int floor;
+    int ceil;
     struct s_sector *next;
 } t_sector;
 
@@ -224,7 +231,7 @@ t_sector 		*check_if_deleted_sector(t_draw *draw,  t_vertex *tmp,
 										 t_vertex *cur_v, t_sector *cur_s);
 void 			print_all_portals(t_draw *draw);
 
-void	draw_select_text(t_env *env);
+void	draw_select_text(t_draw *draw, t_env *env);
 
 
 /*
@@ -274,6 +281,7 @@ t_record *transform_data(t_draw *draw);
 
 void	record_to_file(t_record *rec);
 
+void	delete_portal(t_draw *draw, t_vertex *cur_v);
 #endif
 
 

@@ -179,12 +179,12 @@ t_env *sdl_main_loop(t_env *env)
 					stack_pop(head);
 					refresh_screen(draw, env, head);
 				}
-				else if (kstate[SDL_SCANCODE_S])
-				{
-					draw->s_mode = (draw->s_mode) ? 0 : 1;
-					(draw->s_mode) ? 0 == 0 : refresh_screen(draw, env, head);
-
-				}
+//				else if (kstate[SDL_SCANCODE_S])
+//				{
+//					draw->s_mode = (draw->s_mode) ? 0 : 1;
+//					(draw->s_mode) ? 0 == 0 : refresh_screen(draw, env, head);
+//
+//				}
 				else if (kstate[SDL_SCANCODE_RIGHT] && draw->s_mode)
 				{
 					if (draw->s_count > 1)
@@ -195,14 +195,18 @@ t_env *sdl_main_loop(t_env *env)
 						select_sector_mode(env, draw, cur_s);
 				}
 			}
-			if (ev.type == SDL_MOUSEBUTTONDOWN && !draw->s_mode)
+			if (ev.type == SDL_MOUSEBUTTONDOWN)
 			{
-				if (ev.button.clicks)
+				SDL_GetMouseState(&env->mouse_x, &env->mouse_y);
+				if (ev.button.clicks && env->mouse_x < W_DRAW - 20
+				&& env->mouse_y < H_DRAW - 20 && env->mouse_y > 20 &&
+						env->mouse_x > 20 && !draw->s_mode)
 				{
 					draw_dot(env, draw, head);
 				}
-				SDL_GetMouseState(&env->mouse_x, &env->mouse_y);
-				draw_select_text(env);
+				draw_select_text(draw, env);
+				(draw->s_mode) ? select_sector_mode(env, draw, cur_s)
+				: refresh_screen(draw, env, head);
 			}
 		}
 		draw_frame(env);

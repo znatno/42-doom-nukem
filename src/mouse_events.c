@@ -33,20 +33,30 @@ int	click_to_text(t_env *env)
 	return (-1);
 }
 
-void	draw_select_text(t_env *env)
+void	draw_select_text(t_draw *draw, t_env *env)
 {
 	int	text_select;
 
 	text_select = click_to_text(env);
 
-	if (text_select > -1)
+	if (text_select == 8)
 	{
 		env->textures->selected = text_select;
+		draw->s_mode = 1;
+		if (draw->s_mode)
 		draw_texture(env->textures->cords[text_select], text_select, 0xf98d8d, env);
-		if (text_select == WALL_MODE)
-		{
-			printf("jopa");
-		}
+	}
+	else if (text_select == 1)
+	{
+		env->textures->selected = text_select;
+		draw->s_mode = 0;
+		if (draw->s_mode)
+			draw_texture(env->textures->cords[text_select], text_select, 0xf98d8d, env);
+	}
+	else if (text_select > -1)
+	{
+		env->textures->selected = text_select;
+			draw_texture(env->textures->cords[text_select], text_select, 0xf98d8d, env);
 	}
 	env->mouse_x = -1;
 	env->mouse_y = -1;
