@@ -38,6 +38,7 @@
 #define NONE 0
 #define LOOP_START 1
 # define MAX(x, y) (x >= y) ? (x) : (y)
+# define MIN(x, y) (x <= y) ? (x) : (y)
 # define ROUND(x) ((int)(round((double)x/20.0)))*20
 # define SPACE ' '
 # define I draw->counter
@@ -104,8 +105,9 @@ typedef struct s_rec_sec
 {
 	float 		ceil;
 	float 		floor;
-	t_index		*head_ver;
+	t_index		*head_ind;
 	t_portal	*head_por;
+	struct s_rec_sec	*next;
 }				t_rec_sec;
 
 typedef struct	s_record

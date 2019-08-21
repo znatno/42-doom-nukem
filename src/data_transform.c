@@ -19,14 +19,44 @@ void	print_list_vec(t_xy_l *head)
 	walk = head;
 	while (walk)
 	{
-		printf("*******\n");
-		printf("*%5d*\n");
-		printf("******\n");
-		printf("\\ | /\n");
-		printf(" \\|/\n");
-		printf("   |\n");
-		printf("   v\n");
+		printf("*************\n");
+		printf("*x=%3d|y=%3d* # index == %d\n", walk->x, walk->y, walk->index);
+		printf("*************\n");
+		printf(" \\   |     /\n");
+		printf("  \\  |   /\n");
+		printf("   \\ | /\n");
+		printf("    \\|/\n");
+		printf("     |\n");
+		printf("     v\n");
 		walk = walk->next;
+	}
+}
+
+void	print_list_sec(t_record *rec)
+{
+	t_rec_sec	*walk_sec;
+	t_index		*walk_ver;
+
+	walk_sec = rec->head_sec;
+	while (walk_sec)
+	{
+		walk_ver = walk_sec->head_ind;
+		while (walk_ver)
+		{
+			printf("*************\n");
+			printf("*index = %3d*\n", walk_ver->index);
+			printf("*************\n");
+			printf(" \\   |     /\n");
+			printf("  \\  |   /\n");
+			printf("   \\ | /\n");
+			printf("    \\|/\n");
+			printf("     |\n");
+			printf("     v\n");
+			walk_ver = walk_ver->next;
+		}
+		printf("---------------------\n");
+		printf("---------------------\n");
+		walk_sec = walk_sec->next;
 	}
 }
 
@@ -37,7 +67,7 @@ int		find_smallest_x(t_sector *sector, int y, int x)
 	int 		least_x;
 
 	walk_sec = sector;
-	least_x = 1000000000;
+	least_x = 100000;
 	while (walk_sec)
 	{
 		walk_ver = walk_sec->vertexes;
@@ -54,43 +84,40 @@ int		find_smallest_x(t_sector *sector, int y, int x)
 	return (least_x);
 }
 
-int		create_vertex(t_sector *sector, int y, t_record *rec)
+t_xy_l	*create_vertex(t_sector *sector, int y)
 {
-	t_sector	*walk_sec;
-	t_vertex	*walk_ver;
 	t_xy_l		*head;
 	t_xy_l		*curr;
 	t_xy_l		*pre;
+	static int 	index;
 	int 		least_x_curr;
-	int 		value;
 
-	walk_sec = sector;
 	least_x_curr = -1;
-	value = -1;
 	head = NULL;
-	while (walk_sec)
+	while ((least_x_curr = find_smallest_x(sector, y,least_x_curr)) && (least_x_curr != 100000))
 	{
-		walk_ver = walk_sec->vertexes;
-		while (walk_ver)
-		{
-			least_x_curr = find_smallest_x(sector, y, least_x_curr);
 			curr = (t_xy_l *)malloc(sizeof(t_xy_l));
 			curr->y = y;
 			curr->x = least_x_curr;
+			curr->index = index;
+			curr->next = NULL;
+			curr->tail = NULL;
 			if (head == NULL)
 			{
 				head = curr;
 				head->next = NULL;
+				pre = head;
 			}
 			else
 			{
-
+				pre->next = curr;
+				pre = curr;
 			}
-			walk_ver = walk_ver->next;
-		}
-		walk_sec = walk_sec->next;
+			index++;
 	}
-	return (least_x_curr);
+	if (head)
+		head->tail = curr;
+	return (head);
 }
 
 int		find_smallest_y(t_sector *sector, t_record rec)
@@ -100,15 +127,15 @@ int		find_smallest_y(t_sector *sector, t_record rec)
 	int 		least_y;
 
 	walk_sec = sector;
-	least_y = 1000000000;
+	least_y = 100000;
 	while (walk_sec)
 	{
 		walk_ver = walk_sec->vertexes;
 		while (walk_ver)
 		{
-			if (least_y > walk_ver->xy1.y && rec.least_y < least_y)
+			if (walk_ver->xy1.y > rec.least_y && walk_ver->xy1.y < least_y)
 				least_y = walk_ver->xy1.y;
-			if (least_y > walk_ver->xy2.y && rec.least_y < least_y)
+			if (walk_ver->xy1.y > rec.least_y && walk_ver->xy1.y < least_y)
 				least_y = walk_ver->xy2.y;
 			walk_ver = walk_ver->next;
 		}
@@ -120,21 +147,32 @@ int		find_smallest_y(t_sector *sector, t_record rec)
 t_record	*create_vertex_list(t_sector *sectors)
 {
 	t_xy_l		*curr;
-	t_xy_l		*pre;
-	t_sector	*walk;
+	t_xy_l		*tail;
+	t_xy_l		*head;
 	t_record	*record;
 
-	walk = sectors;
 	record = (t_record *)malloc(sizeof(t_record));
+	head = NULL;
+	curr = NULL;
 	record->head_ver = NULL;
 	record->least_x = -1;
 	record->least_y = -1;
-	while(walk)
+	while((record->least_y = find_smallest_y(sectors, *record)) != 100000)
 	{
-		record->least_y = find_smallest_y(sectors, *record);
-		create_vertex(walk, record->least_y, record);
-		walk = walk->next;
+		if (curr == NULL)
+		{
+			curr = create_vertex(sectors, record->least_y);
+			tail = curr->tail;
+			head = curr;
+		}
+		else
+		{
+			curr = create_vertex(sectors, record->least_y);
+			tail->next = curr;
+			tail = curr->tail;
+		}
 	}
+	record->head_ver = head;
 	return (record);
 }
 
@@ -152,7 +190,7 @@ int		get_index(t_xy ab, t_xy_l *list)
 	return (-1);
 }
 
-t_portal	*create_sector_portal_list(t_sector curr, t_record *rec)
+t_portal	*create_sector_portal_list(t_sector curr, t_record *rec, t_index *in_l)
 {
 
 }
@@ -160,7 +198,8 @@ t_portal	*create_sector_portal_list(t_sector curr, t_record *rec)
 t_index		*create_sector_edge_list(t_sector curr, t_record *rec)
 {
 	t_vertex	*walk;
-	t_index		*in_l;
+	t_index		*head;
+	t_index		*curr_i;
 	t_index		*pre;
 	int			index[2];
 
@@ -173,44 +212,52 @@ t_index		*create_sector_edge_list(t_sector curr, t_record *rec)
 		index[1] = get_index(walk->xy2, rec->head_ver);
 		if (index[0] > -1 && index[1] > -1 && pre == NULL)
 		{
-			in_l = (t_index *)malloc(sizeof(t_index));
-			in_l->index = index[0];
-			in_l->next = (t_index *)malloc(sizeof(t_index));
-			in_l->next->index = index[1];
-			pre = in_l->next;
+			head = (t_index *)malloc(sizeof(t_index));
+			head->index = index[0];
+			head->next = (t_index *)malloc(sizeof(t_index));
+			head->next->next = NULL;
+			head->next->index = index[1];
+			pre = head->next;
 		}
 		else if (index[0] > -1 && index[1] > -1)
 		{
-			pre->next = (t_index *)malloc(sizeof(t_index));
-			pre->index = index[1];
+			curr_i = (t_index *)malloc(sizeof(t_index));
+			curr_i->next = NULL;
+			curr_i->index = index[1];
+			pre->next = curr_i;
+			pre = curr_i;
 		}
 		walk = walk->next;
 	}
-
+	return (head);
 }
 
 t_rec_sec	*create_sector_list(t_sector *sectors, t_record *record)
 {
 	t_sector	*walk_sec;
-	t_vertex	*walk_ver;
-	t_rec_sec	*rec_sec;
+	t_rec_sec	*curr;
+	t_rec_sec	*pre;
+	t_rec_sec	*head;
 
 	walk_sec = sectors;
-	rec_sec = (t_rec_sec *)malloc(sizeof(t_rec_sec));
+	head = NULL;
 	while (walk_sec)
 	{
-		walk_ver = walk_sec->vertexes;
-		while (walk_ver)
-		{
-			rec_sec->head_ver = create_sector_edge_list(*walk_sec, record);
-			rec_sec->head_por = create_sector_portal_list(*walk_sec, record);
-			rec_sec->ceil = 20;
-			rec_sec->floor = 0;
-			walk_ver = walk_ver->next;
-		}
-		walk_sec = walk_sec->next;
+		curr = (t_rec_sec *)malloc(sizeof(t_rec_sec));
+		curr->next = NULL;
+		curr->head_por = NULL;
+		curr->head_ind = create_sector_edge_list(*walk_sec, record);
+		curr->head_por = create_sector_portal_list(*walk_sec, record, curr);
+		curr->ceil = 20.0;
+		curr->floor = 0.0;
+		if (head == NULL)
+			head = curr;
+		else
+			pre->next = curr;
+		pre = curr;
+		walk_sec= walk_sec->next;
 	}
-
+	return (head);
 }
 
 t_record *transform_data(t_draw *draw)
@@ -223,5 +270,7 @@ t_record *transform_data(t_draw *draw)
 	head_p = draw->portals;
 	record = create_vertex_list(head_s);
 	print_list_vec(record->head_ver);
+	record->head_sec = create_sector_list(head_s, record);
+	print_list_sec(record);
 //	record->head_sec = create_sector_list(head_s, record);
 }
