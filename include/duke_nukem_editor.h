@@ -16,11 +16,24 @@
 # include "SDL.h"
 # include "SDL_mixer.h"
 # include "SDL_image.h"
+# include "SDL_ttf.h"
 
 #define W_WIDTH 1600
 #define W_HEIGHT 950
 #define W_DRAW 1400
 #define H_DRAW 800
+#define X		0
+#define Y		1
+#define CEIL		0
+#define DRAW_MODE	1
+#define FLOOR		2
+#define	LEFT		3
+#define	OBJECTS		4
+#define	PLAYER		5
+#define	REFRESH		6
+#define RIGHT		7
+#define SELECT_MODE 8
+#define WALL_MODE	9
 
 #define NONE 0
 #define LOOP_START 1
@@ -41,12 +54,30 @@
 typedef struct s_xy {
     int x;
     int y;
-} t_xy;
+
+} 			t_xy;
+
+typedef struct s_xy_l
+{
+	int 			x;
+	int 			y;
+	int 			index;
+	struct s_xy_l 	*next;
+	struct s_xy_l	*tail;
+}				t_xy_l;
+
 
 typedef struct s_stack {
 	struct s_xy xy;
 	struct t_stack *next;
 }				t_stack;
+
+typedef struct s_vertex
+{
+	t_xy xy1;
+	t_xy xy2;
+	struct s_vertex *next;
+} t_vertex;
 
 typedef struct s_portals
 {
@@ -56,6 +87,36 @@ typedef struct s_portals
 	struct t_sector *sec_b;
 	struct t_portals *next;
 } t_portals;
+
+typedef struct	s_index
+{
+	int				index;
+	struct s_index	*next;
+}				t_index;
+
+typedef struct	s_portal
+{
+	int 			wall_portal;
+	struct s_portal	*next;
+}				t_portal;
+
+typedef struct s_rec_sec
+{
+	float 		ceil;
+	float 		floor;
+	t_index		*head_ver;
+	t_portal	*head_por;
+}				t_rec_sec;
+
+typedef struct	s_record
+{
+	int 		least_x;
+	int 		least_y;
+	t_xy_l		*head_ver;
+	t_rec_sec	*head_sec;
+	float 		player_x;
+	float 		player_y;
+}				t_record;
 
 typedef struct s_line {
     int start;
@@ -69,37 +130,11 @@ typedef struct s_line {
     int py;
 } t_line;
 
-
-typedef struct s_vertex
-{
-    t_xy xy1;
-    t_xy xy2;
-    struct s_vertex *next;
-} t_vertex;
-
 typedef struct s_sector
 {
     t_vertex *vertexes;
     struct s_sector *next;
 } t_sector;
-
-typedef struct s_posf_t
-{
-    int pos;
-    bool is_y;
-    float value;
-    float y;
-} t_posf;
-
-//typedef struct		s_sector
-//{
-//	float			floor;
-//	float			ceil;
-//	t_xy			*vertex;
-//	signed char		*neighbors;       // Each edge may have a corresponding neighboring sector
-//	unsigned		npoints;          // How many vertexes there are
-//	t_xy			*vert;
-//}					t_sector;
 
 typedef struct s_draw
 {
@@ -115,13 +150,27 @@ typedef struct s_draw
     char key;
 } t_draw;
 
+typedef struct		s_textures
+{
+	SDL_Surface		**arr_tex;
+	t_xy			*cords;
+	t_xy			*cords_end;
+	int				selected;
+	int				pre;
+}					t_textures;
+
 typedef struct s_env
 {
 
     SDL_Window *window;
-    SDL_Surface *win_surface;
-	uint32_t *buffer;
-	int zoom;
+    SDL_Event window_e;
+    SDL_Surface	*win_surface;
+    t_textures	*textures;
+//    SDL_Event       event;
+    uint32_t *buffer;
+    int		mouse_x;
+    int		mouse_y;
+    int zoom;
     int sdl_error;
 } t_env;
 
@@ -138,7 +187,21 @@ void draw_frame(t_env *env);
 
 void draw_desk(t_env *env);
 
+void	draw_tools(t_env *env);
+
+void	draw_texture(t_xy cords ,uint32_t num_tex, uint32_t color,t_env *env);
+
 void    clear_screen(t_env *env);
+
+void	texture_load(t_env *env);
+
+void	texture_cords(t_env *env);
+
+void	texture_cords_end(t_env *env);
+
+void	draw_text(uint32_t cord_x, uint32_t cord_y, char *text, t_env *env);
+
+uint32_t	get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y, uint32_t color);
 
 
 /*
@@ -162,6 +225,8 @@ t_sector 		*check_if_deleted_sector(t_draw *draw,  t_vertex *tmp,
 
 										 t_vertex *cur_v, t_sector *cur_s);
 void 			print_all_portals(t_draw *draw);
+
+void	draw_select_text(t_env *env);
 
 
 /*
@@ -203,7 +268,13 @@ void	pop_from_stack_to_list(t_env *env, t_draw *draw, t_stack **head);
 
 void	draw_all_portals(t_env *env, t_draw *draw);
 
-void	delete_portal(t_draw *draw, t_vertex *cur_v);
+/*
+ * transform and record data to map_file.duke
+ */
+
+t_record *transform_data(t_draw *draw);
+
+void	record_to_file(t_record *rec);
 
 #endif
 

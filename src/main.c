@@ -152,6 +152,7 @@ t_env *sdl_main_loop(t_env *env)
 				if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
 				{
 //					print_all_sectors(draw, draw->head);к
+					record_to_file(transform_data(draw));
 					loop = 0;
 				}
 				else if (kstate[SDL_SCANCODE_SPACE] && !draw->s_mode)
@@ -200,9 +201,12 @@ t_env *sdl_main_loop(t_env *env)
 				{
 					draw_dot(env, draw, head);
 				}
+				SDL_GetMouseState(&env->mouse_x, &env->mouse_y);
+				draw_select_text(env);
 			}
 		}
 		draw_frame(env);
+		draw_tools(env);
 		SDL_UpdateWindowSurface(env->window);
 		SDL_Delay(10);
 	}
@@ -223,15 +227,23 @@ t_env *sdl_init(t_env *env)
 								   W_HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
 	env->win_surface = SDL_GetWindowSurface(env->window);
 	env->buffer = (uint32_t *)env->win_surface->pixels;
+	if (!env->window)
+	{
+		//env->sdl_error = ERROR_WINDOW;
+		SDL_GetError();
+	}
+	texture_load(env);
 	return (env);
 }
 
 int main(void)
 {
 	t_env *env;
+	t_textures textures;
 
 	env = malloc(sizeof(t_env));
-	if (!(SDL_Init(SDL_INIT_EVERYTHING) < 0))
+	env->textures = &textures;
+	if (!(SDL_Init(SDL_INIT_EVERYTHING) < 0) && !(TTF_Init() < 0))
 	{
 		env = sdl_main_loop(sdl_init(env));
 	}
@@ -240,5 +252,6 @@ int main(void)
 		SDL_GetError();
 	}
 	SDL_Quit();
+	TTF_Quit();
 	return (0);
 }
