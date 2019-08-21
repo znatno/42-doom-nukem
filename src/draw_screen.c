@@ -101,8 +101,8 @@ void	find_intersect(t_draw_screen_calc *ds)
 {
 	ds->f->nearz = 1e-4f;		//ds->f->nearz = 1e-4f;
 	ds->f->farz = 5;			//ds->f->farz = 5;
-	ds->f->nearside = 1e-5f;	//ds->f->nearside = 1e-5f;
-	ds->f->farside = 20.f;		//ds->f->farside = 20.f;
+	ds->f->nearside = -1e-5f;	//ds->f->nearside = 1e-5f;
+	ds->f->farside = -20.f;		//ds->f->farside = 20.f;
 	//todo тут значення відповідають за відмальовування тому ймовірно тут
 	// можна знайти чому відмальовує зайвого чи не відмальовує коли треба
 

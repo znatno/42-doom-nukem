@@ -82,6 +82,45 @@ void		events(t_game *g)
 	}
 }
 
+void		draw_cur_pistol_sprite(t_game *g, int width, int height, int curSprite)
+{
+	int		x;
+	int		y;
+	int		x_img;
+	float	x_num;
+	float	y_num;
+
+	y = 0;
+	y_num = 0;
+	while (y < 128 && height < H)
+	{
+		x = 0;
+		x_num = 0;
+		x_img = width;
+		while (x < 128 - 1 && x_img < W)
+		{
+			x_num += 0.35;
+			x = (int)x_num;
+			if (g->wpn.pistol_sprite[curSprite][y][x] != 0x000000)
+				g->sdl.buffer[height * W + x_img] = g->wpn.pistol_sprite[curSprite][y][x];
+			x_img++;
+		}
+		y_num += 0.5;
+		y = (int)y_num;
+		height++;
+	}
+}
+
+void		draw_pistol(t_game *g)
+{
+	draw_cur_pistol_sprite(g, W - 400, H - 250, 0);
+}
+
+void		draw_weapons(t_game *g)
+{
+	draw_pistol(g);
+}
+
 void		game_loop(t_game *g)
 {
 	g->msgs[0] = create_msg("Episode 1", FONT_M_BG, (t_xy_int){40, 64}, 5);
@@ -148,6 +187,7 @@ void		game_loop(t_game *g)
 		/* Draw frame */
 		draw_screen(g->sectors, g->plr);
 
+		draw_weapons(g);
 		/* update window */
 		SDL_UpdateTexture(g->sdl.texture, NULL, g->sdl.buffer, W * (sizeof(int)));
 		SDL_RenderCopy(g->sdl.renderer, g->sdl.texture, NULL, NULL);
@@ -159,6 +199,76 @@ void		game_loop(t_game *g)
 		SDL_Delay(20);
 		//printf("clock: %lu\n", clock());
 	}
+}
+
+SDL_Surface		*load_pistol_part(int sprite)
+{
+	SDL_Surface *curSprite;
+
+	if (sprite == 0)
+		curSprite = IMG_Load("../sprites/pistol1.png");
+	if (sprite == 1)
+		curSprite = IMG_Load("../sprites/pistol2.png");
+	if (sprite == 2)
+		curSprite = IMG_Load("../sprites/pistol3.png");
+	if (sprite == 3)
+		curSprite = IMG_Load("../sprites/pistol4.png");
+	if (sprite == 4)
+		curSprite = IMG_Load("../sprites/pistol5.png");
+	if (sprite == 5)
+		curSprite = IMG_Load("../sprites/pistol6.png");
+	return (curSprite);
+}
+
+int		load_pistol_sprite(t_game *g, int spriteCount)
+{
+	SDL_Surface		*curSprite;
+	unsigned int	*pixels;
+	int				x;
+	int				y;
+
+	if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG))
+		ft_putendl(IMG_GetError());
+	curSprite = load_pistol_part(spriteCount);
+	y = -1;
+	pixels = (unsigned int *)curSprite->pixels;
+	while (++y < 128)
+	{
+		x = -1;
+		while (++x < 128)
+			g->wpn.pistol_sprite[spriteCount][y][x] = pixels[(y * curSprite->w) + x];
+	}
+	SDL_FreeSurface(curSprite);
+	ft_putendl("Pistol Part Loaded!");
+	return (1);
+}
+
+void		load_pistol(t_game *g)
+{
+	int y;
+	int sprite;
+	int maxSprites;
+
+	maxSprites = 6;
+	g->wpn.pistol_sprite = (int***)malloc(sizeof(int **) * maxSprites);
+	sprite = 0;
+	while (sprite < maxSprites)
+	{
+		g->wpn.pistol_sprite[sprite] = (int**)malloc(sizeof(int *) * 128);
+		y = 0;
+		while (y < 128)
+		{
+			g->wpn.pistol_sprite[sprite][y] = (int*)malloc(sizeof(int) * 128);
+			y++;
+		}
+		load_pistol_sprite(g, sprite);
+		sprite++;
+	}
+}
+
+void		load_weapons(t_game *g)
+{
+	load_pistol(g);
 }
 
 int 		main(void)
@@ -180,6 +290,9 @@ int 		main(void)
 
 	//Load fonts
 	load_fonts(&g);
+
+
+	load_weapons(&g);
 
 	//Cursor lock
 	SDL_ShowCursor(SDL_DISABLE);

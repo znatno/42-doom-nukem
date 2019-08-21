@@ -25,7 +25,7 @@
 # include "SDL.h"
 # include "SDL_mixer.h"
 # include "SDL_image.h"
-# include "SDL_ttf.h"
+# include "SDL2/SDL_ttf.h"
 
 /* Define window size */
 # define W 640
@@ -140,6 +140,11 @@ typedef struct			s_sdl_main
 	SDL_Texture			*texture;
 	int					*buffer;
 }						t_sdl_main;
+
+typedef	struct 		s_weapons
+{
+	int 			***pistol_sprite;
+}					t_weapons;
 
 // Player: location
 typedef struct		s_player
@@ -306,6 +311,7 @@ typedef struct		s_game
 	t_sector	*sectors;
 	t_font		fonts[FONTS_NUM];
 	t_msg		msgs[MAX_MSGS];
+	t_weapons	wpn;
 //	t_obj		*objs;		// масив зчитаних об'єктів
 
 	int			error;		// для виводу тексту помилки при виході

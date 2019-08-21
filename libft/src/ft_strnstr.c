@@ -14,10 +14,8 @@
 
 char	*ft_strnstr(const char *hayst, const char *need, size_t l)
 {
-	char	*h;
 	size_t	size;
 
-	h = (char *)hayst;
 	size = ft_strlen(need);
 	if (*need == '\0')
 		return ((char *)hayst);
