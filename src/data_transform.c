@@ -190,9 +190,148 @@ int		get_index(t_xy ab, t_xy_l *list)
 	return (-1);
 }
 
-t_portal	*create_sector_portal_list(t_sector curr, t_record *rec, t_index *in_l)
+int 	get_index_sec(t_sector *sec, t_sector *head_sec)
 {
+	t_sector	*walk_sec;
+	int 	index;
 
+	index = 0;
+	walk_sec = head_sec;
+	while (walk_sec)
+	{
+		if (sec == walk_sec)
+			return (index);
+		walk_sec = walk_sec->next;
+		index++;
+	}
+	return (-1);
+}
+
+t_xy		get_point_cords(int index, t_xy_l *head_vi)
+{
+	t_xy	result;
+	t_xy_l	*walk_vi;
+
+	walk_vi = head_vi;
+	while (walk_vi)
+	{
+		if (index == walk_vi->index)
+		{
+			result.x = walk_vi->x;
+			result.y = walk_vi->y;
+			return (result);
+		}
+		walk_vi = walk_vi->next;
+	}
+}
+
+int		choose_your_destiny(t_sector *sectors, t_rec_sec *curr, t_sector *a, t_sector *b)
+{
+	t_sector	*wals_s;
+	int 		index;
+
+	wals_s = sectors;
+	index = 0;
+	while (wals_s)
+	{
+		if (index == curr->index_s && a == wals_s)
+			return (1);
+		else if (index == curr->index_s && b == wals_s)
+			return (2);
+		wals_s = wals_s->next;
+		index++;
+	}
+	return (-1);
+}
+
+
+
+int 	get_portal_index_sectors(t_portals *portals, t_xy a, t_xy b, t_sector *sectors, t_rec_sec *curr)
+{
+	t_portals	*walk_p;
+	t_sector	*walk_s;
+	t_portals 	*exist;
+	int 		index;
+	int 		tmp;
+
+	walk_p = portals;
+	exist = NULL;
+	walk_s = sectors;
+	while (walk_p)
+	{
+		if (a.x == walk_p->xy1.x && a.y == walk_p->xy1.y &&
+		b.x == walk_p->xy2.x && b.y == walk_p->xy2.y)
+			exist = walk_p;
+		else if (a.x == walk_p->xy2.x && a.y == walk_p->xy2.y &&
+				 b.x == walk_p->xy1.x && b.y == walk_p->xy1.y)
+			exist = walk_p;
+		if (exist)
+			break;
+		walk_p = walk_p->next;
+	}
+	while (exist && walk_s)
+	{
+		if (walk_s == walk_p->sec_b || walk_s == walk_p->sec_a)
+		{
+			tmp = choose_your_destiny(sectors, curr, walk_p->sec_a, walk_p->sec_b);
+			if (tmp == 1)
+				tmp = get_index_sec(walk_p->sec_b, sectors);
+			else if (tmp == 2)
+				tmp = get_index_sec(walk_p->sec_a, sectors);
+			return (tmp);
+		}
+		walk_s = walk_s->next;
+		index++;
+	}
+	return (-1);
+}
+
+t_portal	*end_to_head(t_portal *head_p)
+{
+	t_portal	*walk_p;
+	t_portal	*prev;
+
+	walk_p = head_p;
+	prev = NULL;
+	while (walk_p && walk_p->next)
+	{
+		prev = walk_p;
+		walk_p = walk_p->next;
+	}
+	if (prev && walk_p)
+	{
+		prev->next = NULL;
+		walk_p->next = head_p;
+	}
+	return (walk_p);
+}
+
+t_portal	*create_sector_portal_list(t_xy_l *head_vi, t_rec_sec *curr_s, t_portals *portals, t_sector *sectors)
+{
+	t_xy		a;
+	t_xy		b;
+	t_portal	*head;
+	t_portal	*curr;
+	t_portal	*prev;
+	t_index		*walk_is;
+
+	head = NULL;
+	walk_is = curr_s->head_ind;
+	while (walk_is && walk_is->next)
+	{
+		a = get_point_cords(walk_is->index, head_vi);
+		b = get_point_cords(walk_is->next->index, head_vi);
+		curr = (t_portal *)malloc(sizeof(t_portal));
+		curr->next = NULL;
+		curr->wall_portal = get_portal_index_sectors(portals, a, b, sectors, curr_s);
+		if (head == NULL)
+			head = curr;
+		else
+			prev->next = curr;
+		prev = curr;
+		walk_is = walk_is->next;
+	}
+	return (end_to_head(head));
 }
 
 t_index		*create_sector_edge_list(t_sector curr, t_record *rec)
@@ -232,12 +371,13 @@ t_index		*create_sector_edge_list(t_sector curr, t_record *rec)
 	return (head);
 }
 
-t_rec_sec	*create_sector_list(t_sector *sectors, t_record *record)
+t_rec_sec	*create_sector_list(t_sector *sectors, t_record *record, t_draw *d)
 {
 	t_sector	*walk_sec;
 	t_rec_sec	*curr;
 	t_rec_sec	*pre;
 	t_rec_sec	*head;
+	static int 	index;
 
 	walk_sec = sectors;
 	head = NULL;
@@ -246,8 +386,9 @@ t_rec_sec	*create_sector_list(t_sector *sectors, t_record *record)
 		curr = (t_rec_sec *)malloc(sizeof(t_rec_sec));
 		curr->next = NULL;
 		curr->head_por = NULL;
+		curr->index_s = index;
 		curr->head_ind = create_sector_edge_list(*walk_sec, record);
-		curr->head_por = create_sector_portal_list(*walk_sec, record, curr);
+		curr->head_por = create_sector_portal_list(record->head_ver, curr, d->portals, d->head);
 		curr->ceil = 20.0;
 		curr->floor = 0.0;
 		if (head == NULL)
@@ -256,6 +397,7 @@ t_rec_sec	*create_sector_list(t_sector *sectors, t_record *record)
 			pre->next = curr;
 		pre = curr;
 		walk_sec= walk_sec->next;
+		index++;
 	}
 	return (head);
 }
@@ -269,8 +411,8 @@ t_record *transform_data(t_draw *draw)
 	head_s = draw->head;
 	head_p = draw->portals;
 	record = create_vertex_list(head_s);
-	print_list_vec(record->head_ver);
-	record->head_sec = create_sector_list(head_s, record);
-	print_list_sec(record);
-//	record->head_sec = create_sector_list(head_s, record);
+//	print_list_vec(record->head_ver);
+	record->head_sec = create_sector_list(head_s, record, draw);
+	return (record);
+//	print_list_sec(record);
 }

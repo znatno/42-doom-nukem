@@ -152,7 +152,7 @@ t_env *sdl_main_loop(t_env *env)
 				if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
 				{
 //					print_all_sectors(draw, draw->head);к
-//					record_to_file(transform_data(draw));
+					record_data(transform_data(draw));
 					loop = 0;
 				}
 				else if (kstate[SDL_SCANCODE_SPACE] && !draw->s_mode)
@@ -199,8 +199,8 @@ t_env *sdl_main_loop(t_env *env)
 			{
 				SDL_GetMouseState(&env->mouse_x, &env->mouse_y);
 				if (ev.button.clicks && env->mouse_x < W_DRAW - 20
-				&& env->mouse_y < H_DRAW - 20 && env->mouse_y > 20 &&
-						env->mouse_x > 20 && !draw->s_mode)
+				&& env->mouse_y < H_DRAW - 20 && env->mouse_y > 15 &&
+						env->mouse_x > 15 && !draw->s_mode)
 				{
 					draw_dot(env, draw, head);
 				}

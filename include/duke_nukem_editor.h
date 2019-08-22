@@ -35,6 +35,9 @@
 #define SELECT_MODE 8
 #define WALL_MODE	9
 
+#define A	0
+#define B	1
+
 #define NONE 0
 #define LOOP_START 1
 # define MAX(x, y) (x >= y) ? (x) : (y)
@@ -70,7 +73,6 @@ typedef struct s_xy_l
 	struct s_xy_l	*tail;
 }				t_xy_l;
 
-
 typedef struct s_stack {
 	struct s_xy xy;
 	struct t_stack *next;
@@ -87,10 +89,10 @@ typedef struct s_portals
 {
 	struct s_xy 	xy1;
 	struct s_xy 	xy2;
-	struct t_sector *sec_a;
-	struct t_sector *sec_b;
-	struct t_portals *next;
-} t_portals;
+	struct s_sector *sec_a;
+	struct s_sector *sec_b;
+	struct s_portals *next;
+}				t_portals;
 
 typedef struct	s_index
 {
@@ -108,6 +110,7 @@ typedef struct s_rec_sec
 {
 	float 		ceil;
 	float 		floor;
+	int 		index_s;
 	t_index		*head_ind;
 	t_portal	*head_por;
 	struct s_rec_sec	*next;
@@ -284,6 +287,10 @@ t_record *transform_data(t_draw *draw);
 void	record_to_file(t_record *rec);
 
 void	delete_portal(t_draw *draw, t_vertex *cur_v);
+
+char		*ft_itof(long double k);
+
+void	record_data(t_record *record);
 #endif
 
 
