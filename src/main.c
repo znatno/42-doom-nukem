@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/19 21:47:57 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/22 23:33:16 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,15 @@ void		events(t_game *g)
 				g->plr.falling = 1;
 			}
 
+			if (ev.key.keysym.sym == 't')
+			{
+				g->error = g->error == 100 ? 0 : 100;
+			}
+
 			if (ev.key.keysym.sym == 'p')
 			{
+				printf("%f\t%f\t%f\n",
+						g->plr.where.x, g->plr.where.y, g->plr.where.z);
 				g->msgs[1] = create_msg("Between two girls & one cup",
 						FONT_M_SM, (t_xy_int){64, 96}, 5);
 
@@ -89,9 +96,13 @@ void		game_loop(t_game *g)
 	g->msgs[2] = create_msg("Notes: 0/10", FONT_M_MD, (t_xy_int){32, 420}, -1);
 	while (true)
 	{
+
 		/* Очищує буфер чорним кольором */
-		//SDL_FillRect(sdl->w_surface, NULL,
-		//		SDL_MapRGB(sdl->w_surface->format, 0, 0, 0));
+		//SDL_RenderClear(g->sdl.renderer);
+		//SDL_FillRect(g->sdl.texture, NULL, SDL_MapRGB(g->sdl.w_surface->format, 0, 0, 0));
+
+
+		//SDL_Fill
 
 		/* Key Events */
 		events(g);
@@ -146,14 +157,14 @@ void		game_loop(t_game *g)
 			g->plr.moving = 1;
 
 		/* Draw frame */
-		draw_screen(g->sectors, g->plr);
+		draw_screen(g);
 
 		/* update window */
 		SDL_UpdateTexture(g->sdl.texture, NULL, g->sdl.buffer, W * (sizeof(int)));
 		SDL_RenderCopy(g->sdl.renderer, g->sdl.texture, NULL, NULL);
 
 		/* place texts */
-		get_messages(g);
+		//get_messages(g);
 
 		SDL_RenderPresent(g->sdl.renderer);
 		SDL_Delay(20);
@@ -167,9 +178,8 @@ int 		main(void)
 
 	//Structs initialization
 	g.sectors = NULL;
-	g.plr = (t_player){ .ground = 0, .falling = 1, .moving = 0, .ducking = 0,
-				   .eyeheight = EYE_H, .num_scts = 0, .ms_yaw = 0,
-				   .sdl = &g.sdl, .key = { .w = 0, .s = 0, .a = 0, .d = 0 }};
+	g.plr = (t_player){.falling = 1, .eyeheight = EYE_H, .sdl = &g.sdl};
+
 	init_msgs(&g);
 
 	//Framework initialization

@@ -76,8 +76,8 @@ void	move_player(t_player *plr, t_sector **sectors, float dx, float dy)
 				plr->where.x -= dx;
 				plr->where.y -= dy;
 			}
-			printf("Moved to another sector ");
-			printf("| curr sec: %d\n",plr->sector);
+			printf("Moved to another sector "); //
+			printf("| curr sec: %d\n",plr->sector); //
 			break ;
 		}
 		i++;

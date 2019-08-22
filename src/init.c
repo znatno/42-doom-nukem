@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 20:18:22 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/19 21:47:44 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/22 19:40:00 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,4 +24,13 @@ void	init_sdl(t_game *g)
 	g->sdl.buffer = (int *)malloc(sizeof(int) * W * H);
 	if (!g->sdl.window || !g->sdl.renderer || !g->sdl.buffer || !g->sdl.texture)
 		exit_doom(g);
+
+	for (int i1 = 0; i1 < H; i1++)
+		for (int i2 = 0; i2 < W; i2++)
+			g->sdl.buffer[i1 * W + i2] = 0x00ffffff;
+	SDL_UpdateTexture(g->sdl.texture, NULL, g->sdl.buffer, W * (sizeof(int)));
+	SDL_RenderCopy(g->sdl.renderer, g->sdl.texture, NULL, NULL);
+	SDL_RenderPresent(g->sdl.renderer);
+	SDL_Delay(1000);
+
 }

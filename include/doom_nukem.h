@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/20 23:03:16 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/22 18:55:42 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,8 @@ typedef struct		s_player
 	t_xyz			where;		// Current position
 	t_xyz			vlct;		// velocity, curr motion vector / швидкість
 	float			angle;		// камера по X-осі, yaw — по Y-осі
-	float			anglesin;
+	float
+	anglesin;
 	float			anglecos;
 	float			yaw;		// Looking towards (and sin() and cos() thereof)
 	unsigned		sector;		// Which sector the player is currently in
@@ -164,7 +165,7 @@ typedef struct		s_player
 	float 			speed;		// швидкість, менша для присяду
 	int 			pushing;
 	float			aclrt;		// acceleration / прискорення
-	t_xy_int			ms;			// mouse aiming
+	t_xy_int		ms;			// mouse aiming
 	float 			ms_yaw;
 	t_sdl_main		*sdl;
 
@@ -186,10 +187,10 @@ typedef struct	s_calc_tmp_float
 	float vy2;
 	float pcos;
 	float psin;
-	float tx1;
-	float tx2;
-	float tz1;
-	float tz2;
+	float tx1;			//
+	float tx2;			//
+	float tz1;			// якщо більше-рівне 0, то потрапляє в екран
+	float tz2;			// якщо більше-рівне 0, то потрапляє в екран
 	float nearz;
 	float farz;
 	float nearside;
@@ -261,7 +262,7 @@ typedef struct		s_draw_screen_calc
 	t_calc_tmp_float	*f;
 	t_calc_tmp_struct	*s;
 	t_tmp_iter			*it;
-	t_item				*que;
+	t_item				*queue;
 }					t_draw_screen_calc;
 
 typedef struct		s_font
@@ -324,7 +325,7 @@ char			*ft_itof(long double k);
 ** Draw functions
 */
 
-void			draw_screen(t_sector *sector, t_player plr);
+void			draw_screen(t_game *g);
 void			vline(int x, int y1, int y2, int color, t_player *player);
 t_xy			vv_to_v(float x0, float y0, float x1, float y1);
 float			len_vector(t_xy		free_vector);

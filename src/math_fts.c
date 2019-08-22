@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:00:11 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/19 19:25:10 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/20 23:16:09 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,12 +40,13 @@ t_xy intersect(float x1, float y1, float x2, float y2,
 {
 	t_xy result;
 
+	//printf("intersect\n");
 	result = (t_xy){.x = VXS(VXS(x1,y1, x2,y2), (x1)-(x2),
 							 VXS(x3,y3, x4,y4), (x3)-(x4))
 						 / VXS((x1)-(x2), (y1)-(y2), (x3)-(x4), (y3)-(y4)),
-			.y = VXS(VXS(x1,y1, x2,y2), (y1)-(y2),
-					 VXS(x3,y3, x4,y4), (y3)-(y4))
-				 / VXS((x1)-(x2), (y1)-(y2), (x3)-(x4), (y3)-(y4))};
+					.y = VXS(VXS(x1,y1, x2,y2), (y1)-(y2),
+							 VXS(x3,y3, x4,y4), (y3)-(y4))
+						 / VXS((x1)-(x2), (y1)-(y2), (x3)-(x4), (y3)-(y4))};
 	return (result);
 }
 

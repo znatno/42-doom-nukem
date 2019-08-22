@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/07 19:06:01 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/19 19:23:08 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/22 23:30:37 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,9 +85,11 @@ t_posf	atof_posf(const char *s, t_posf posf)
 
 void	reader(char *line, int fd, t_player *p, t_sector **sectors)
 {
-	t_posf posf;
-	t_xy *vert = NULL, v;
-	int n, NumVertices = 0;
+	t_posf	posf;
+
+	t_xy	*vert = NULL, v;
+	int		n, NumVertices = 0;
+
 	posf.pos = 0;
 	posf.value = 0;
 	posf.is_y = 0;
@@ -182,29 +184,16 @@ void	reader(char *line, int fd, t_player *p, t_sector **sectors)
 		}
 		if (*line == 'p')
 		{
-			float angle;
 			while (!ft_isdigit(line[posf.pos]))
-			{
 				posf.pos++;
-			}
 			posf = atof_posf(line, posf);
-			v.x = posf.value;
+			p->where.x = posf.value;
 			posf = atof_posf(line, posf);
-			v.y = posf.value;
+			p->where.y = posf.value;
 			posf = atof_posf(line, posf);
-			angle = posf.value;
+			p->angle = posf.value;
 			posf = atof_posf(line, posf);
 			n = (int)posf.value;
-			p->where.x = v.x;
-			p->where.y = v.y;
-			p->where.z = 0;
-			p->vlct.x = 0;
-			p->vlct.y = 0;
-			p->vlct.z = 0;
-			p->angle = angle;
-			p->anglesin = 0;
-			p->anglecos = 0;
-			p->yaw = 0;
 			p->sector = n;
 			p->where.z = (*sectors)[p->sector].floor + EYE_H;
 		}
