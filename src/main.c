@@ -115,10 +115,11 @@ void 		ceil_floor_changing(t_env *env, t_draw *draw, int key)
 	}
 }
 
-void 		select_sector_mode(t_env *env, t_draw *draw, int key)
+t_sector		*select_sector_mode(t_env *env, t_draw *draw, int key)
 {
 	t_sector 	*cur_s;
 	t_vertex 	*cur_v;
+	t_sector 	*save;
 	int 		i;
 
 	cur_s = draw->head;
@@ -134,6 +135,7 @@ void 		select_sector_mode(t_env *env, t_draw *draw, int key)
 			if (i == key)
 			{
 				line(cur_v->xy1, cur_v->xy2, env, VIOLET);
+				save = cur_s;
 			}
 			else
 				line(cur_v->xy1, cur_v->xy2, env, WHITE);
@@ -147,11 +149,48 @@ void 		select_sector_mode(t_env *env, t_draw *draw, int key)
 	{
 		draw_all_portals(env, draw);
 	}
+	return (save);
 }
+
+//void 		select_sector_mode(t_env *env, t_draw *draw, int key)
+//{
+//	t_sector 	*cur_s;
+//	t_vertex 	*cur_v;
+//	int 		i;
+//
+//	cur_s = draw->head;
+//	clear_screen(env);
+//	draw_desk(env);
+//	i = 0;
+//	while (draw->head != NULL && cur_s)
+//	{
+//		i++;
+//		cur_v = cur_s->vertexes;
+//		while (cur_v)
+//		{
+//			if (i == key)
+//			{
+//
+//				line(cur_v->xy1, cur_v->xy2, env, VIOLET);
+//			}
+//			else
+//				line(cur_v->xy1, cur_v->xy2, env, WHITE);
+//			if (!(find_portal_for_draw(env, draw, cur_v, cur_s)))
+//				delete_portal(draw, cur_v);
+//			cur_v = cur_v->next;
+//		}
+//		cur_s = cur_s->next;
+//	}
+//	if (draw->portals != NULL)
+//	{
+//		draw_all_portals(env, draw);
+//	}
+//}
 
 t_env *sdl_main_loop(t_env *env)
 {
 	const Uint8 *kstate;
+	t_sector 	*save;
 	t_draw *draw;
 	SDL_Event ev;
 	int loop;
@@ -165,9 +204,12 @@ t_env *sdl_main_loop(t_env *env)
 	loop = 1;
 	draw->s_mode = false;
 	draw->d_mode = false;
+	draw->ceil_mode = false;
+	draw->floor_mode = false;
 	draw->s_count = 0;
 	draw->p_count = 0;
 	cur_s = 0;
+	int i = 0;
 	while (loop && env->sdl_error == NONE)
 	{
 		kstate = SDL_GetKeyboardState(NULL);
@@ -218,19 +260,53 @@ t_env *sdl_main_loop(t_env *env)
 					else
 						cur_s = 1;
 //					printf("%d\n",cur_s);
-						select_sector_mode(env, draw, cur_s);
+						save = select_sector_mode(env, draw, cur_s);
+					draw_text(1500, 305, ft_itoa(save->ceil),env);
+					draw_text(1500, 365, ft_itoa(save->floor),env);
 				}
 				// TOP BUTTTTTTTON
+//				else if (draw->ceil_mode == true)
+//				{
+//					draw_texture(env->textures->cords[CEIL], CEIL, 0xf98d8d, env);
+//				}
+//				else if (draw->floor_mode == true)
+//				{
+//					draw_texture(env->textures->cords[FLOOR], FLOOR, 0xf98d8d, env);
+//				}
+				else if (kstate[SDL_SCANCODE_UP] && draw->floor_mode && draw->s_mode){
+					save = select_sector_mode(env, draw, cur_s);
+					draw_text(1500, 365, ft_itoa(save->floor),env);
+					(save->floor + 7 >= save->ceil) ? (save->floor = save->ceil - 7) : 0 == 0;
+					save->floor++;
+					draw_select_text(draw, env);
+				}
+				else if (kstate[SDL_SCANCODE_DOWN] && draw->floor_mode && draw->s_mode){
+					save = select_sector_mode(env, draw, cur_s);
+					draw_text(1500, 365, ft_itoa(save->floor),env);
+					(save->floor < 1) ? save->floor = 0 : save->floor--;
+					draw_select_text(draw, env);
+				}
 				else if (kstate[SDL_SCANCODE_UP] && draw->ceil_mode && draw->s_mode){
-					select_sector_mode(env, draw, cur_s);
+					save = select_sector_mode(env, draw, cur_s);
+					draw_text(1500, 305, ft_itoa(save->ceil),env);
+					(save->ceil - 7 <= save->floor) ? (save->ceil = save->floor + 7) : 0 == 0;
+					draw_select_text(draw, env);
+					save->ceil++;
+				}
+				else if (kstate[SDL_SCANCODE_DOWN] && draw->ceil_mode && draw->s_mode){
+					save = select_sector_mode(env, draw, cur_s);
+					draw_text(1500, 305, ft_itoa(save->ceil),env);
+					(save->ceil < 7) ? save->ceil = 20 : save->ceil--;
+					(save->ceil - 7 <= save->floor) ? (save->ceil = save->floor + 7) : 0 == 0;
+					draw_select_text(draw, env);
 				}
 			}
 			if (ev.type == SDL_MOUSEBUTTONDOWN)
 			{
 				SDL_GetMouseState(&env->mouse_x, &env->mouse_y);
-				if (ev.button.clicks && env->mouse_x < W_DRAW - 20
-				&& env->mouse_y < H_DRAW - 20 && env->mouse_y > 20 &&
-						env->mouse_x > 20 && !draw->s_mode)
+				if (ev.button.clicks && env->mouse_x < W_DRAW - 15
+				&& env->mouse_y < H_DRAW - 15 && env->mouse_y > 15 &&
+						env->mouse_x > 15 && !draw->s_mode)
 				{
 					draw_dot(env, draw, head);
 				}

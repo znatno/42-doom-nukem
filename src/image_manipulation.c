@@ -69,8 +69,8 @@ void	draw_tools(t_env *env)
 	draw_text(1480, 75, "- select", env);
 	draw_text(1480, 135, "- wall", env);
 	draw_text(1475, 195, "- refresh", env);
-	draw_text(1480, 305, "- 20", env);
-	draw_text(1480, 365, "- 0", env);
+//	draw_text(1480, 305, "- 20", env);
+//	draw_text(1480, 365, "- 0", env);
 	draw_text(1480, 515, "x -", env);
 	draw_text(1480, 550, "y -", env);
 	if (env->textures->selected >= 0)
