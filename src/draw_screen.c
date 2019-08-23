@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/02 21:38:26 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/22 22:39:37 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/23 18:42:14 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -288,22 +288,31 @@ void	draw_screen(t_game *g)
 			continue; // Odd = still rendering, 0x20 = give up
 		++ds.i->renderedsectors[ds.s->now.sectorno];
 		ds.s->sect = &g->sectors[ds.s->now.sectorno];
+
 		/* Render each wall of this sector that is facing towards player. */
-		for (ds.it->s = 0; ds.it->s < ds.s->sect->npoints; ++ds.it->s)
+		//for (ds.it->s = 0; ds.it->s < ds.s->sect->npoints; ++ds.it->s)
+		ds.it->s = 0;
+		while (ds.it->s < ds.s->sect->npoints)
 		{
-			rotate_view(&ds, g);
+			rotate_view(&ds, g); //повертаємо вектори стін до куту огляду гравця
 			/* Is the wall at least partially in front of the player? */
 			if (ds.f->tz1 <= 0 && ds.f->tz2 <= 0)
+			{
+				ds.it->s++;
 				continue;
+			}
 			/* If it's partially behind the player, clip it against player's view frustrum */
 			if (ds.f->tz1 <= 0 || ds.f->tz2 <= 0)
 				find_intersect(&ds);
 			perspective(&ds);
 			if (ds.i->x1 >= ds.i->x2 || ds.i->x2 < ds.s->now.sx1 || ds.i->x1 > ds.s->now.sx2)
+			{
+				ds.it->s++;
 				continue; // Only render if it's visible
+			}
 			/* Acquire the floor and ceiling heights, relative to where the player's view is */
 			render_sector_walls(&ds, g->sectors, ds.queue, g);
-			//SDL_UpdateWindowSurface(plr.sdl->window);
+			ds.it->s++;
 		} // for s in sector's edges
 		++ds.i->renderedsectors[ds.s->now.sectorno];
 		ds.it->start_do == 1 ? ds.it->start_do = 0 : 0;

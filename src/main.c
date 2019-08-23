@@ -164,11 +164,10 @@ void		game_loop(t_game *g)
 		SDL_RenderCopy(g->sdl.renderer, g->sdl.texture, NULL, NULL);
 
 		/* place texts */
-		//get_messages(g);
+		get_messages(g);
 
 		SDL_RenderPresent(g->sdl.renderer);
 		SDL_Delay(20);
-		//printf("clock: %lu\n", clock());
 	}
 }
 
