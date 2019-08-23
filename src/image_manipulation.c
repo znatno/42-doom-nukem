@@ -24,6 +24,33 @@ uint32_t	get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y, uint32_t color)
 		return (color);
 }
 
+void	draw_text_black(uint32_t cord_x, uint32_t cord_y, char *text, t_env *env)
+{
+	TTF_Font	*font = TTF_OpenFont("../fonts/FiraSans-Regular.ttf", 32);
+	SDL_Color	color = {255, 255, 255, 0};
+	SDL_Surface	*font_surface = TTF_RenderText_Solid(font, text, color);
+	font_surface = SDL_ConvertSurfaceFormat(font_surface, SDL_PIXELFORMAT_BGRA32, 0);
+	uint32_t it_x;
+	uint32_t it_y;
+	uint32_t size_w;
+	uint32_t size_h;
+
+	it_y = 0;
+	size_h = font_surface->h;
+	size_w = font_surface->w;
+	while (it_y < size_h)
+	{
+		it_x = 0;
+		while (it_x < size_w)
+		{
+			env->buffer[(cord_y + it_y) * W_WIDTH + (cord_x + it_x)] = get_pixel(font_surface, it_x, it_y, 0x0);
+			it_x++;
+		}
+		it_y++;
+	}
+	TTF_CloseFont(font);
+}
+
 void	draw_text(uint32_t cord_x, uint32_t cord_y, char *text, t_env *env)
 {
 	TTF_Font	*font = TTF_OpenFont("../fonts/FiraSans-Regular.ttf", 32);
@@ -36,6 +63,7 @@ void	draw_text(uint32_t cord_x, uint32_t cord_y, char *text, t_env *env)
 	uint32_t size_h;
 
 	it_y = 0;
+	draw_text_black(cord_x, cord_y, "0000",env);
 	size_h = font_surface->h;
 	size_w = font_surface->w;
 	while (it_y < size_h)
@@ -69,8 +97,8 @@ void	draw_tools(t_env *env)
 	draw_text(1480, 75, "- select", env);
 	draw_text(1480, 135, "- wall", env);
 	draw_text(1475, 195, "- refresh", env);
-	draw_text(1480, 305, "- 20", env);
-	draw_text(1480, 365, "- 0", env);
+//	draw_text(1480, 305, "- 20", env);
+//	draw_text(1480, 365, "- 0", env);
 	draw_text(1480, 515, "x -", env);
 	draw_text(1480, 550, "y -", env);
 	if (env->textures->selected >= 0)

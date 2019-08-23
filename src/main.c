@@ -1,29 +1,4 @@
 #include "duke_nukem_editor.h"
-
-//void save_sector(t_env *env, t_draw *draw)
-//{
-//	t_sector *temp;
-//
-//	if (!(temp = draw->head))
-//	{
-//		if (!(temp = (t_sector *) malloc(sizeof(t_sector))))
-//			exit(166);
-////		create_sectors_list(env, draw, temp);
-////        print_sector(temp);
-//	}
-//	else
-//	{
-//		add_sector_to_list(temp, draw);
-////		print_all_sectors(draw, temp);
-//	}
-//
-//	//free(temp);
-//}
-
-//void				is_portal(t_draw *draw, t_env *env, t_vertex *cur_v)
-//{
-//
-//}
 void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head)
 {
 	t_sector *cur_s;
@@ -50,32 +25,8 @@ void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head)
 	}
 
 	if (draw->portals != NULL)
-	{
 		draw_all_portals(env, draw);
-	}
-//	draw_all_portals(env, draw);
 }
-
-//void 				redraw_screen(t_draw *draw, t_env *env)
-//{
-//	t_sector *cur_s;
-//	t_vertex *cur_v;
-//
-//	cur_s = draw->head;
-//	delete_sector_from_list(draw);
-//	clear_screen(env);
-//	draw_desk(env);
-//	while (draw->head != NULL && cur_s)
-//	{
-//		cur_v = cur_s->vertexes;
-//		while (cur_v)
-//		{
-//			line(cur_v->xy1, cur_v->xy2, env, 0xFF00FF);
-//			cur_v = cur_v->next;
-//		}
-//		cur_s = cur_s->next;
-//	}
-//}
 
 t_draw *init_draw(t_draw *draw)
 {
@@ -91,10 +42,36 @@ t_draw *init_draw(t_draw *draw)
 	return (draw);
 }
 
-void 		select_sector_mode(t_env *env, t_draw *draw, int key)
+t_vertex 		*save_vertex(t_env *env, t_draw *draw, int key, t_sector *save)
 {
 	t_sector 	*cur_s;
 	t_vertex 	*cur_v;
+	int 		i;
+
+	cur_s = save;
+	i = 0;
+	while (cur_s)
+	{
+		cur_v = cur_s->vertexes;
+		while (cur_v)
+		{
+			i++;
+			if (i == key)
+			{
+				line(cur_v->xy1, cur_v->xy2, env, CYAN);
+				return (cur_v);
+			}
+			cur_v = cur_v->next;
+		}
+		cur_s = cur_s->next;
+	}
+}
+
+t_sector		*select_sector_mode(t_env *env, t_draw *draw, int key)
+{
+	t_sector 	*cur_s;
+	t_vertex 	*cur_v;
+	t_sector 	*save;
 	int 		i;
 
 	cur_s = draw->head;
@@ -108,7 +85,10 @@ void 		select_sector_mode(t_env *env, t_draw *draw, int key)
 		while (cur_v)
 		{
 			if (i == key)
-			line(cur_v->xy1, cur_v->xy2, env, VIOLET);
+			{
+				line(cur_v->xy1, cur_v->xy2, env, VIOLET);
+				save = cur_s;
+			}
 			else
 				line(cur_v->xy1, cur_v->xy2, env, WHITE);
 			if (!(find_portal_for_draw(env, draw, cur_v, cur_s)))
@@ -121,15 +101,91 @@ void 		select_sector_mode(t_env *env, t_draw *draw, int key)
 	{
 		draw_all_portals(env, draw);
 	}
+	return (save);
 }
+
+//t_sector		*select_wall_mode(t_env *env, t_draw *draw, int key)
+//{
+//	t_sector 	*cur_s;
+//	t_vertex 	*cur_v;
+//	t_sector 	*save;
+//	int 		i;
+//
+//	cur_s = draw->head;
+//	clear_screen(env);
+//	draw_desk(env);
+//	i = 0;
+//	while (draw->head != NULL && cur_s)
+//	{
+//		i++;
+//		cur_v = cur_s->vertexes;
+//		while (cur_v)
+//		{
+//			if (i == key)
+//			{
+//				line(cur_v->xy1, cur_v->xy2, env, VIOLET);
+//				save = cur_s;
+//			}
+//			else
+//				line(cur_v->xy1, cur_v->xy2, env, WHITE);
+//			if (!(find_portal_for_draw(env, draw, cur_v, cur_s)))
+//				delete_portal(draw, cur_v);
+//			cur_v = cur_v->next;
+//		}
+//		cur_s = cur_s->next;
+//	}
+//	if (draw->portals != NULL)
+//	{
+//		draw_all_portals(env, draw);
+//	}
+//	return (save);
+//}
+
+//void 		select_sector_mode(t_env *env, t_draw *draw, int key)
+//{
+//	t_sector 	*cur_s;
+//	t_vertex 	*cur_v;
+//	int 		i;
+//
+//	cur_s = draw->head;
+//	clear_screen(env);
+//	draw_desk(env);
+//	i = 0;
+//	while (draw->head != NULL && cur_s)
+//	{
+//		i++;
+//		cur_v = cur_s->vertexes;
+//		while (cur_v)
+//		{
+//			if (i == key)
+//			{
+//
+//				line(cur_v->xy1, cur_v->xy2, env, VIOLET);
+//			}
+//			else
+//				line(cur_v->xy1, cur_v->xy2, env, WHITE);
+//			if (!(find_portal_for_draw(env, draw, cur_v, cur_s)))
+//				delete_portal(draw, cur_v);
+//			cur_v = cur_v->next;
+//		}
+//		cur_s = cur_s->next;
+//	}
+//	if (draw->portals != NULL)
+//	{
+//		draw_all_portals(env, draw);
+//	}
+//}
 
 t_env *sdl_main_loop(t_env *env)
 {
 	const Uint8 *kstate;
+	t_sector 	*save;
+	t_vertex 	*save_v;
 	t_draw *draw;
 	SDL_Event ev;
 	int loop;
 	int cur_s;
+	int cur_v;
 
 	//STACK VARS
 	t_stack **head = ft_memalloc(sizeof(stack_t**));
@@ -139,9 +195,16 @@ t_env *sdl_main_loop(t_env *env)
 	loop = 1;
 	draw->s_mode = false;
 	draw->d_mode = false;
+	draw->ceil_mode = false;
+	draw->floor_mode = false;
+	draw->w_mode = false;
 	draw->s_count = 0;
 	draw->p_count = 0;
+	save = NULL;
+
 	cur_s = 0;
+	cur_v = 0;
+	int i = 0;
 	while (loop && env->sdl_error == NONE)
 	{
 		kstate = SDL_GetKeyboardState(NULL);
@@ -157,42 +220,82 @@ t_env *sdl_main_loop(t_env *env)
 				}
 				else if (kstate[SDL_SCANCODE_SPACE] && !draw->s_mode)
 				{
-					draw->key = SPACE; // space pressed
+					draw->key = SPACE;
 					if (stack_more_than_two(head))
 					{
 						draw_dot(env, draw, head);
 						refresh_screen(draw, env, head);
 					}
 					draw->key = 0;
-				} // TODO: WALL SELECTION
-//				else if (kstate[SDL_SCANCODE_RETURN] && !draw->d_mode)
-//				{
-//					cur_v = find_wall_in_list()
-//				}
-				else if (kstate[SDL_SCANCODE_DELETE])// && draw->s_mode)
+				}
+				else if (kstate[SDL_SCANCODE_DELETE])
 				{
 					delete_sector_from_list(env, draw);
-					select_sector_mode(env, draw, cur_s);
+					refresh_screen(draw, env, head);
 				}
 				else if (kstate[SDL_SCANCODE_BACKSPACE] && !draw->s_mode)
 				{
 					stack_pop(head);
 					refresh_screen(draw, env, head);
 				}
-//				else if (kstate[SDL_SCANCODE_S])
-//				{
-//					draw->s_mode = (draw->s_mode) ? 0 : 1;
-//					(draw->s_mode) ? 0 == 0 : refresh_screen(draw, env, head);
-//
-//				}
-				else if (kstate[SDL_SCANCODE_RIGHT] && draw->s_mode)
+				else if (kstate[SDL_SCANCODE_RIGHT] && draw->s_mode && !draw->w_mode)
 				{
-					if (draw->s_count > 1)
-						cur_s += (draw->s_count > cur_s) ? 1 : (-cur_s + 1);
-					else
-						cur_s = 1;
-//					printf("%d\n",cur_s);
-						select_sector_mode(env, draw, cur_s);
+					if (draw->head != NULL)
+					{
+						if (draw->s_count > 1)
+							cur_s += (draw->s_count > cur_s) ? 1 : (-cur_s + 1);
+						else
+							cur_s = 1;
+						save = select_sector_mode(env, draw, cur_s);
+						draw_text(1500, 305, ft_itoa(save->ceil), env);
+						draw_text(1500, 365, ft_itoa(save->floor), env);
+					}
+				}
+				// FIXME: WALL MOD BLEAT
+				else if (kstate[SDL_SCANCODE_RIGHT] && draw->w_mode && !draw->d_mode && draw->s_mode)
+				{
+					if (draw->head != NULL)
+					{
+						save = select_sector_mode(env, draw, cur_s);
+						(cur_v > save->walls) ? cur_v = 1 : cur_v;
+						save_v = save_vertex(env, draw, cur_v++, save);
+						draw_text(1500, 305, ft_itoa(save->ceil), env);
+						draw_text(1500, 365, ft_itoa(save->floor), env);
+					}
+				}
+				else if (kstate[SDL_SCANCODE_UP] && draw->floor_mode && draw->s_mode)
+				{
+					if (draw->head != NULL)
+					{
+						save = select_sector_mode(env, draw, cur_s);
+						draw_text(1500, 365, ft_itoa(save->floor), env);
+						(save->floor + 10 >= save->ceil) ? (save->floor = save->ceil - 10) : 0 == 0;
+						save->floor++;
+						draw_select_text(draw, env);
+					}
+				}
+				else if (kstate[SDL_SCANCODE_DOWN] && draw->floor_mode && draw->s_mode){
+					if (draw->head != NULL)
+					{
+						save = select_sector_mode(env, draw, cur_s);
+						draw_text(1500, 365, ft_itoa(save->floor), env);
+						(save->floor < 1) ? save->floor = 0 : save->floor--;
+						draw_select_text(draw, env);
+					}
+				}
+				else if (kstate[SDL_SCANCODE_UP] && draw->ceil_mode && draw->s_mode && draw->head){
+					save = select_sector_mode(env, draw, cur_s);
+					draw_text(1500, 305, ft_itoa(save->ceil),env);
+					(save->ceil - 10 <= save->floor) ? (save->ceil = save->floor + 10) : 0 == 0;
+					draw_select_text(draw, env);
+					save->ceil++;
+				}
+				else if (kstate[SDL_SCANCODE_DOWN] && draw->ceil_mode && draw->s_mode && draw->head){
+					save = select_sector_mode(env, draw, cur_s);
+					draw_text(1500, 305, ft_itoa(save->ceil),env);
+					(save->ceil < 10) ? save->ceil = 20 : save->ceil--;
+					(save->ceil - 10 <= save->floor) ? (save->ceil = save->floor + 10) : 0 == 0;
+					draw_select_text(draw, env);
 				}
 			}
 			if (ev.type == SDL_MOUSEBUTTONDOWN)
@@ -202,10 +305,12 @@ t_env *sdl_main_loop(t_env *env)
 				&& env->mouse_y < H_DRAW - 20 && env->mouse_y > 15 &&
 						env->mouse_x > 15 && !draw->s_mode)
 				{
+					printf("MOUSE : wall = %d select = %d draw %d\n", draw->s_mode, draw->w_mode, draw->d_mode);
 					draw_dot(env, draw, head);
 				}
 				draw_select_text(draw, env);
 				(draw->s_mode) ? select_sector_mode(env, draw, cur_s)
+
 				: refresh_screen(draw, env, head);
 			}
 		}

@@ -143,6 +143,7 @@ typedef struct s_sector
     t_vertex *vertexes;
     int floor;
     int ceil;
+    int walls;
     struct s_sector *next;
 } t_sector;
 
@@ -157,6 +158,9 @@ typedef struct s_draw
   	int p_count;
     bool s_mode;
     bool d_mode;
+    bool w_mode;
+	bool floor_mode;
+    bool ceil_mode;
     char key;
 } t_draw;
 

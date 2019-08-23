@@ -39,21 +39,71 @@ void	draw_select_text(t_draw *draw, t_env *env)
 
 	text_select = click_to_text(env);
 
+//	printf("%d\n", text_select);
+//	if (text_select > 9 || text_select < 0)
+//		text_select = 1;
+	// SELECT MODE STARTS
+	if (text_select == CEIL && draw->s_mode && !draw->d_mode && !draw->w_mode)
+	{
+		draw->ceil_mode = true;
+		draw->floor_mode = false;
+		draw->d_mode = false;
+		draw_texture(env->textures->cords[text_select], text_select, 0xf98d8d,
+					 env);
+	}
+	if (text_select == FLOOR && draw->s_mode && !draw->d_mode && !draw->w_mode)
+	{
+		draw->ceil_mode = false;
+		draw->floor_mode = true;
+		draw->d_mode = false;
+		draw_texture(env->textures->cords[text_select], text_select, 0xf98d8d, env);
+	}
 	if (text_select == 8)
 	{
 		env->textures->selected = text_select;
 		draw->s_mode = 1;
-		if (draw->s_mode)
-		draw_texture(env->textures->cords[text_select], text_select, 0xf98d8d, env);
-	}
-	else if (text_select == 1)
-	{
-		env->textures->selected = text_select;
-		draw->s_mode = 0;
+		draw->w_mode = 0;
+		draw->d_mode = 0;
 		if (draw->s_mode)
 			draw_texture(env->textures->cords[text_select], text_select, 0xf98d8d, env);
 	}
-	else if (text_select > -1)
+	// CEIL
+
+	// SELECT MODE ENDS
+//	if (text_select == 9 && draw->s_mode)
+//	{
+//		env->textures->selected = text_select;
+//		draw->d_mode = 1;
+//		draw->s_mode = 0;
+//		draw->w_mode = 0;
+////		draw->ceil_mode = true;
+////		draw->floor_mode = true
+//		if (draw->d_mode)
+//			draw_texture(env->textures->cords[text_select], text_select, 0xf98d8d, env);
+//	}
+	 if (text_select == 1)
+	{
+		env->textures->selected = text_select;
+		draw->s_mode = 0;
+		draw->w_mode = 0;
+		draw->d_mode = 1;
+		draw->ceil_mode = false;
+		draw->floor_mode = false;
+		if (draw->s_mode)
+			draw_texture(env->textures->cords[text_select], text_select, 0xf98d8d, env);
+	}
+	if (text_select == WALL_MODE && draw->s_mode && !draw->d_mode)
+	{
+		printf("TEXT_SELECT_W_M: wall = %d select = %d draw %d\n", draw->s_mode, draw->w_mode, draw->d_mode);
+		draw->w_mode = true;
+		draw->d_mode = false;
+		draw->s_mode = true;
+		draw->ceil_mode = false;
+		draw->floor_mode = false;
+		draw_texture(env->textures->cords[text_select], text_select, 0xf98d8d,
+					 env);
+	}
+	if (text_select > -1)
 	{
 		env->textures->selected = text_select;
 			draw_texture(env->textures->cords[text_select], text_select, 0xf98d8d, env);

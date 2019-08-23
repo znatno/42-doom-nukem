@@ -1,5 +1,9 @@
 #include "duke_nukem_editor.h"
 
+
+// TODO: add wall mode
+// FIXME: Если сектор по номеру не первый и все его грани, это порталы, то будет СЭГФОУЛТ
+
 void print_sector(t_sector *temp)
 {
 	t_vertex *cur;
@@ -367,7 +371,9 @@ void	pop_from_stack_to_list(t_env *env, t_draw *draw, t_stack **head)
 	t_xy cur_data;
 	t_xy prev_data;
 	t_xy first_data;
+	int i;
 
+	i = 0;
 	cur_s = last_in_list(draw);
 	cur_s->floor = DEFAULT_FLOOR;
 	cur_s->ceil = DEFAULT_CEIL;
@@ -380,8 +386,10 @@ void	pop_from_stack_to_list(t_env *env, t_draw *draw, t_stack **head)
 
 	while (cur_data.x != -42)
 	{
+		i++;
 		head_v->xy1 = cur_data;
 		cur_data = stack_pop(head);
+
 		(cur_data.x != -42) ? (head_v->xy2 = cur_data) : (head_v->xy2 = first_data);
 		(draw->head->next != NULL) ? find_portal(env, draw, head_v, cur_s) : 0 == 0;
 		if (cur_data.x != -42)
@@ -390,6 +398,8 @@ void	pop_from_stack_to_list(t_env *env, t_draw *draw, t_stack **head)
 			head_v = head_v->next;
 		}
 	}
+	cur_s->walls = i;
+//	printf("THERE ARE %d \n", i);
 	head_v = NULL;
 }
 
