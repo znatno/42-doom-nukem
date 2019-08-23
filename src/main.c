@@ -214,28 +214,21 @@ t_env *sdl_main_loop(t_env *env)
 			{
 				if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
 				{
-//					print_all_sectors(draw, draw->head);к
-//					record_to_file(transform_data(draw));
 					loop = 0;
 				}
 				else if (kstate[SDL_SCANCODE_SPACE] && !draw->s_mode)
 				{
-					draw->key = SPACE; // space pressed
+					draw->key = SPACE;
 					if (stack_more_than_two(head))
 					{
 						draw_dot(env, draw, head);
 						refresh_screen(draw, env, head);
 					}
 					draw->key = 0;
-				} //
-//				else if (kstate[SDL_SCANCODE_RETURN] && !draw->d_mode)
-//				{
-//					cur_v = find_wall_in_list()
-//				}
-				else if (kstate[SDL_SCANCODE_DELETE])// && draw->s_mode)
+				}
+				else if (kstate[SDL_SCANCODE_DELETE])
 				{
 					delete_sector_from_list(env, draw);
-//					select_sector_mode(env, draw, cur_s);
 					refresh_screen(draw, env, head);
 				}
 				else if (kstate[SDL_SCANCODE_BACKSPACE] && !draw->s_mode)
@@ -243,12 +236,6 @@ t_env *sdl_main_loop(t_env *env)
 					stack_pop(head);
 					refresh_screen(draw, env, head);
 				}
-//				else if (kstate[SDL_SCANCODE_S])
-//				{
-//					draw->s_mode = (draw->s_mode) ? 0 : 1;
-//					(draw->s_mode) ? 0 == 0 : refresh_screen(draw, env, head);
-//
-//				}
 				else if (kstate[SDL_SCANCODE_RIGHT] && draw->s_mode && !draw->w_mode)
 				{
 					if (draw->head != NULL)
@@ -274,15 +261,6 @@ t_env *sdl_main_loop(t_env *env)
 						draw_text(1500, 365, ft_itoa(save->floor), env);
 					}
 				}
-				// TOP BUTTTTTTTON
-//				else if (draw->ceil_mode == true)
-//				{
-//					draw_texture(env->textures->cords[CEIL], CEIL, 0xf98d8d, env);
-//				}
-//				else if (draw->floor_mode == true)
-//				{
-//					draw_texture(env->textures->cords[FLOOR], FLOOR, 0xf98d8d, env);
-//				}
 				else if (kstate[SDL_SCANCODE_UP] && draw->floor_mode && draw->s_mode)
 				{
 					if (draw->head != NULL)
