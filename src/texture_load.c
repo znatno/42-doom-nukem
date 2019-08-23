@@ -12,11 +12,24 @@
 
 #include "doom_nukem.h"
 
-SDL_Texture		*load_texture(char *path, t_sdl_main *sdl)
+
+void	textures_init(t_sdl_main *sdl)
 {
-	SDL_Texture	*texture;
+	SDL_Surface		**arr_tex;
 
-	texture = IMG_LoadTexture(sdl->renderer, path);
-	return (texture);
+	arr_tex = (SDL_Surface **)malloc(sizeof(SDL_Surface *) * 6);
+	arr_tex[0] = IMG_Load("../textures-doom/brick.jpg");
+	arr_tex[1] = IMG_Load("../textures-doom/steel_0.jpg");
+	arr_tex[2] = IMG_Load("../textures-doom/steel_1.jpg");
+	arr_tex[3] = IMG_Load("../textures-doom/wall_grey.jpg");
+	arr_tex[4] = IMG_Load("../textures-doom/wood_white_0.jpg");
+	arr_tex[5] = IMG_Load("../textures-doom/wood_white_1.jpg");
+
+	arr_tex[0] = SDL_ConvertSurfaceFormat(arr_tex[0], SDL_PIXELFORMAT_BGRA32, 0);
+	arr_tex[1] = SDL_ConvertSurfaceFormat(arr_tex[1], SDL_PIXELFORMAT_BGRA32, 0);
+	arr_tex[2] = SDL_ConvertSurfaceFormat(arr_tex[2], SDL_PIXELFORMAT_BGRA32, 0);
+	arr_tex[3] = SDL_ConvertSurfaceFormat(arr_tex[3], SDL_PIXELFORMAT_BGRA32, 0);
+	arr_tex[4] = SDL_ConvertSurfaceFormat(arr_tex[4], SDL_PIXELFORMAT_BGRA32, 0);
+	arr_tex[5] = SDL_ConvertSurfaceFormat(arr_tex[5], SDL_PIXELFORMAT_BGRA32, 0);
+	sdl->textures->arr_tex = arr_tex;
 }
-

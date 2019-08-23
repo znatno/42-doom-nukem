@@ -26,10 +26,12 @@
 # include "SDL_mixer.h"
 # include "SDL_image.h"
 # include "SDL_ttf.h"
+# include "SDL_surface.h"
+# include "SDL_pixels.h"
 
 /* Define window size */
-# define W 640
-# define H 480
+#define W 1024
+#define H 768
 
 #define YAW(y, z) (y + z * plr.yaw)	// Y-axis angle of player camera
 #define MAX_QUE	32					// max num of sectors what will be rendered
@@ -45,6 +47,14 @@
 #define FILE_NAME "../test.txt"
 #define GET_ANGLE_V0_V1(xy0, xy1) (radian_to_grades(acosf(angle_vv(scalar_product(xy0, xy1), len_vector(xy0), len_vector(xy1)))))
 
+#define RED					0
+#define GREEN				1
+#define TOP_PORTAL_WALL	0
+#define BLUE				2
+#define BOTTOM_PORTAL_WALL 1
+#define CEIL				3
+#define FULL_WALL			2
+#define FLOOR				4
 //	Utility functions. Because C doesn't have templates,
 //	we use the slightly less safe preprocessor macros to
 //	implement these functions that work with multiple types.
@@ -130,13 +140,23 @@ typedef struct		s_move_vec
 	float 			y;
 }					t_move_vec;
 
+typedef struct		s_textures
+{
+	SDL_Surface		**arr_tex;
+	uint32_t 		txt_y;
+	uint32_t		txt_x;
+	float 			perc_x;
+	float 			perc_y;
+}					t_textures;
+
+
 typedef struct			s_sdl_main
 {
 	//SDL_DisplayMode		display_mode;
 	SDL_Window			*window;
 	SDL_Renderer		*renderer;
-	SDL_Surface			*w_surface;
-
+	SDL_Surface			*win_surface;
+	t_textures			*textures;
 	SDL_Texture			*texture;
 	int					*buffer;
 }						t_sdl_main;
@@ -203,6 +223,12 @@ typedef struct	s_calc_tmp_float
 	float yfloor;
 	float nyceil;
 	float nyfloor;
+	float perc_light;
+	float hei;
+	float mapx;
+	float mapz;
+	float rtx;
+	float rtz;
 }				t_calc_tmp_float;
 
 typedef struct	s_calc_tmp_int
@@ -232,9 +258,16 @@ typedef struct	s_calc_tmp_int
 	int 		cnya;
 	int 		nyb;
 	int 		cnyb;
+	int 		u0;
+	int 		u1;
+	int 		txtx;
+	int 		txty;
+	int 		pel;
 	unsigned	r1;
 	unsigned 	r2;
 	unsigned	r;
+	unsigned	txtz;
+	unsigned	txtx1;
 }				t_calc_tmp_int;
 
 
@@ -245,12 +278,27 @@ typedef struct	s_item
 	int sx2;
 }				t_item;
 
+typedef struct		s_scaler
+{
+	int				result;
+	int 			bop;
+	int 			fd;
+	int 			ca;
+	int 			cache;
+}					t_scaler;
+
 typedef struct		s_calc_tmp_struct
 {
 	t_item				now;
+	t_scaler			ya_int;
+	t_scaler			yb_int;
+	t_scaler			nya_int;
+	t_scaler			nyb_int;
 	const t_sector 		*sect;
 	t_xy				i1;
 	t_xy				i2;
+	t_xy				org1;
+	t_xy				org2;
 	t_item				*head;
 	t_item				*tail;
 	t_sector			*sector;
@@ -272,6 +320,14 @@ typedef struct		s_font
 	int 			size;
 	SDL_Color		color;
 }					t_font;
+void	textures_init(t_sdl_main *sdl);
+float		percentage(int start, int end, int curr);
+void	render(int draw_mode ,int texture_num, t_player *p, t_draw_screen_calc *ds);
+int 	scaler_next(t_scaler *i);
+t_scaler scalar_init(int a, int b, int c, int d, int f);
+int		ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);
+void vline2(int y1,int y2, t_scaler ty, unsigned txtx, t_player *p, t_draw_screen_calc *ds, int tn);
+void	vline_texture(int y1, int y2, int text_num, t_player *plr, t_draw_screen_calc *ds);
 
 typedef struct		s_msg
 {

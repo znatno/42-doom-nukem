@@ -116,6 +116,11 @@ void	find_intersect(t_draw_screen_calc *ds)
 	ds->s->i2 = intersect(ds->f->tx1, ds->f->tz1, ds->f->tx2, ds->f->tz2,
 						  ds->f->nearside, ds->f->nearz, ds->f->farside,
 						  ds->f->farz);
+	ds->s->org1.x = ds->f->tx1;
+	ds->s->org1.y = ds->f->tz1;
+
+	ds->s->org2.x = ds->f->tx2;
+	ds->s->org2.y = ds->f->tz2;
 	if (ds->f->tz1 < ds->f->nearz)
 	{
 		if (ds->s->i1.y > 0)
@@ -141,6 +146,16 @@ void	find_intersect(t_draw_screen_calc *ds)
 			ds->f->tx2 = ds->s->i2.x;
 			ds->f->tz2 = ds->s->i2.y;
 		}
+	}
+	if (fabsf(ds->f->tx2 - ds->f->tx1) > fabsf(ds->f->tz2 - ds->f->tz1))
+	{
+		ds->i->u0 = (int)((ds->f->tx1 - ds->s->org1.x) * 1023 / (ds->s->org2.x - ds->s->org1.x));
+		ds->i->u1 =(int)((ds->f->tx2 - ds->s->org1.x) * 1023 / (ds->s->org2.x - ds->s->org1.x));
+	}
+	else
+	{
+		ds->i->u0 =(int)((ds->f->tz1 - ds->s->org1.y) * 1023 / (ds->s->org2.y - ds->s->org1.y));
+		ds->i->u1 = (int)((ds->f->tz2 - ds->s->org1.y) * 1023 / (ds->s->org2.y - ds->s->org1.y));
 	}
 }
 
@@ -193,17 +208,25 @@ void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p, t_game *g)
 	ds->i->z = (int)roundf(((ds->it->x - ds->i->x1) * (ds->f->tz2-ds->f->tz1)
 			/ (ds->i->x2-ds->i->x1) + ds->f->tz1) * 8);
 	ds->i->z = (ds->i->z > 250) ? (250) : (ds->i->z);
+
+	ds->f->perc_light = percentage(250, 0, ds->i->z); //light percent by ds-i->z
 	/* Acquire the Y coordinates for our ceiling & floor for this X coordinate-> Clamp them-> */
 	ds->i->ya = (ds->it->x - ds->i->x1) * (ds->i->y2a - ds->i->y1a) / (ds->i->x2 - ds->i->x1) + ds->i->y1a;
-	ds->i->cya = CLAMP(ds->i->ya, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // top
+	ds->i->cya = clamp(ds->i->ya, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // top
 
 	ds->i->yb = (ds->it->x - ds->i->x1) * (ds->i->y2b - ds->i->y1b) / (ds->i->x2 - ds->i->x1) + ds->i->y1b;
-	ds->i->cyb = CLAMP(ds->i->yb, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // bottom
+	ds->i->cyb = clamp(ds->i->yb, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // bottom
 
+	render(CEIL, 0, p, ds);
+//	render(CEIL, 0, p, ds);
+//	render(FLOOR, 0, p, ds);
 	/* Render ceiling: everything above this sector's ceiling height-> */
-	vline(ds->it->x, ds->i->y_top[ds->it->x], ds->i->cya - 1, 0x33333300, p);
+//	SDL_UpdateWindowSurface(p->sdl->window);
+	vline(ds->it->x, ds->i->y_top[ds->it->x], ds->i->cya - 1, 0x00333333, p);
+//	SDL_UpdateWindowSurface(p->sdl->window);
 	/* Render floor: everything below this sector's floor height-> */
-	vline(ds->it->x, ds->i->cyb + 1, ds->i->y_bottom[ds->it->x], 0x66333300, p);
+	vline(ds->it->x, ds->i->cyb + 1, ds->i->y_bottom[ds->it->x], 0x00663333, p);
+//	SDL_UpdateWindowSurface(p->sdl->window);
 }
 
 void	render_ceil_floor(t_draw_screen_calc *ds, t_player *p)
@@ -215,15 +238,17 @@ void	render_ceil_floor(t_draw_screen_calc *ds, t_player *p)
 	ds->i->nyb = (ds->it->x - ds->i->x1) * (ds->i->ny2b - ds->i->ny1b) / (ds->i->x2 - ds->i->x1) + ds->i->ny1b;
 	ds->i->cnyb = CLAMP(ds->i->nyb, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]);
 
+	render(TOP_PORTAL_WALL, 3, p, ds);
 	/* If our ceiling is higher than their ceiling, render upper wall */
-	ds->i->r1 = 0x01010100 * (255 - ds->i->z); // top portal wall color
-	ds->i->r2 = 0x01010100 * (255 - ds->i->z); // bottom portal wall color
+//	ds->i->r1 = 0x010101 * (255 - ds->i->z); // top portal wall color
+//	ds->i->r2 = 0x010101 * (255 - ds->i->z); // bottom portal wall color
 
-	vline(ds->it->x, ds->i->cya, ds->i->cnya - 1, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r1), p); // Between our and their ceiling
-	ds->i->y_top[ds->it->x] = CLAMP(MAX(ds->i->cya, ds->i->cnya), ds->i->y_top[ds->it->x], H - 1); // Shrink the remaining window below these ceilings
+	ds->i->y_top[ds->it->x] = clamp(max(ds->i->cya, ds->i->cnya), ds->i->y_top[ds->it->x], H - 1); // Shrink the remaining window below these ceilings
+	render(BOTTOM_PORTAL_WALL, 3, p, ds);
 	/* If our floor is lower than their floor, render bottom wall */
-	vline(ds->it->x, ds->i->cnyb + 1, ds->i->cyb, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r2), p); // Between their and our floor
-	ds->i->y_bottom[ds->it->x] = CLAMP(MIN(ds->i->cyb, ds->i->cnyb), 0, ds->i->y_bottom[ds->it->x]); // Shrink the remaining window above these floors
+//	render(BOTTOM_PORTAL_WALL, 0, p, ds); // Between their and our floor
+//	SDL_UpdateWindowSurface(p->sdl->window);
+	ds->i->y_bottom[ds->it->x] = clamp(min(ds->i->cyb, ds->i->cnyb), 0, ds->i->y_bottom[ds->it->x]); // Shrink the remaining window above these floors
 }
 
 void	render_sector(t_draw_screen_calc *ds, t_player *p, t_game *g)
@@ -234,11 +259,9 @@ void	render_sector(t_draw_screen_calc *ds, t_player *p, t_game *g)
 		render_ceil_floor(ds, p);
 	else
 	{
+		render(FULL_WALL, 5, p, ds);
 		/* There's no neighbor. Render wall from top (cya = ceiling level) to bottom (cyb = floor level). */
-		ds->i->r = 0x01010100 * (255 - ds->i->z); // wall color = 0x010101 * (255 - ds->i->z)
-		vline(ds->it->x, ds->i->cya, ds->i->cyb, (ds->it->x == ds->i->x1 || ds->it->x == ds->i->x2) ? (SEC_COLOR) : (ds->i->r), p);
-		if (g->error == 100)
-			debug_update(g);
+//		ds->i->r = 0x010101 * (255 - ds->i->z); // wall color = 0x010101 * (255 - ds->i->z)
 //		SDL_UpdateWindowSurface(p->sdl->window);
 	}
 }
@@ -246,9 +269,20 @@ void	render_sector(t_draw_screen_calc *ds, t_player *p, t_game *g)
 void	render_sector_walls(t_draw_screen_calc *ds , t_sector *sector,
 									t_item queue[MAX_QUE], t_game *g)
 {
-	render_walls(ds, sector, g->plr);
+	render_walls(ds, sectore, *plr);
+	ds->s->ya_int = scalar_init(ds->i->x1, ds->i->beginx, ds->i->x2, ds->i->y1a,
+								ds->i->y2a);
+	ds->s->yb_int = scalar_init(ds->i->x1, ds->i->beginx, ds->i->x2, ds->i->y1b,
+								ds->i->y2b);
+	ds->s->nya_int = scalar_init(ds->i->x1, ds->i->beginx, ds->i->x2,
+								 ds->i->ny1a, ds->i->ny2a);
+	ds->s->nyb_int = scalar_init(ds->i->x1, ds->i->beginx, ds->i->x2,
+								 ds->i->ny1b, ds->i->ny2b);
 	for (ds->it->x = ds->i->beginx; ds->it->x <= ds->i->endx; ++ds->it->x)
-		render_sector(ds, &g->plr, g);
+	{
+		ds->i->txtx = (int)((ds->i->u0 * ((ds->i->x2 - ds->it->x) * ds->f->tz2) + ds->i->u1 * ((ds->it->x - ds->i->x1) * ds->f->tz1)) / ((ds->i->x2 - ds->it->x) * ds->f->tz2 + (ds->it->x - ds->i->x1) * ds->f->tz1));
+		render_sector(ds, plr);
+	}
 	/* Schedule the neighboring sector for rendering within the window formed by this wall-> */
 	if (ds->i->neightbor >= 0 && ds->i->endx >= ds->i->beginx
 		&& (ds->s->head  + MAX_QUE + 1 - ds->s->tail) % MAX_QUE)
