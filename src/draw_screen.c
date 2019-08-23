@@ -221,7 +221,7 @@ void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p)
 		float mapx, mapz;
 
 		mapz = hei * H * V_FOV / ((H / 2 - (float)y) - p->yaw * H * V_FOV);
-		mapx = mapz * (W / 2 - (float)ds->it->x) / W * H_FOV;
+		mapx = mapz * (W / 2 - (float)ds->it->x) / (W * H_FOV);
 		float rtx = mapz * ds->f->pcos + mapx * ds->f->psin;
 		float rtz = mapz * ds->f->psin - mapx * ds->f->pcos;
 		mapx = rtx + p->where.x;
