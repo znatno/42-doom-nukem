@@ -210,37 +210,7 @@ void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p)
 	ds->i->cya = clamp(ds->i->ya, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // top
 	ds->i->cyb = clamp(ds->i->yb, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // bottom
 
-	uint32_t *pix= (uint32_t *)p->sdl->win_surface->pixels;
-	for(int y = ds->i->y_top[ds->it->x] - 1; y <= ds->i->y_bottom[ds->it->x]; ++y)
-	{
-		if (y >= ds->i->cya && y <= ds->i->cyb) {
-			y = ds->i->cyb;
-			continue;
-		}
-		float hei = y < ds->i->cya ? ds->f->yceil : ds->f->yfloor;
-		float mapx, mapz;
-
-		mapz = hei * H * V_FOV / ((H / 2 - (float)y) - p->yaw * H * V_FOV);
-		mapx = mapz * (W / 2 - (float)ds->it->x) / (W * H_FOV);
-		float rtx = mapz * ds->f->pcos + mapx * ds->f->psin;
-		float rtz = mapz * ds->f->psin - mapx * ds->f->pcos;
-		mapx = rtx + p->where.x;
-		mapz = rtz + p->where.y;
-
-		unsigned txtx = mapx * 256;
-		unsigned txtz = mapz * 256;
-		uint32_t pel;
-		if (y < ds->i->cya)
-		{
-			pel = ft_get_pixel(p->sdl->textures->arr_tex[2], txtx % p->sdl->textures->arr_tex[3]->w, txtz % p->sdl->textures->arr_tex[3]->h);
-		}
-		else
-		{
-			pel = ft_get_pixel(p->sdl->textures->arr_tex[5], txtx % p->sdl->textures->arr_tex[5]->w, txtz % p->sdl->textures->arr_tex[5]->h);
-		}
-		((uint32_t *)pix)[y * W + ds->it->x] = pel;
-	}
-
+	render(CEIL, 0, p, ds);
 //	render(CEIL, 0, p, ds);
 //	render(FLOOR, 0, p, ds);
 	/* Render ceiling: everything above this sector's ceiling height-> */
@@ -294,13 +264,13 @@ void	render_sector_walls(t_draw_screen_calc *ds , t_sector *sectore,
 							t_item queue[MaxQue], t_player *plr)
 {
 	render_walls(ds, sectore, *plr);
-	ds->s->ya_int = scaler_init(ds->i->x1, ds->i->beginx, ds->i->x2, ds->i->y1a,
+	ds->s->ya_int = scalar_init(ds->i->x1, ds->i->beginx, ds->i->x2, ds->i->y1a,
 								ds->i->y2a);
-	ds->s->yb_int = scaler_init(ds->i->x1, ds->i->beginx, ds->i->x2, ds->i->y1b,
+	ds->s->yb_int = scalar_init(ds->i->x1, ds->i->beginx, ds->i->x2, ds->i->y1b,
 								ds->i->y2b);
-	ds->s->nya_int = scaler_init(ds->i->x1, ds->i->beginx, ds->i->x2,
+	ds->s->nya_int = scalar_init(ds->i->x1, ds->i->beginx, ds->i->x2,
 								 ds->i->ny1a, ds->i->ny2a);
-	ds->s->nyb_int = scaler_init(ds->i->x1, ds->i->beginx, ds->i->x2,
+	ds->s->nyb_int = scalar_init(ds->i->x1, ds->i->beginx, ds->i->x2,
 								 ds->i->ny1b, ds->i->ny2b);
 	for (ds->it->x = ds->i->beginx; ds->it->x <= ds->i->endx; ++ds->it->x)
 	{

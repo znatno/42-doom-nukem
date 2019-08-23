@@ -226,6 +226,8 @@ typedef struct	s_calc_tmp_float
 	float hei;
 	float mapx;
 	float mapz;
+	float rtx;
+	float rtz;
 }				t_calc_tmp_float;
 
 typedef struct	s_calc_tmp_int
@@ -263,6 +265,8 @@ typedef struct	s_calc_tmp_int
 	unsigned	r1;
 	unsigned 	r2;
 	unsigned	r;
+	unsigned	txtz;
+	unsigned	txtx1;
 }				t_calc_tmp_int;
 
 
@@ -327,7 +331,7 @@ void	textures_init(t_sdl_main *sdl);
 float		percentage(int start, int end, int curr);
 void	render(int draw_mode ,int texture_num, t_player *p, t_draw_screen_calc *ds);
 int 	scaler_next(t_scaler *i);
-t_scaler scaler_init(int a, int b, int c, int d, int f);
+t_scaler scalar_init(int a, int b, int c, int d, int f);
 int		ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);
 void vline2(int y1,int y2, t_scaler ty, unsigned txtx, t_player *p, t_draw_screen_calc *ds, int tn);
 

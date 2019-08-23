@@ -54,24 +54,47 @@ int		color_transoform(int	color, float percent)
 	return (color);
 }
 
+void	draw_ceil_floor(t_draw_screen_calc *ds, t_player *p)
+{
+	uint32_t *pix= (uint32_t *)p->sdl->win_surface->pixels;
+	for(int y = ds->i->y_top[ds->it->x] - 1; y <= ds->i->y_bottom[ds->it->x]; ++y)
+	{
+		if (y >= ds->i->cya && y <= ds->i->cyb) {
+			y = ds->i->cyb;
+			continue;
+		}
+		ds->f->hei = y < ds->i->cya ? ds->f->yceil : ds->f->yfloor;
+		ds->f->mapz = ds->f->hei * H * V_FOV / ((H / 2 - (float)y) - p->yaw * H * V_FOV);
+		ds->f->mapx = ds->f->mapz * (W / 2 - (float)ds->it->x) / (W * H_FOV);
+		ds->f->rtx = ds->f->mapz * ds->f->pcos + ds->f->mapx * ds->f->psin;
+		ds->f->rtz = ds->f->mapz * ds->f->psin - ds->f->mapx * ds->f->pcos;
+		ds->f->mapx = ds->f->rtx + p->where.x;
+		ds->f->mapz = ds->f->rtz + p->where.y;
+		ds->i->txtx1 = (unsigned int)(ds->f->mapx * 256);
+		ds->i->txtz = (unsigned int)(ds->f->mapz * 256);
+		if (y < ds->i->cya)
+			pix[y * W + ds->it->x] = ft_get_pixel(p->sdl->textures->arr_tex[2], ds->i->txtx1 % p->sdl->textures->arr_tex[3]->w, ds->i->txtz % p->sdl->textures->arr_tex[3]->h);
+		else
+			pix[y * W + ds->it->x] = ft_get_pixel(p->sdl->textures->arr_tex[5], ds->i->txtx1 % p->sdl->textures->arr_tex[5]->w, ds->i->txtz % p->sdl->textures->arr_tex[5]->h);
+	}
+}
+
 void	render(int draw_mode ,int texture_num, t_player *p, t_draw_screen_calc *ds)
 {
 	if (draw_mode == TOP_PORTAL_WALL)
 		vline2(ds->i->cya, ds->i->cnya - 1,
-			   scaler_init(ds->i->ya, ds->i->cya, ds->i->yb, 0,
+			   scalar_init(ds->i->ya, ds->i->cya, ds->i->yb, 0,
 						   p->sdl->textures->arr_tex[2]->w - 1), ds->i->txtx, p, ds, texture_num);
 	else if (draw_mode == BOTTOM_PORTAL_WALL)
 		vline2(ds->i->cnyb + 1, ds->i->cyb,
-			   scaler_init(ds->i->ya, ds->i->cnyb + 1, ds->i->yb, 0,
+			   scalar_init(ds->i->ya, ds->i->cnyb + 1, ds->i->yb, 0,
 						   p->sdl->textures->arr_tex[2]->w - 1), ds->i->txtx, p, ds,texture_num);
 	else if (draw_mode == FULL_WALL)
 		vline2(ds->i->cya, ds->i->cyb,
-			   scaler_init(ds->i->ya, ds->i->cya, ds->i->yb, 0,
+			   scalar_init(ds->i->ya, ds->i->cya, ds->i->yb, 0,
 						   p->sdl->textures->arr_tex[2]->w - 1), ds->i->txtx, p, ds, 5);
-	else if (draw_mode == CEIL)
-		vline(ds->i->y_top[ds->it->x], ds->i->cya - 1, 0x6, p, ds);
-	else if (draw_mode == FLOOR)
-		vline(ds->i->cyb + 1, ds->i->y_bottom[ds->it->x], 0x6, p, ds);
+	else if (draw_mode == CEIL || draw_mode == FLOOR)
+		draw_ceil_floor(ds, p);
 }
 
 void vline2(int y1,int y2, t_scaler ty, unsigned txtx, t_player *p, t_draw_screen_calc *ds, int tn)
@@ -129,7 +152,7 @@ int scaler_next(t_scaler *i)
 	return (i->result);
 }
 
-t_scaler scaler_init(int a, int b, int c, int d, int f)
+t_scaler scalar_init(int a, int b, int c, int d, int f)
 {
 	t_scaler	s;
 
