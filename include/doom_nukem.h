@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/22 18:55:42 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/23 19:48:20 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,16 @@
 #define W 1024
 #define H 768
 
-#define YAW(y, z) (y + z * plr.yaw)	// Y-axis angle of player camera
-#define MAX_QUE	32					// max num of sectors what will be rendered
-#define EYE_H  6					// Camera height from floor when standing
-#define DUCK_H 2.5					// And when crouching
-#define HEAD_MARGIN 1				// How much room there is above camera before the head hits the ceiling
-#define KNEE_H 2					// How tall obstacles the player can simply walk over without jumping
-#define HFOV (0.73f * H)			// Affects the horizontal field of vision
-#define VFOV (.2f * H)				// Affects the vertical field of vision
+# define YAW(y, z) (y + z * plr.yaw)	// Y-axis angle of player camera
+# define MAX_QUE	32					// max num of sectors what will be rendered
+# define EYE_H  6					// Camera height from floor when standing
+# define DUCK_H 2.5					// And when crouching
+# define HEAD_MARGIN 1				// How much room there is above camera before the head hits the ceiling
+# define KNEE_H 2					// How tall obstacles the player can simply walk over without jumping
+# define HFOV (0.73f * H)			// Affects the horizontal field of vision
+# define VFOV (.2f * H)				// Affects the vertical field of vision
+# define H_FOV		(1.0 * 0.73f * H / W) //шось з перспективою
+# define V_FOV		(1.0 * .2f)
 #define ISDIGIT(c) (c >= '0' && c <= '9')
 #define SEC_COLOR	0x0000ff00
 #define BLACK_COLOR	0x00
@@ -263,9 +265,9 @@ typedef struct	s_calc_tmp_int
 	int 		txtx;
 	int 		txty;
 	int 		pel;
-	unsigned	r1;
-	unsigned 	r2;
-	unsigned	r;
+//	unsigned	r1;
+//	unsigned 	r2;
+//	unsigned	r;
 	unsigned	txtz;
 	unsigned	txtx1;
 }				t_calc_tmp_int;
@@ -320,14 +322,14 @@ typedef struct		s_font
 	int 			size;
 	SDL_Color		color;
 }					t_font;
-void	textures_init(t_sdl_main *sdl);
+void		textures_init(t_sdl_main *sdl);
 float		percentage(int start, int end, int curr);
-void	render(int draw_mode ,int texture_num, t_player *p, t_draw_screen_calc *ds);
-int 	scaler_next(t_scaler *i);
-t_scaler scalar_init(int a, int b, int c, int d, int f);
-int		ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);
-void vline2(int y1,int y2, t_scaler ty, unsigned txtx, t_player *p, t_draw_screen_calc *ds, int tn);
-void	vline_texture(int y1, int y2, int text_num, t_player *plr, t_draw_screen_calc *ds);
+void		render(int draw_mode ,int texture_num, t_player *p, t_draw_screen_calc *ds);
+int 		scaler_next(t_scaler *i);
+t_scaler	scalar_init(int a, int b, int c, int d, int f);
+int			ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);
+void 		vline2(int y1,int y2, t_scaler ty, unsigned txtx, t_player *p, t_draw_screen_calc *ds, int tn);
+void		vline_texture(int y1, int y2, int text_num, t_player *plr, t_draw_screen_calc *ds);
 
 typedef struct		s_msg
 {
@@ -382,7 +384,7 @@ char			*ft_itof(long double k);
 */
 
 void			draw_screen(t_game *g);
-void			vline(int x, int y1, int y2, int color, t_player *player);
+void			vline(int y1, int y2, int color, t_player *plr, t_draw_screen_calc *ds);
 t_xy			vv_to_v(float x0, float y0, float x1, float y1);
 float			len_vector(t_xy		free_vector);
 float			scalar_product(t_xy xy0, t_xy xy1);

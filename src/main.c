@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/22 23:33:16 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/23 20:06:51 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,8 +92,8 @@ void		events(t_game *g)
 void		game_loop(t_game *g)
 {
 	g->msgs[0] = create_msg("Episode 1", FONT_M_BG, (t_xy_int){40, 64}, 5);
-	g->msgs[1] = create_msg("HP: 100/100", FONT_M_MD, (t_xy_int){32, 380}, -1);
-	g->msgs[2] = create_msg("Notes: 0/10", FONT_M_MD, (t_xy_int){32, 420}, -1);
+	g->msgs[1] = create_msg("HP: 100/100", FONT_M_MD, (t_xy_int){32, 680}, -1);
+	g->msgs[2] = create_msg("Notes: 0/10", FONT_M_MD, (t_xy_int){32, 720}, -1);
 	while (true)
 	{
 
@@ -167,7 +167,7 @@ void		game_loop(t_game *g)
 		get_messages(g);
 
 		SDL_RenderPresent(g->sdl.renderer);
-		SDL_Delay(20);
+		//SDL_Delay(20);
 	}
 }
 
@@ -189,6 +189,9 @@ int 		main(void)
 
 	//Load fonts
 	load_fonts(&g);
+
+	//Load textures
+	textures_init(&g.sdl);
 
 	//Cursor lock
 	SDL_ShowCursor(SDL_DISABLE);

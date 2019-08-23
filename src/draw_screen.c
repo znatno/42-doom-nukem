@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/02 21:38:26 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/23 18:42:14 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/23 19:53:37 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	print_player_pos(t_player *p)
 
 void	print_data_ds(t_player *p)
 {
-	printf("\n---------------------\n");
+	printf("\n------------------------------------------\n");
 	printf("| player_x = %5f | player_y = %5f |\n", p->where.x, p->where.y);
 	printf("| vlct_x = %5f | vlct_y = %5f | vlct_z = %5f|\n", p->vlct.x, p->vlct.y, p->vlct.z);
 	printf("| angle = %f | ang_sin = %5f | ang_cos = %5f | yaw = %5f|\n", p->angle, p->anglesin, p->anglecos, p->yaw);
@@ -38,7 +38,7 @@ void	print_data_ds(t_player *p)
 	printf("| ground = %i | falling = %i | moving = %i | ducking = %i | eyeheight = %5f|\n", p->ground, p->falling, p->moving, p->ducking,p->eyeheight);
 	printf("| move_x = %5f | move_y = %5f |\n", p->mv.x, p->mv.y);
 	printf("| mouse_aim_x = %i | mouse_aim_y = %i | mouse_aim_yaw = %5f |\n",p->ms.x, p->ms.y, p->ms_yaw);
-	printf("---------------------\n");
+	printf("------------------------------------------\n");
 }
 
 void	init_draw(t_draw_screen_calc *ds, t_player plr)
@@ -92,24 +92,18 @@ void	rotate_view(t_draw_screen_calc *ds, t_game *g)
 
 	ds->f->tx2 = ds->f->vx2 * ds->f->psin - ds->f->vy2 * ds->f->pcos;
 	ds->f->tz2 = ds->f->vx2 * ds->f->pcos + ds->f->vy2 * ds->f->psin;
-//	if (g->error == 100)
-//	{
-//		printf("\nSECTOR: %d\tWALL: %d\n", ds->s->now.sectorno, ds->it->s);
-//		printf("tx1: %f\ttz1: %f\ttx2: %f\ttz2: %f\n",
-//			   ds->f->tx1, ds->f->tz1, ds->f->tx2, ds->f->tz2);
-//	}
 }
 
 void	find_intersect(t_draw_screen_calc *ds)
 {
-	ds->f->nearz = 1e-4f;		// ds->f->nearz = 1e-4f;
-	ds->f->farz = 1;			// ds->f->farz = 5;
-	ds->f->nearside = 1e-5f;	// ds->f->nearside = 1e-5f;
-	ds->f->farside = 20.f;		// ds->f->farside = 20.f;
 	//todo тут значення відповідають за відмальовування тому ймовірно тут
 	// можна знайти чому відмальовує зайвого чи не відмальовує коли треба
 
-	// Find an intersection between the wall and the !approximate! edges of player's view
+	ds->f->nearz = 1e-4f;
+	ds->f->farz = 5;
+	ds->f->nearside = 1e-5f;
+	ds->f->farside = 20.f;
+	// Find an intersection between the wall and the approximate edges of player's view
 	ds->s->i1 = intersect(ds->f->tx1, ds->f->tz1, ds->f->tx2, ds->f->tz2,
 						  -ds->f->nearside, ds->f->nearz, -ds->f->farside,
 						  ds->f->farz);
@@ -127,8 +121,7 @@ void	find_intersect(t_draw_screen_calc *ds)
 		{
 			ds->f->tx1 = ds->s->i1.x;
 			ds->f->tz1 = ds->s->i1.y;
-		}
-		else
+		} else
 		{
 			ds->f->tx1 = ds->s->i2.x;
 			ds->f->tz1 = ds->s->i2.y;
@@ -211,31 +204,23 @@ void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p, t_game *g)
 
 	ds->f->perc_light = percentage(250, 0, ds->i->z); //light percent by ds-i->z
 	/* Acquire the Y coordinates for our ceiling & floor for this X coordinate-> Clamp them-> */
-	ds->i->ya = (ds->it->x - ds->i->x1) * (ds->i->y2a - ds->i->y1a) / (ds->i->x2 - ds->i->x1) + ds->i->y1a;
-	ds->i->cya = clamp(ds->i->ya, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // top
+	ds->i->ya = scaler_next(&ds->s->ya_int);
+	ds->i->yb = scaler_next(&ds->s->yb_int);
 
-	ds->i->yb = (ds->it->x - ds->i->x1) * (ds->i->y2b - ds->i->y1b) / (ds->i->x2 - ds->i->x1) + ds->i->y1b;
-	ds->i->cyb = clamp(ds->i->yb, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // bottom
-
-	render(CEIL, 0, p, ds);
-//	render(CEIL, 0, p, ds);
-//	render(FLOOR, 0, p, ds);
+	ds->i->cya = CLAMP(ds->i->ya, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // top
+	ds->i->cyb = CLAMP(ds->i->yb, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // bottom
 	/* Render ceiling: everything above this sector's ceiling height-> */
-//	SDL_UpdateWindowSurface(p->sdl->window);
-	vline(ds->it->x, ds->i->y_top[ds->it->x], ds->i->cya - 1, 0x00333333, p);
-//	SDL_UpdateWindowSurface(p->sdl->window);
 	/* Render floor: everything below this sector's floor height-> */
-	vline(ds->it->x, ds->i->cyb + 1, ds->i->y_bottom[ds->it->x], 0x00663333, p);
-//	SDL_UpdateWindowSurface(p->sdl->window);
+	render(CEIL, 0, p, ds);
 }
 
 void	render_ceil_floor(t_draw_screen_calc *ds, t_player *p)
 {
 	/* Same for _their_ floor and ceiling */
-	ds->i->nya = (ds->it->x - ds->i->x1) * (ds->i->ny2a - ds->i->ny1a) / (ds->i->x2 - ds->i->x1) + ds->i->ny1a;
-	ds->i->cnya = CLAMP(ds->i->nya, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]);
+	ds->i->nya = scaler_next(&ds->s->nya_int);
+	ds->i->nyb = scaler_next(&ds->s->nyb_int);
 
-	ds->i->nyb = (ds->it->x - ds->i->x1) * (ds->i->ny2b - ds->i->ny1b) / (ds->i->x2 - ds->i->x1) + ds->i->ny1b;
+	ds->i->cnya = CLAMP(ds->i->nya, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]);
 	ds->i->cnyb = CLAMP(ds->i->nyb, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]);
 
 	render(TOP_PORTAL_WALL, 3, p, ds);
@@ -243,12 +228,12 @@ void	render_ceil_floor(t_draw_screen_calc *ds, t_player *p)
 //	ds->i->r1 = 0x010101 * (255 - ds->i->z); // top portal wall color
 //	ds->i->r2 = 0x010101 * (255 - ds->i->z); // bottom portal wall color
 
-	ds->i->y_top[ds->it->x] = clamp(max(ds->i->cya, ds->i->cnya), ds->i->y_top[ds->it->x], H - 1); // Shrink the remaining window below these ceilings
+	ds->i->y_top[ds->it->x] = CLAMP(MAX(ds->i->cya, ds->i->cnya), ds->i->y_top[ds->it->x], H - 1); // Shrink the remaining window below these ceilings
 	render(BOTTOM_PORTAL_WALL, 3, p, ds);
 	/* If our floor is lower than their floor, render bottom wall */
 //	render(BOTTOM_PORTAL_WALL, 0, p, ds); // Between their and our floor
 //	SDL_UpdateWindowSurface(p->sdl->window);
-	ds->i->y_bottom[ds->it->x] = clamp(min(ds->i->cyb, ds->i->cnyb), 0, ds->i->y_bottom[ds->it->x]); // Shrink the remaining window above these floors
+	ds->i->y_bottom[ds->it->x] = CLAMP(MIN(ds->i->cyb, ds->i->cnyb), 0, ds->i->y_bottom[ds->it->x]); // Shrink the remaining window above these floors
 }
 
 void	render_sector(t_draw_screen_calc *ds, t_player *p, t_game *g)
@@ -269,7 +254,7 @@ void	render_sector(t_draw_screen_calc *ds, t_player *p, t_game *g)
 void	render_sector_walls(t_draw_screen_calc *ds , t_sector *sector,
 									t_item queue[MAX_QUE], t_game *g)
 {
-	render_walls(ds, sectore, *plr);
+	render_walls(ds, sector, g->plr);
 	ds->s->ya_int = scalar_init(ds->i->x1, ds->i->beginx, ds->i->x2, ds->i->y1a,
 								ds->i->y2a);
 	ds->s->yb_int = scalar_init(ds->i->x1, ds->i->beginx, ds->i->x2, ds->i->y1b,
@@ -281,7 +266,7 @@ void	render_sector_walls(t_draw_screen_calc *ds , t_sector *sector,
 	for (ds->it->x = ds->i->beginx; ds->it->x <= ds->i->endx; ++ds->it->x)
 	{
 		ds->i->txtx = (int)((ds->i->u0 * ((ds->i->x2 - ds->it->x) * ds->f->tz2) + ds->i->u1 * ((ds->it->x - ds->i->x1) * ds->f->tz1)) / ((ds->i->x2 - ds->it->x) * ds->f->tz2 + (ds->it->x - ds->i->x1) * ds->f->tz1));
-		render_sector(ds, plr);
+		render_sector(ds, &g->plr, g);
 	}
 	/* Schedule the neighboring sector for rendering within the window formed by this wall-> */
 	if (ds->i->neightbor >= 0 && ds->i->endx >= ds->i->beginx
@@ -335,6 +320,8 @@ void	draw_screen(t_game *g)
 				ds.it->s++;
 				continue;
 			}
+			ds.i->u0 = 0;
+			ds.i->u1 = 1023;
 			/* If it's partially behind the player, clip it against player's view frustrum */
 			if (ds.f->tz1 <= 0 || ds.f->tz2 <= 0)
 				find_intersect(&ds);
