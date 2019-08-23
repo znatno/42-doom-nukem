@@ -12,19 +12,6 @@
 
 #include "duke_nukem_editor.h"
 
-char	*trim_itof(char *flt)
-{
-	int		i;
-
-	i = ft_strlen(flt);
-	if (flt[i - 1] == '0')
-	{
-		flt[i - 2] = '\0';
-		return (flt);
-	}
-	return (flt);
-}
-
 int		open_create_map()
 {
 	int 	fd;
@@ -50,12 +37,12 @@ void	vertex_record(t_xy_l *vertex, int fd)
 	while (walk_v)
 	{
 		tmp = ft_strcpy(tmp, "vertex ");
-		tmp = ft_strcat(tmp , trim_itof(ft_itof(walk_v->y / 10.0)));
+		tmp = ft_strcat(tmp , ft_itoa(walk_v->y / 10));
 		tmp_y = walk_v->y;
 		while (walk_v && walk_v->y == tmp_y)
 		{
 			tmp = ft_strcat(tmp, " ");
-			tmp = ft_strcat(tmp, trim_itof(ft_itof(walk_v->x / 10.0)));
+			tmp = ft_strcat(tmp, ft_itoa(walk_v->x / 10));
 			walk_v = walk_v->next;
 		}
 		tmp = ft_strcat(tmp, "\n");
@@ -78,23 +65,23 @@ void	sector_record(t_rec_sec *head_s, int fd)
 	while (walk_s)
 	{
 		tmp = ft_strcpy(tmp, "sector ");
-		tmp = ft_strcat(tmp, trim_itof((ft_itof(walk_s->floor))));
+		tmp = ft_strcat(tmp, ft_itoa((int)walk_s->floor));
 		tmp = ft_strcat(tmp, " ");
-		tmp = ft_strcat(tmp, trim_itof((ft_itof(walk_s->ceil))));
+		tmp = ft_strcat(tmp, ft_itoa((int)walk_s->ceil));
 		tmp = ft_strcat(tmp, "\t");
 		walk_sv = walk_s->head_ind;
 		walk_sp = walk_s->head_por;
 		while (walk_sv && walk_sv->next)
 		{
 			tmp = ft_strcat(tmp, " ");
-			tmp = ft_strcat(tmp, trim_itof(ft_itof(walk_sv->index)));
+			tmp = ft_strcat(tmp, ft_itoa(walk_sv->index));
 			walk_sv = walk_sv->next;
 		}
 		tmp = ft_strcat(tmp, "\t");
 		while (walk_sp)
 		{
 			tmp = ft_strcat(tmp, " ");
-			tmp = ft_strcat(tmp, trim_itof(((walk_sp->wall_portal == -1) ? ("-1") : (ft_itof(walk_sp->wall_portal)))));
+			tmp = ft_strcat(tmp, ((walk_sp->wall_portal == -1) ? ("-1") : (ft_itoa(walk_sp->wall_portal))));
 			walk_sp = walk_sp->next;
 		}
 		tmp = ft_strcat(tmp, "\n");

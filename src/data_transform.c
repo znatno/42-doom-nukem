@@ -411,7 +411,7 @@ t_record *transform_data(t_draw *draw)
 	head_s = draw->head;
 	head_p = draw->portals;
 	record = create_vertex_list(head_s);
-//	print_list_vec(record->head_ver);
+	print_list_vec(record->head_ver);
 	record->head_sec = create_sector_list(head_s, record, draw);
 	return (record);
 //	print_list_sec(record);
