@@ -29,11 +29,11 @@ int		open_create_map()
 {
 	int 	fd;
 
-	fd = open("../maps/ya_karta.doom", O_WRONLY);
+	fd = open("../maps/ya_karta.doom", O_WRONLY | O_TRUNC);
 	if (fd == -1)
 	{
 		system("touch ../maps/ya_karta.doom");
-		fd = open("../maps/ya_karta.doom", O_WRONLY);
+		fd = open("../maps/ya_karta.doom", O_WRONLY | O_TRUNC);
 	}
 	return (fd);
 }
@@ -41,7 +41,7 @@ int		open_create_map()
 void	vertex_record(t_xy_l *vertex, int fd)
 {
 	t_xy_l	*walk_v;
-	int 	tmp_i[2];
+	int 	tmp_y;
 	char *tmp;
 
 	tmp = (char *)malloc(sizeof(char) * 256);
@@ -50,21 +50,19 @@ void	vertex_record(t_xy_l *vertex, int fd)
 	while (walk_v)
 	{
 		tmp = ft_strcpy(tmp, "vertex ");
-		tmp = ft_strcat(tmp , trim_itof(ft_itof(walk_v->y)));
-		tmp_i[0] = walk_v->y;
-		while (walk_v && walk_v->y == tmp_i[0])
+		tmp = ft_strcat(tmp , trim_itof(ft_itof(walk_v->y / 10.0)));
+		tmp_y = walk_v->y;
+		while (walk_v && walk_v->y == tmp_y)
 		{
 			tmp = ft_strcat(tmp, " ");
-			tmp = ft_strcat(tmp, trim_itof(ft_itof(walk_v->x)));
+			tmp = ft_strcat(tmp, trim_itof(ft_itof(walk_v->x / 10.0)));
 			walk_v = walk_v->next;
-			tmp_i[1] = -1;
 		}
 		tmp = ft_strcat(tmp, "\n");
 		write(fd, tmp, ft_strlen(tmp));
 		ft_bzero(tmp, 256);
-		if (walk_v)
-			walk_v = (tmp[1] == -1) ? walk_v : walk_v->next;
 	}
+	write(fd, "\n", 1);
 }
 
 void	sector_record(t_rec_sec *head_s, int fd)
@@ -86,16 +84,17 @@ void	sector_record(t_rec_sec *head_s, int fd)
 		tmp = ft_strcat(tmp, "\t");
 		walk_sv = walk_s->head_ind;
 		walk_sp = walk_s->head_por;
-		while (walk_sv)
+		while (walk_sv && walk_sv->next)
 		{
 			tmp = ft_strcat(tmp, " ");
-			tmp = ft_strcat(tmp, trim_itof((ft_itof(walk_sv->index))));
+			tmp = ft_strcat(tmp, trim_itof(ft_itof(walk_sv->index)));
 			walk_sv = walk_sv->next;
 		}
+		tmp = ft_strcat(tmp, "\t");
 		while (walk_sp)
 		{
 			tmp = ft_strcat(tmp, " ");
-			tmp = ft_strcat(tmp, trim_itof((ft_itof(walk_sp->wall_portal))));
+			tmp = ft_strcat(tmp, trim_itof(((walk_sp->wall_portal == -1) ? ("-1") : (ft_itof(walk_sp->wall_portal)))));
 			walk_sp = walk_sp->next;
 		}
 		tmp = ft_strcat(tmp, "\n");
@@ -110,10 +109,6 @@ void	player_record()
 	//record player to file
 }
 
-void	record_to_file(t_record *rec)
-{
-
-}
 
 void	record_data(t_record *record)
 {
