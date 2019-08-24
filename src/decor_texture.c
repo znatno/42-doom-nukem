@@ -15,7 +15,7 @@
 
 void	get_pixels_decor(uint32_t d_n, t_sdl_main *sdl)
 {
-	uint32_t *buf;
+	uint32_t	*buf;
 	uint32_t size[2];
 	char it[2];
 

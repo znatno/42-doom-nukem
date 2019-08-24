@@ -19,7 +19,7 @@ void	decor_init(t_sdl_main *sdl)
 	arr_tex = (SDL_Surface **)malloc(sizeof(SDL_Surface *) * 1);
 	arr_tex[0] = IMG_Load("../textures-doom/smile.png");
 
-//	arr_tex[0] = SDL_ConvertSurfaceFormat(arr_tex[0], SDL_PIXELFORMAT_ABGR32, 0);
+	arr_tex[0] = SDL_ConvertSurfaceFormat(arr_tex[0], SDL_PIXELFORMAT_ABGR32, 0);
 //	arr_tex[1] = SDL_ConvertSurfaceFormat(arr_tex[1], SDL_PIXELFORMAT_ARGB32, 0);
 	sdl->textures->decor_tex = arr_tex;
 }
