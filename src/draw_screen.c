@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/02 21:38:26 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/23 19:53:37 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/24 21:48:09 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,7 +96,7 @@ void	rotate_view(t_draw_screen_calc *ds, t_game *g)
 
 void	find_intersect(t_draw_screen_calc *ds)
 {
-	//todo тут значення відповідають за відмальовування тому ймовірно тут
+	// todo тут значення відповідають за відмальовування тому ймовірно тут
 	// можна знайти чому відмальовує зайвого чи не відмальовує коли треба
 
 	ds->f->nearz = 1e-4f;
@@ -268,14 +268,6 @@ void	render_sector_walls(t_draw_screen_calc *ds , t_sector *sector,
 		ds->i->txtx = (int)((ds->i->u0 * ((ds->i->x2 - ds->it->x) * ds->f->tz2) + ds->i->u1 * ((ds->it->x - ds->i->x1) * ds->f->tz1)) / ((ds->i->x2 - ds->it->x) * ds->f->tz2 + (ds->it->x - ds->i->x1) * ds->f->tz1));
 		render_sector(ds, &g->plr, g);
 	}
-	/* Schedule the neighboring sector for rendering within the window formed by this wall-> */
-	if (ds->i->neightbor >= 0 && ds->i->endx >= ds->i->beginx
-		&& (ds->s->head  + MAX_QUE + 1 - ds->s->tail) % MAX_QUE)
-	{
-		*ds->s->head  = (t_item) {ds->i->neightbor, ds->i->beginx, ds->i->endx};
-		if (++ds->s->head == queue + MAX_QUE)
-			ds->s->head = queue;
-	}
 }
 
 void	draw_screen(t_game *g)
@@ -303,11 +295,13 @@ void	draw_screen(t_game *g)
 	{
 		//SDL_UpdateWindowSurface(plr.sdl->window);
 		pick_sector_slice(&ds);
+
 		if ((unsigned)ds.i->renderedsectors[ds.s->now.sectorno] & 0x21u)
 			continue; // Odd = still rendering, 0x20 = give up
 		++ds.i->renderedsectors[ds.s->now.sectorno];
 		ds.s->sect = &g->sectors[ds.s->now.sectorno];
 
+		// WALLS RENDERING
 		/* Render each wall of this sector that is facing towards player. */
 		//for (ds.it->s = 0; ds.it->s < ds.s->sect->npoints; ++ds.it->s)
 		ds.it->s = 0;
@@ -320,6 +314,7 @@ void	draw_screen(t_game *g)
 				ds.it->s++;
 				continue;
 			}
+
 			ds.i->u0 = 0;
 			ds.i->u1 = 1023;
 			/* If it's partially behind the player, clip it against player's view frustrum */
@@ -331,10 +326,41 @@ void	draw_screen(t_game *g)
 				ds.it->s++;
 				continue; // Only render if it's visible
 			}
+
 			/* Acquire the floor and ceiling heights, relative to where the player's view is */
 			render_sector_walls(&ds, g->sectors, ds.queue, g);
+
+			/* Schedule the neighboring sector for rendering
+			 * within the window formed by this wall-> */
+			if (ds.i->neightbor >= 0 && ds.i->endx >= ds.i->beginx
+				&& (ds.s->head  + MAX_QUE + 1 - ds.s->tail) % MAX_QUE)
+			{
+				*ds.s->head = (t_item) {ds.i->neightbor, ds.i->beginx, ds.i->endx};
+				if (++ds.s->head == ds.queue + MAX_QUE)
+					ds.s->head = ds.queue;
+			}
 			ds.it->s++;
 		} // for s in sector's edges
+
+		// OBJECTS RENDERING
+		//comment before test other
+		ds.it->s = 0;
+//		while (ds.it->s < ds.s->sect->objs)
+//		{
+//			//рахуємо відстань спрайта від гравця
+//			float odist;
+//
+//			odist = getdistance(g->plr.where.x, g->plr.where.y,
+//								ds.s->sect->objects[ds.it->s]->pos.x,
+//								ds.s->sect->objects[ds.it->s]->pos.y);
+//
+//
+//			//проеціонуємо спрайти на 2D простір екрану:
+//			// віднімаємо plr.pos - obj.pos і множимо на обернену марицю камери
+//
+//			ds.it->s++;
+//		}
+
 		++ds.i->renderedsectors[ds.s->now.sectorno];
 		ds.it->start_do == 1 ? ds.it->start_do = 0 : 0;
 	}

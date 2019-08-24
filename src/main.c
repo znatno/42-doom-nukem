@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/23 20:06:51 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/24 22:23:44 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,10 +48,22 @@ void		events(t_game *g)
 
 			if (ev.key.keysym.sym == 'p')
 			{
-				printf("%f\t%f\t%f\n",
+				printf("Position\n");
+				printf("%f\t%f\t%f\n\n",
 						g->plr.where.x, g->plr.where.y, g->plr.where.z);
-				g->msgs[1] = create_msg("Between two girls & one cup",
-						FONT_M_SM, (t_xy_int){64, 96}, 5);
+				if (g->plr.sector == 0)
+				{
+					printf("Object\n");
+					printf("sector: %u, x: %f, y: %f, a: %u, hp: %d\n\n",
+						   g->sectors[g->plr.sector].objects[0]->sector,
+						   g->sectors[g->plr.sector].objects[0]->pos.x,
+						   g->sectors[g->plr.sector].objects[0]->pos.y,
+						   g->sectors[g->plr.sector].objects[0]->animated,
+						   g->sectors[g->plr.sector].objects[0]->hp);
+				}
+
+				//g->msgs[1] = create_msg("Between two girls & one cup",
+				//		FONT_M_SM, (t_xy_int){64, 96}, 5);
 
 				//create_msg(text, font, seconds);
 
@@ -187,11 +199,28 @@ int 		main(void)
 	//Load map
 	load_data(&g.plr, &g.sectors);
 
+	/**/
+	//object test
+	g.sectors->objs = 2;
+	g.sectors->objects = ft_memalloc(sizeof(t_obj*));
+	for (int i = 0; i < g.sectors->objs; i++)
+		g.sectors->objects[i] = ft_memalloc(sizeof(t_obj));
+
+	g.sectors->objects[0]->pos.x = 4;
+	g.sectors->objects[0]->pos.y = 8;
+	//z = 6
+	g.sectors->objects[0]->sector = 0;
+	g.sectors->objects[0]->texture = (SDL_Surface **)malloc(sizeof(SDL_Surface *) * 6);
+	g.sectors->objects[0]->texture[0] = IMG_Load("../sprites/barrel.png");
+	g.sectors->objects[0]->hp = -1;
+	g.sectors->objects[0]->animated = 0;
+	/**/
+
 	//Load fonts
 	load_fonts(&g);
 
 	//Load textures
-	textures_init(&g.sdl);
+	init_textures(&g.sdl);
 
 	//Cursor lock
 	SDL_ShowCursor(SDL_DISABLE);

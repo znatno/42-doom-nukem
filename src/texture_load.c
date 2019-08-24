@@ -13,7 +13,7 @@
 #include "doom_nukem.h"
 
 
-void	textures_init(t_sdl_main *sdl)
+void	init_textures(t_sdl_main *sdl)
 {
 	SDL_Surface		**arr_tex;
 

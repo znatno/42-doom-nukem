@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:00:35 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/19 19:24:08 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/24 20:33:56 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,11 @@ int		move_or_not(t_xyz where ,t_sector sector, unsigned sect_num)
 	res = -1;
 	for (int j = 0; j < sector.npoints; j++)
 	{
-		xy[0] = vv_to_v(where.x, where.y,sector.vertex[j].x, sector.vertex[j].y);
-		xy[1] = vv_to_v(where.x, where.y, sector.vertex[j + 1].x, sector.vertex[j + 1].y);
-		cur_angle = GET_ANGLE_V0_V1(xy[0], xy[1]);
+		xy[0] = vect_to_dist(where.x, where.y, sector.vertex[j].x,
+							 sector.vertex[j].y);
+		xy[1] = vect_to_dist(where.x, where.y, sector.vertex[j + 1].x,
+							 sector.vertex[j + 1].y);
+		cur_angle = getangle_2vectors(xy[0], xy[1]);
 		if (vector_product(xy[0], xy[1]) > 0)
 			sum_angles += cur_angle;
 		else

@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/23 19:48:20 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/24 22:37:16 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,13 +47,12 @@
 #define SEC_COLOR	0x0000ff00
 #define BLACK_COLOR	0x00
 #define FILE_NAME "../test.txt"
-#define GET_ANGLE_V0_V1(xy0, xy1) (radian_to_grades(acosf(angle_vv(scalar_product(xy0, xy1), len_vector(xy0), len_vector(xy1)))))
 
 #define RED					0
 #define GREEN				1
-#define TOP_PORTAL_WALL	0
+#define TOP_PORTAL_WALL		0
 #define BLUE				2
-#define BOTTOM_PORTAL_WALL 1
+#define BOTTOM_PORTAL_WALL	1
 #define CEIL				3
 #define FULL_WALL			2
 #define FLOOR				4
@@ -70,7 +69,7 @@
 // value into set range.x
 
 // Векторний добуток
-#define VXS(x0, y0, x1, y1)   ((x0)*(y1) - (x1)*(y0))		// vxs: Vector cross product
+#define VXS(x0, y0, x1, y1)   ((x0) * (y1) - (x1) * (y0))	// vxs: Vector cross product
 
 //	Overlap:  Determine whether the two number ranges overlap.
 //	Overlap(a0, a1, b0, b1) (min(a0,a1) <= max(b0,b1) && min(b0,b1) <= max(a0,a1))
@@ -117,6 +116,24 @@ typedef struct	s_xy_int
 	int			y;
 }				t_xy_int;
 
+typedef struct		s_obj	// прототип структури для об'єкта
+{
+	unsigned		sector;	// номер сектора (звідти ще беремо висоту)
+	t_xy			pos;	// позиція X Y
+
+	// масив текстури для різних боків і знищення
+	// todo придумати e_num для боків/анімації
+	SDL_Surface		**texture;
+
+	int				hp;		// -1 - невразливий
+							// від 1 - потрібна к-сть пострілів/ударів для смерті
+							// 0 - вбито
+
+	unsigned		animated;	// 0 - анімація смерті відтворена
+								// від 1 - к-сть кадрів анімації (циклом пройдеться до нуля)
+
+}					t_obj;
+
 /* Sectors: Floor and ceiling height; list of edge vertices and neighbors */
 typedef struct		s_sector
 {
@@ -125,7 +142,10 @@ typedef struct		s_sector
 	t_xy			*vertex;
 	int				*neighbors;       // Each edge may have a corresponding neighboring sector
 	unsigned		npoints;          // How many vertexes there are
-	t_xy		*vert;
+	t_xy			*vert;
+
+	t_obj			**objects;
+	unsigned		objs;
 }					t_sector;
 
 typedef struct		s_keys
@@ -322,14 +342,6 @@ typedef struct		s_font
 	int 			size;
 	SDL_Color		color;
 }					t_font;
-void		textures_init(t_sdl_main *sdl);
-float		percentage(int start, int end, int curr);
-void		render(int draw_mode ,int texture_num, t_player *p, t_draw_screen_calc *ds);
-int 		scaler_next(t_scaler *i);
-t_scaler	scalar_init(int a, int b, int c, int d, int f);
-int			ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);
-void 		vline2(int y1,int y2, t_scaler ty, unsigned txtx, t_player *p, t_draw_screen_calc *ds, int tn);
-void		vline_texture(int y1, int y2, int text_num, t_player *plr, t_draw_screen_calc *ds);
 
 typedef struct		s_msg
 {
@@ -340,23 +352,6 @@ typedef struct		s_msg
 	double 			start_t;
 	bool			constant;
 }					t_msg;
-
-/*
-t_obj			// прототип структури для об'єкта
-{
- 	int sector	// номер сектора (звідти ще беремо висоту)
-	t_xy_int	// позиція X Y
- 	texture_id	// масив текстури для різних боків і знищення
-
- 	hp			// -1 - невразливий
- 				// від 1 - потрібна к-сть пострілів/ударів для смерті
- 				// 0 - вбито
-
-	animated	// 0 - анімація смерті відтворена
- 				// від 1 - к-сть кадрів анімації (циклом пройдеться до нуля)
-
-}
-*/
 
 typedef struct		s_game
 {
@@ -370,6 +365,16 @@ typedef struct		s_game
 	int			error;		// для виводу тексту помилки при виході
 }					t_game;
 
+void		init_textures(t_sdl_main *sdl);
+float		percentage(int start, int end, int curr);
+void		render(int draw_mode ,int texture_num, t_player *p, t_draw_screen_calc *ds);
+int 		scaler_next(t_scaler *i);
+t_scaler	scalar_init(int a, int b, int c, int d, int f);
+float		getangle_2vectors(t_xy v1, t_xy v2);
+
+int			ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);
+void 		vline2(int y1,int y2, t_scaler ty, unsigned txtx, t_player *p, t_draw_screen_calc *ds, int tn);
+void		vline_texture(int y1, int y2, int text_num, t_player *plr, t_draw_screen_calc *ds);
 
 /*
 ** Initialize functions
@@ -385,8 +390,9 @@ char			*ft_itof(long double k);
 
 void			draw_screen(t_game *g);
 void			vline(int y1, int y2, int color, t_player *plr, t_draw_screen_calc *ds);
-t_xy			vv_to_v(float x0, float y0, float x1, float y1);
-float			len_vector(t_xy		free_vector);
+t_xy			vect_to_dist(float x0, float y0, float x1, float y1);
+float			dist_to_len(t_xy free_vector);
+float 			getdistance(float x0, float y0, float x1, float y1);
 float			scalar_product(t_xy xy0, t_xy xy1);
 float			angle_vv(float scalar_product, float len0, float len1);
 float			radian_to_grades(float rad);
