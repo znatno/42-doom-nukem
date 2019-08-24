@@ -91,7 +91,7 @@ void		events(t_game *g)
 
 void		game_loop(t_game *g)
 {
-	g->msgs[0] = create_msg("Episode 1", FONT_M_BG, (t_xy_int){40, 64}, 5);
+	g->msgs[0] = create_msg("Episode 1", FONT_M_BG, (t_xy_int){40, 64}, 50);
 	g->msgs[1] = create_msg("HP: 100/100", FONT_M_MD, (t_xy_int){32, 680}, -1);
 	g->msgs[2] = create_msg("Notes: 0/10", FONT_M_MD, (t_xy_int){32, 720}, -1);
 	while (true)

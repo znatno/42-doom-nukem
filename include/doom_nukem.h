@@ -32,6 +32,10 @@
 /* Define window size */
 #define W 1024
 #define H 768
+#define X_0 0
+#define Y_0 1
+#define X_1 2
+#define Y_1 3
 
 # define YAW(y, z) (y + z * plr.yaw)	// Y-axis angle of player camera
 # define MAX_QUE	32					// max num of sectors what will be rendered
@@ -117,6 +121,12 @@ typedef struct	s_xy_int
 	int			y;
 }				t_xy_int;
 
+typedef struct	s_xy_uint
+{
+	uint32_t	x;
+	uint32_t	y;
+}				t_xy_uint;
+
 /* Sectors: Floor and ceiling height; list of edge vertices and neighbors */
 typedef struct		s_sector
 {
@@ -145,6 +155,7 @@ typedef struct		s_move_vec
 typedef struct		s_textures
 {
 	SDL_Surface		**arr_tex;
+	SDL_Surface		**decor_tex;
 	uint32_t 		txt_y;
 	uint32_t		txt_x;
 	float 			perc_x;
@@ -437,5 +448,11 @@ void			show_msg(t_game *g, t_msg m, t_font font);
 void			get_messages(t_game *g);
 t_msg			create_msg(char *text, uint8_t fontname, t_xy_int pos, int sec);
 void			clear_msg(t_msg *m);
+
+/*
+ * Texture manipulating functions
+ */
+
+void	decor_texture(t_sdl_main *sdl, uint32_t t_n, uint32_t d_n, t_xy_uint cords);
 
 #endif
