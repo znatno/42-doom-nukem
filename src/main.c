@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/24 22:23:44 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/24 22:24:27 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -201,19 +201,20 @@ int 		main(void)
 
 	/**/
 	//object test
-	g.sectors->objs = 2;
-	g.sectors->objects = ft_memalloc(sizeof(t_obj*));
+	g.sectors[0].objs = 2;
+	g.sectors[0].objects = ft_memalloc(sizeof(t_obj*));
 	for (int i = 0; i < g.sectors->objs; i++)
-		g.sectors->objects[i] = ft_memalloc(sizeof(t_obj));
+		g.sectors[0].objects[i] = ft_memalloc(sizeof(t_obj));
 
-	g.sectors->objects[0]->pos.x = 4;
-	g.sectors->objects[0]->pos.y = 8;
+	g.sectors[0].objects[0]->pos.x = 4;
+	g.sectors[0].objects[0]->pos.y = 8;
 	//z = 6
-	g.sectors->objects[0]->sector = 0;
-	g.sectors->objects[0]->texture = (SDL_Surface **)malloc(sizeof(SDL_Surface *) * 6);
-	g.sectors->objects[0]->texture[0] = IMG_Load("../sprites/barrel.png");
-	g.sectors->objects[0]->hp = -1;
-	g.sectors->objects[0]->animated = 0;
+	g.sectors[0].objects[0]->sector = 0;
+	g.sectors[0].objects[0]->texture = (SDL_Surface **)malloc(sizeof
+	(SDL_Surface *) * 6);
+	g.sectors[0].objects[0]->texture[0] = IMG_Load("../sprites/barrel.png");
+	g.sectors[0].objects[0]->hp = -1;
+	g.sectors[0].objects[0]->animated = 0;
 	/**/
 
 	//Load fonts

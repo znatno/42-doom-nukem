@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/02 21:38:26 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/24 21:48:09 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/24 23:02:23 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -345,21 +345,25 @@ void	draw_screen(t_game *g)
 		// OBJECTS RENDERING
 		//comment before test other
 		ds.it->s = 0;
-//		while (ds.it->s < ds.s->sect->objs)
-//		{
-//			//рахуємо відстань спрайта від гравця
-//			float odist;
-//
-//			odist = getdistance(g->plr.where.x, g->plr.where.y,
-//								ds.s->sect->objects[ds.it->s]->pos.x,
-//								ds.s->sect->objects[ds.it->s]->pos.y);
-//
-//
-//			//проеціонуємо спрайти на 2D простір екрану:
-//			// віднімаємо plr.pos - obj.pos і множимо на обернену марицю камери
-//
-//			ds.it->s++;
-//		}
+		while (ds.it->s < 1 && g->plr.sector == 0
+				&& g->sectors[0].objs == 2 && !ds.it->start_do)
+		{
+			//рахуємо відстань спрайта від гравця
+			float odist;
+
+			odist = getdistance(g->plr.where.x, g->plr.where.y,
+								g->sectors[0].objects[ds.it->s]->pos.x,
+								g->sectors[0].objects[ds.it->s]->pos.y);
+			//TODO:	переробити для черги секторів (було раніше вже так)
+			//		sector[0] -> sect
+			if (g->plr.ducking)
+				printf("dist: %f\n", odist);
+
+			// проеціонуємо спрайти на 2D простір екрану:
+			// віднімаємо plr.pos - obj.pos і множимо на обернену марицю камери
+
+			ds.it->s++;
+		}
 
 		++ds.i->renderedsectors[ds.s->now.sectorno];
 		ds.it->start_do == 1 ? ds.it->start_do = 0 : 0;
