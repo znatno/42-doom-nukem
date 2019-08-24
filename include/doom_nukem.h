@@ -135,7 +135,7 @@ typedef struct		s_sector
 	t_xy			*vertex;
 	int				*neighbors;       // Each edge may have a corresponding neighboring sector
 	unsigned		npoints;          // How many vertexes there are
-	t_xy		*vert;
+	t_xy			*vert;
 }					t_sector;
 
 typedef struct		s_keys

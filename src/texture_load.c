@@ -17,7 +17,7 @@ void	decor_init(t_sdl_main *sdl)
 	SDL_Surface		**arr_tex;
 
 	arr_tex = (SDL_Surface **)malloc(sizeof(SDL_Surface *) * 1);
-	arr_tex[0] = IMG_Load("../textures-doom/smile.png");
+	arr_tex[0] = IMG_Load("../textures-doom/ahegao.jpg");
 
 	arr_tex[0] = SDL_ConvertSurfaceFormat(arr_tex[0], SDL_PIXELFORMAT_ABGR32, 0);
 //	arr_tex[1] = SDL_ConvertSurfaceFormat(arr_tex[1], SDL_PIXELFORMAT_ARGB32, 0);
@@ -44,5 +44,5 @@ void	textures_init(t_sdl_main *sdl)
 	arr_tex[5] = SDL_ConvertSurfaceFormat(arr_tex[5], SDL_PIXELFORMAT_ARGB32, 0);
 	sdl->textures->arr_tex = arr_tex;
 	decor_init(sdl);
-	decor_texture(sdl,3,0, (t_xy_uint){.x = 0, .y = 0});
+	decor_texture(sdl,5,0, (t_xy_uint){.x = 50, .y = 50});
 }
