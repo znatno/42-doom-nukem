@@ -16,7 +16,6 @@ uint32_t	get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y, uint32_t color)
 {
 	uint32_t		*pixel;
 
-	pixel = 0;
 	pixel = sur->pixels + y * sur->pitch + x * sur->format->BytesPerPixel;
 	if (*pixel == 0)
 		return (0);
