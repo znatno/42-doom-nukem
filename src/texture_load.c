@@ -16,7 +16,7 @@ void	texture_cords(t_env *env)
 {
 	t_xy	*cords;
 
-	cords = (t_xy *)malloc(sizeof(t_xy) * 10);
+	cords = (t_xy *)malloc(sizeof(t_xy) * 11);
 	cords[DRAW_MODE].x = 1425;
 	cords[DRAW_MODE].y = 10;
 
@@ -49,6 +49,9 @@ void	texture_cords(t_env *env)
 	cords[OBJECTS].x = 1470;
 	cords[OBJECTS].y = 640;
 
+	cords[GUNS_OBJ].x = 100;
+	cords[GUNS_OBJ].y = 100;
+
 	env->textures->cords = cords;
 }
 
@@ -56,7 +59,7 @@ void	texture_load(t_env *env)
 {
 	SDL_Surface		**arr_tex;
 
-	arr_tex = (SDL_Surface **)malloc(sizeof(SDL_Surface *) * 11);
+	arr_tex = (SDL_Surface **)malloc(sizeof(SDL_Surface *) * 30);
 	arr_tex[0] = IMG_Load("../textures/ceil.png");
 	arr_tex[1] = IMG_Load("../textures/draw_mode.png");
 	arr_tex[2] = IMG_Load("../textures/floor.png");
@@ -67,13 +70,24 @@ void	texture_load(t_env *env)
 	arr_tex[7] = IMG_Load("../textures/right.png");
 	arr_tex[8] = IMG_Load("../textures/select_mode.png");
 	arr_tex[9] = IMG_Load("../textures/wall_mode.png");
-	arr_tex[10] = IMG_Load("../textures/wood_editor.png");
-	arr_tex[11] = IMG_Load("../textures/skulls_editor.png");
-	arr_tex[12] = IMG_Load("../textures/bloody_editor.png");
-	arr_tex[13] = IMG_Load("../textures/mess_editor.png");
-	arr_tex[14] = IMG_Load("../textures/forest_editor.png");
-	arr_tex[15] = IMG_Load("../textures/wall_editor.png");
-	arr_tex[16] = IMG_Load("../textures/carpet_editor.png");
+	arr_tex[10] = IMG_Load("../textures/guns_editor.png");
+	arr_tex[11] = IMG_Load("../textures/kits_editor.png");
+	arr_tex[12] = IMG_Load("../textures/armor_editor.png");
+	arr_tex[13] = IMG_Load("../textures/death_editor.png");
+	arr_tex[14] = IMG_Load("../textures/fly_editor.png");
+	arr_tex[15] = IMG_Load("../textures/network_editor.png");
+
+	arr_tex[20] = IMG_Load("../textures/wood_editor.png");
+	arr_tex[21] = IMG_Load("../textures/skulls_editor.png");
+	arr_tex[22] = IMG_Load("../textures/bloody_editor.png");
+	arr_tex[23] = IMG_Load("../textures/mess_editor.png");
+	arr_tex[24] = IMG_Load("../textures/forest_editor.png");
+	arr_tex[25] = IMG_Load("../textures/wall_editor.png");
+	arr_tex[26] = IMG_Load("../textures/carpet_editor.png");
+
+//	arr_tex[30] = IMG_Load("../textures/guns_editor.png");
+//	arr_tex[31] = IMG_Load("../textures/kits_editor.png");
+//	arr_tex[32] = IMG_Load("../textures/armor_editor.png");
 
 	arr_tex[0] = SDL_ConvertSurfaceFormat(arr_tex[0], SDL_PIXELFORMAT_BGRA32, 0);
 	arr_tex[1] = SDL_ConvertSurfaceFormat(arr_tex[1], SDL_PIXELFORMAT_BGRA32, 0);
@@ -91,7 +105,20 @@ void	texture_load(t_env *env)
 	arr_tex[13] = SDL_ConvertSurfaceFormat(arr_tex[13], SDL_PIXELFORMAT_BGRA32, 0);
 	arr_tex[14] = SDL_ConvertSurfaceFormat(arr_tex[14], SDL_PIXELFORMAT_BGRA32, 0);
 	arr_tex[15] = SDL_ConvertSurfaceFormat(arr_tex[15], SDL_PIXELFORMAT_BGRA32, 0);
-	arr_tex[16] = SDL_ConvertSurfaceFormat(arr_tex[16], SDL_PIXELFORMAT_BGRA32, 0);
+
+
+	arr_tex[20] = SDL_ConvertSurfaceFormat(arr_tex[20], SDL_PIXELFORMAT_BGRA32, 0);
+	arr_tex[21] = SDL_ConvertSurfaceFormat(arr_tex[21], SDL_PIXELFORMAT_BGRA32, 0);
+	arr_tex[22] = SDL_ConvertSurfaceFormat(arr_tex[22], SDL_PIXELFORMAT_BGRA32, 0);
+	arr_tex[23] = SDL_ConvertSurfaceFormat(arr_tex[23], SDL_PIXELFORMAT_BGRA32, 0);
+	arr_tex[24] = SDL_ConvertSurfaceFormat(arr_tex[24], SDL_PIXELFORMAT_BGRA32, 0);
+	arr_tex[25] = SDL_ConvertSurfaceFormat(arr_tex[25], SDL_PIXELFORMAT_BGRA32, 0);
+	arr_tex[26] = SDL_ConvertSurfaceFormat(arr_tex[26], SDL_PIXELFORMAT_BGRA32, 0);
+
+//	arr_tex[30] = SDL_ConvertSurfaceFormat(arr_tex[30], SDL_PIXELFORMAT_BGRA32, 0);
+//	arr_tex[31] = SDL_ConvertSurfaceFormat(arr_tex[31], SDL_PIXELFORMAT_BGRA32, 0);
+//	arr_tex[32] = SDL_ConvertSurfaceFormat(arr_tex[32], SDL_PIXELFORMAT_BGRA32, 0);
+
 	env->textures->arr_tex = arr_tex;
 	texture_cords(env);
 	texture_cords_end(env);
@@ -105,9 +132,11 @@ void	texture_cords_end(t_env *env)
 	int 	i;
 
 	i = 0;
-	cords_end = (t_xy *)malloc(sizeof(t_xy) * 10);
-	while (i < 10)
+	cords_end = (t_xy *)malloc(sizeof(t_xy) * 11);
+	while (i < 11)
 	{
+		if (i == 6)
+		printf("%d %d\n", env->textures->arr_tex[i]->w, env->textures->arr_tex[i]->h);
 		cords_end[i].x = env->textures->cords[i].x + env->textures->arr_tex[i]->w;
 		cords_end[i].y = env->textures->cords[i].y + env->textures->arr_tex[i]->h;
 //		printf("draw_mode_end_x - %d| draw_mode_end_y - %d\n", cords_end[i].x, cords_end[i].y);

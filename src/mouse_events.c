@@ -39,10 +39,6 @@ void	draw_select_text(t_draw *draw, t_env *env)
 
 	text_select = click_to_text(env);
 
-//	printf("%d\n", text_select);
-//	if (text_select > 9 || text_select < 0)
-//		text_select = 1;
-	// SELECT MODE STARTS
 	if (text_select == CEIL && draw->s_mode && !draw->d_mode && !draw->w_mode)
 	{
 		draw->ceil_mode = true;
