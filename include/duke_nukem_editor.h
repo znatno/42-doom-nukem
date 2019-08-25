@@ -18,6 +18,8 @@
 # include "SDL_image.h"
 # include "SDL_ttf.h"
 
+# define WALL_MOD_CONDITION draw->w_mode && !draw->d_mode && draw->s_mode && (draw->head != NULL)
+
 #define W_WIDTH 1600
 #define W_HEIGHT 950
 #define W_DRAW 1400
@@ -34,6 +36,18 @@
 #define RIGHT		7
 #define SELECT_MODE 8
 #define WALL_MODE	9
+
+#define TEXTURE_COORDS (t_xy){.x = (1470), .y = 442}
+
+#define TEXTURE_DEFAULT 10
+#define TEXTURE_WOOD 10
+#define TEXTURE_SKULLS 11
+#define TEXTURE_BLOODY 12
+#define TEXTURE_MESS 13
+#define TEXTURE_FOREST 14
+#define TEXTURE_WALL 15
+#define TEXTURE_CARPET 16
+#define TEXTURE_MAX 16
 
 #define NONE 0
 #define LOOP_START 1
@@ -79,6 +93,7 @@ typedef struct s_vertex
 {
 	t_xy xy1;
 	t_xy xy2;
+	int texture;
 	struct s_vertex *next;
 } t_vertex;
 
@@ -236,6 +251,8 @@ t_sector 		*check_if_deleted_sector(t_draw *draw,  t_vertex *tmp,
 void 			print_all_portals(t_draw *draw);
 
 void	draw_select_text(t_draw *draw, t_env *env);
+
+void	draw_wall(t_xy cords ,uint32_t num_tex, t_env *env);
 
 
 /*

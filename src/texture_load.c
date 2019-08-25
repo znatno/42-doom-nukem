@@ -37,10 +37,10 @@ void	texture_cords(t_env *env)
 	cords[FLOOR].x = 1425;
 	cords[FLOOR].y = 360;
 
-	cords[LEFT].x = 1425;
+	cords[LEFT].x = 1415;
 	cords[LEFT].y = 450;
 
-	cords[RIGHT].x = 1530;
+	cords[RIGHT].x = 1540;
 	cords[RIGHT].y = 450;
 
 	cords[PLAYER].x = 1420;
@@ -56,7 +56,7 @@ void	texture_load(t_env *env)
 {
 	SDL_Surface		**arr_tex;
 
-	arr_tex = (SDL_Surface **)malloc(sizeof(SDL_Surface *) * 10);
+	arr_tex = (SDL_Surface **)malloc(sizeof(SDL_Surface *) * 11);
 	arr_tex[0] = IMG_Load("../textures/ceil.png");
 	arr_tex[1] = IMG_Load("../textures/draw_mode.png");
 	arr_tex[2] = IMG_Load("../textures/floor.png");
@@ -67,6 +67,13 @@ void	texture_load(t_env *env)
 	arr_tex[7] = IMG_Load("../textures/right.png");
 	arr_tex[8] = IMG_Load("../textures/select_mode.png");
 	arr_tex[9] = IMG_Load("../textures/wall_mode.png");
+	arr_tex[10] = IMG_Load("../textures/wood_editor.png");
+	arr_tex[11] = IMG_Load("../textures/skulls_editor.png");
+	arr_tex[12] = IMG_Load("../textures/bloody_editor.png");
+	arr_tex[13] = IMG_Load("../textures/mess_editor.png");
+	arr_tex[14] = IMG_Load("../textures/forest_editor.png");
+	arr_tex[15] = IMG_Load("../textures/wall_editor.png");
+	arr_tex[16] = IMG_Load("../textures/carpet_editor.png");
 
 	arr_tex[0] = SDL_ConvertSurfaceFormat(arr_tex[0], SDL_PIXELFORMAT_BGRA32, 0);
 	arr_tex[1] = SDL_ConvertSurfaceFormat(arr_tex[1], SDL_PIXELFORMAT_BGRA32, 0);
@@ -78,6 +85,13 @@ void	texture_load(t_env *env)
 	arr_tex[7] = SDL_ConvertSurfaceFormat(arr_tex[7], SDL_PIXELFORMAT_BGRA32, 0);
 	arr_tex[8] = SDL_ConvertSurfaceFormat(arr_tex[8], SDL_PIXELFORMAT_BGRA32, 0);
 	arr_tex[9] = SDL_ConvertSurfaceFormat(arr_tex[9], SDL_PIXELFORMAT_BGRA32, 0);
+	arr_tex[10] = SDL_ConvertSurfaceFormat(arr_tex[10], SDL_PIXELFORMAT_BGRA32, 0);
+	arr_tex[11] = SDL_ConvertSurfaceFormat(arr_tex[11], SDL_PIXELFORMAT_BGRA32, 0);
+	arr_tex[12] = SDL_ConvertSurfaceFormat(arr_tex[12], SDL_PIXELFORMAT_BGRA32, 0);
+	arr_tex[13] = SDL_ConvertSurfaceFormat(arr_tex[13], SDL_PIXELFORMAT_BGRA32, 0);
+	arr_tex[14] = SDL_ConvertSurfaceFormat(arr_tex[14], SDL_PIXELFORMAT_BGRA32, 0);
+	arr_tex[15] = SDL_ConvertSurfaceFormat(arr_tex[15], SDL_PIXELFORMAT_BGRA32, 0);
+	arr_tex[16] = SDL_ConvertSurfaceFormat(arr_tex[16], SDL_PIXELFORMAT_BGRA32, 0);
 	env->textures->arr_tex = arr_tex;
 	texture_cords(env);
 	texture_cords_end(env);
@@ -96,8 +110,8 @@ void	texture_cords_end(t_env *env)
 	{
 		cords_end[i].x = env->textures->cords[i].x + env->textures->arr_tex[i]->w;
 		cords_end[i].y = env->textures->cords[i].y + env->textures->arr_tex[i]->h;
-		printf("draw_mode_end_x - %d| draw_mode_end_y - %d\n", cords_end[i].x, cords_end[i].y);
-		printf("draw_mode_x - %d| draw_mode_y - %d\n", env->textures->cords[i].x, env->textures->cords[i].y);
+//		printf("draw_mode_end_x - %d| draw_mode_end_y - %d\n", cords_end[i].x, cords_end[i].y);
+//		printf("draw_mode_x - %d| draw_mode_y - %d\n", env->textures->cords[i].x, env->textures->cords[i].y);
 		i++;
 	}
 	env->textures->cords_end = cords_end;

@@ -125,9 +125,7 @@ t_sector *last_portal(t_draw *draw)
 	while (cur->next)
 	{
 		cur = cur->next;
-//		printf("IM HERE\n");
 	}
-//	printf("%p",cur);
 	return (cur);
 }
 t_portals 	*malloc_portal(t_portals *portal, t_vertex *data, t_sector *temp_s, t_sector *cur_s)
@@ -383,13 +381,12 @@ void	pop_from_stack_to_list(t_env *env, t_draw *draw, t_stack **head)
 	head_v = cur_s->vertexes;
 	head_v->xy1 = first_data;
 	head_v->xy2 = cur_data;
-
 	while (cur_data.x != -42)
 	{
 		i++;
+		head_v->texture = TEXTURE_DEFAULT;
 		head_v->xy1 = cur_data;
 		cur_data = stack_pop(head);
-
 		(cur_data.x != -42) ? (head_v->xy2 = cur_data) : (head_v->xy2 = first_data);
 		(draw->head->next != NULL) ? find_portal(env, draw, head_v, cur_s) : 0 == 0;
 		if (cur_data.x != -42)
@@ -399,7 +396,6 @@ void	pop_from_stack_to_list(t_env *env, t_draw *draw, t_stack **head)
 		}
 	}
 	cur_s->walls = i;
-//	printf("THERE ARE %d \n", i);
 	head_v = NULL;
 }
 

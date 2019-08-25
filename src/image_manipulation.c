@@ -16,12 +16,19 @@ uint32_t	get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y, uint32_t color)
 {
 	uint32_t		*pixel;
 
-	pixel = 0;
 	pixel = sur->pixels + y * sur->pitch + x * sur->format->BytesPerPixel;
 	if (*pixel == 0)
 		return (0);
 	else
 		return (color);
+}
+
+uint32_t	get_pixel_wall(SDL_Surface *sur, uint32_t x, uint32_t y)
+{
+	uint32_t		*pixel;
+
+	pixel = sur->pixels + y * sur->pitch + x * sur->format->BytesPerPixel;
+	return (*pixel);
 }
 
 void	draw_text_black(uint32_t cord_x, uint32_t cord_y, char *text, t_env *env)
@@ -122,6 +129,30 @@ void	draw_texture(t_xy cords ,uint32_t num_tex, uint32_t color,t_env *env)
 		{
 			env->buffer[(cords.y + it_y) * W_WIDTH + (cords.x + it_x)] =
 					get_pixel(env->textures->arr_tex[num_tex], it_x, it_y, color);
+			it_x++;
+		}
+		it_y++;
+	}
+}
+
+void	draw_wall(t_xy cords ,uint32_t num_tex, t_env *env)
+{
+	uint32_t it_x;
+	uint32_t it_y;
+	uint32_t size_w;
+	uint32_t size_h;
+
+
+	it_y = 0;
+	size_w = env->textures->arr_tex[num_tex]->w;
+	size_h = env->textures->arr_tex[num_tex]->h;
+	while (it_y < size_h)
+	{
+		it_x = 0;
+		while (it_x < size_w)
+		{
+			env->buffer[(cords.y + it_y) * W_WIDTH + (cords.x + it_x)] =
+					get_pixel_wall(env->textures->arr_tex[num_tex], it_x, it_y);
 			it_x++;
 		}
 		it_y++;
