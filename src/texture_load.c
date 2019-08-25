@@ -47,10 +47,19 @@ void	texture_cords(t_env *env)
 	cords[PLAYER].y = 520;
 
 	cords[OBJECTS].x = 1470;
-	cords[OBJECTS].y = 640;
+	cords[OBJECTS].y = 600;
 
-	cords[GUNS_OBJ].x = 100;
-	cords[GUNS_OBJ].y = 100;
+	cords[GUNS_OBJ].x = 1415;
+	cords[GUNS_OBJ].y = 680;
+
+	cords[KITS_OBJ].x = 1415;
+	cords[KITS_OBJ].y = 770;
+
+	cords[ARMOR_OBJ].x = 1415;
+	cords[ARMOR_OBJ].y = 890;
+
+	cords[13].x = 1415;
+	cords[13].y = 890;
 
 	env->textures->cords = cords;
 }
@@ -132,8 +141,8 @@ void	texture_cords_end(t_env *env)
 	int 	i;
 
 	i = 0;
-	cords_end = (t_xy *)malloc(sizeof(t_xy) * 11);
-	while (i < 11)
+	cords_end = (t_xy *)malloc(sizeof(t_xy) * 15);
+	while (i < 14)
 	{
 		if (i == 6)
 		printf("%d %d\n", env->textures->arr_tex[i]->w, env->textures->arr_tex[i]->h);

@@ -23,7 +23,7 @@
 #define W_WIDTH 1600
 #define W_HEIGHT 950
 #define W_DRAW 1400
-#define H_DRAW 800
+#define H_DRAW 940
 #define X		0
 #define Y		1
 #define CEIL		0

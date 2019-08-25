@@ -98,8 +98,11 @@ void	draw_tools(t_env *env)
 	draw_texture(env->textures->cords[RIGHT], RIGHT, 0xffffff ,env);
 	draw_texture(env->textures->cords[PLAYER], PLAYER, 0xffffff, env);
 	draw_texture(env->textures->cords[OBJECTS], OBJECTS, 0xffffff, env);
-	line((t_xy){.x = 1495,.y = 700}, (t_xy){.x = 1495, .y = 930}, env, 0xffffff);
-	line((t_xy){.x = 1410,.y = 730}, (t_xy){.x = 1590, .y = 730}, env, 0xffffff);
+	draw_texture(env->textures->cords[GUNS_OBJ], GUNS_OBJ, 0xffffff, env);
+	draw_texture(env->textures->cords[KITS_OBJ], KITS_OBJ, 0xffffff, env);
+	draw_texture(env->textures->cords[ARMOR_OBJ], ARMOR_OBJ, 0xffffff, env);
+//	line((t_xy){.x = 1495,.y = 700}, (t_xy){.x = 1495, .y = 930}, env, 0xffffff);
+//	line((t_xy){.x = 1410,.y = 730}, (t_xy){.x = 1590, .y = 730}, env, 0xffffff);
 	draw_text(1480, 15, "- draw", env);
 	draw_text(1480, 75, "- select", env);
 	draw_text(1480, 135, "- wall", env);
