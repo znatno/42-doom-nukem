@@ -19,8 +19,10 @@ int	click_to_text(t_env *env)
 	int i;
 
 	i = 0;
-	while (i < 13)
+	while (i < 16)
 	{
+		if (i == LEFT || i == RIGHT)
+			i += 1;
 		start[X] = env->textures->cords[i].x;
 		start[Y] = env->textures->cords[i].y;
 		end[X] = env->textures->cords_end[i].x;

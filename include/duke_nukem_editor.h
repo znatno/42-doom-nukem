@@ -46,7 +46,7 @@
 #define MIXED_ACT   15
 
 
-#define TEXTURE_COORDS (t_xy){.x = (1470), .y = 442}
+#define TEXTURE_COORDS (t_xy){.x = (1470), .y = (442)}
 
 #define TEXTURE_DEFAULT 20
 #define TEXTURE_WOOD 20
