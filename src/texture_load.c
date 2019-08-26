@@ -44,28 +44,25 @@ void	texture_cords(t_env *env)
 	cords[RIGHT].y = 450;
 
 	cords[PLAYER].x = 1440;
-	cords[PLAYER].y = 600;
+	cords[PLAYER].y = 540;
 
 	cords[OBJECTS].x = 1530;
-	cords[OBJECTS].y = 600;
+	cords[OBJECTS].y = 540;
 
 	cords[GUNS_OBJ].x = 1430;
-	cords[GUNS_OBJ].y = 680;
+	cords[GUNS_OBJ].y = 640;
 
 	cords[KITS_OBJ].x = 1430;
-	cords[KITS_OBJ].y = 770;
+	cords[KITS_OBJ].y = 740;
 
 	cords[ARMOR_OBJ].x = 1430;
-	cords[ARMOR_OBJ].y = 860;
-
+	cords[ARMOR_OBJ].y = 850;
 
 	cords[DEATH_ACT].x = 1520;
-	cords[DEATH_ACT].y = 680;
-
+	cords[DEATH_ACT].y = 640;
 
 	cords[FLY_ACT].x = 1520;
-	cords[FLY_ACT].y = 770;
-
+	cords[FLY_ACT].y = 750;
 
 	cords[MIXED_ACT].x = 1520;
 	cords[MIXED_ACT].y = 860;
@@ -155,8 +152,6 @@ void	texture_cords_end(t_env *env)
 	{
 		cords_end[i].x = env->textures->cords[i].x + env->textures->arr_tex[i]->w;
 		cords_end[i].y = env->textures->cords[i].y + env->textures->arr_tex[i]->h;
-//		printf("draw_mode_end_x - %d| draw_mode_end_y - %d\n", cords_end[i].x, cords_end[i].y);
-//		printf("draw_mode_x - %d| draw_mode_y - %d\n", env->textures->cords[i].x, env->textures->cords[i].y);
 		i++;
 	}
 	env->textures->cords_end = cords_end;

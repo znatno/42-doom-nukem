@@ -173,6 +173,18 @@ t_env *sdl_main_loop(t_env *env)
 						save = select_sector_mode(env, draw, cur_s);
 					(save) ? draw_text(1500, 305, ft_itoa(save->ceil), env) : 0 == 0;
 					(save) ? draw_text(1500, 365, ft_itoa(save->floor), env) : 0 == 0;
+					(save->object[GUNS_OBJ % 10] == 1) ? (draw_texture(env->textures->cords[GUNS_OBJ], GUNS_OBJ, 0xf98d8d,
+							env), printf("im here\n")) : 0 == 0;
+					(save->object[KITS_OBJ % 10] == 1) ? draw_texture(env->textures->cords[KITS_OBJ], KITS_OBJ, 0xf98d8d,
+																	  env) : 0 == 0;
+					(save->object[ARMOR_OBJ % 10] == 1) ? draw_texture(env->textures->cords[ARMOR_OBJ], ARMOR_OBJ, 0xf98d8d,
+																	   env) : 0 == 0;
+					(save->action[(DEATH_ACT - SHIFT) % 10] == 1) ? draw_texture(env->textures->cords[DEATH_ACT], DEATH_ACT, 0xf98d8d,
+																			   env) : 0 == 0;
+					(save->action[(FLY_ACT - SHIFT) % 10] == 1) ? draw_texture(env->textures->cords[FLY_ACT], FLY_ACT, 0xf98d8d,
+																			   env) : 0 == 0;
+					(save->action[(MIXED_ACT - SHIFT) % 10] == 1) ? draw_texture(env->textures->cords[MIXED_ACT], MIXED_ACT, 0xf98d8d,
+																				 env) : 0 == 0;
 				}
 				// FIXME: WALL MOD BLEAT
 				else if (kstate[SDL_SCANCODE_RIGHT] && draw->w_mode && !draw->d_mode && draw->s_mode &&  (draw->head != NULL))
@@ -182,6 +194,7 @@ t_env *sdl_main_loop(t_env *env)
 						save_v = save_vertex(env, draw, cur_v++, save);
 						draw_text(1500, 305, ft_itoa(save->ceil), env);
 						draw_text(1500, 365, ft_itoa(save->floor), env);
+
 					(cur_v > 1) ? draw_wall(TEXTURE_COORDS, save_v->texture, env) : 0 == 0;
 				}
 				else if (kstate[SDL_SCANCODE_UP] && WALL_MOD_CONDITION && cur_v > 1)
@@ -231,6 +244,12 @@ t_env *sdl_main_loop(t_env *env)
 				draw_select_text(draw, env);
 				(draw->s_mode) ? select_sector_mode(env, draw, cur_s)
 				: refresh_screen(draw, env, head);
+				// TODO: SELECT IF OBJECT PICKED
+				if (draw->s_mode && save && click_to_text(env) == GUNS_OBJ)
+				{
+					(save->object[GUNS_OBJ % 10]) ? (save->object[GUNS_OBJ % 10] = 0) : (save->object[GUNS_OBJ % 10] = 1);
+					printf("%d\n", save->object[GUNS_OBJ % 10]);
+				}
 			}
 		}
 		draw_frame(env);

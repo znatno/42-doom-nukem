@@ -37,10 +37,15 @@
 #define SELECT_MODE 8
 #define WALL_MODE	9
 
+#define SHIFT 3
+
 #define GUNS_OBJ    10
 #define KITS_OBJ    11
 #define ARMOR_OBJ   12
 
+// obj[0][1][2]
+
+// actions[0][1][2]
 #define DEATH_ACT	13
 #define FLY_ACT		14
 #define MIXED_ACT   15
@@ -163,6 +168,8 @@ typedef struct s_sector
     int floor;
     int ceil;
     int walls;
+	bool object[3];
+	bool action[3];
     struct s_sector *next;
 } t_sector;
 
@@ -312,6 +319,14 @@ t_record *transform_data(t_draw *draw);
 void	record_to_file(t_record *rec);
 
 void	delete_portal(t_draw *draw, t_vertex *cur_v);
+
+////MOUSE EVENTS/////////////
+
+int	click_to_text(t_env *env);
+
+
+
+/////////////////////////////
 #endif
 
 
