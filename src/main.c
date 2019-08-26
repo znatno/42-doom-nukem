@@ -171,8 +171,8 @@ t_env *sdl_main_loop(t_env *env)
 						else
 							cur_s = 1;
 						save = select_sector_mode(env, draw, cur_s);
-						draw_text(1500, 305, ft_itoa(save->ceil), env);
-						draw_text(1500, 365, ft_itoa(save->floor), env);
+					(save) ? draw_text(1500, 305, ft_itoa(save->ceil), env) : 0 == 0;
+					(save) ? draw_text(1500, 365, ft_itoa(save->floor), env) : 0 == 0;
 				}
 				// FIXME: WALL MOD BLEAT
 				else if (kstate[SDL_SCANCODE_RIGHT] && draw->w_mode && !draw->d_mode && draw->s_mode &&  (draw->head != NULL))

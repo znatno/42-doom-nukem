@@ -19,7 +19,7 @@ int	click_to_text(t_env *env)
 	int i;
 
 	i = 0;
-	while (i < 10)
+	while (i < 13)
 	{
 		start[X] = env->textures->cords[i].x;
 		start[Y] = env->textures->cords[i].y;

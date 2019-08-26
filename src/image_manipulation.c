@@ -100,7 +100,7 @@ void	draw_tools(t_env *env)
 	draw_texture(env->textures->cords[OBJECTS], OBJECTS, 0xffffff, env);
 	draw_texture(env->textures->cords[GUNS_OBJ], GUNS_OBJ, 0xffffff, env);
 	draw_texture(env->textures->cords[KITS_OBJ], KITS_OBJ, 0xffffff, env);
-	draw_texture(env->textures->cords[ARMOR_OBJ], ARMOR_OBJ, 0xffffff, env);
+//	draw_texture(env->textures->cords[ARMOR_OBJ], ARMOR_OBJ, 0xffffff, env);
 //	line((t_xy){.x = 1495,.y = 700}, (t_xy){.x = 1495, .y = 930}, env, 0xffffff);
 //	line((t_xy){.x = 1410,.y = 730}, (t_xy){.x = 1590, .y = 730}, env, 0xffffff);
 	draw_text(1480, 15, "- draw", env);
@@ -130,6 +130,8 @@ void	draw_texture(t_xy cords ,uint32_t num_tex, uint32_t color,t_env *env)
 		it_x = 0;
 		while (it_x < size_w)
 		{
+		alloca(1);
+
 			env->buffer[(cords.y + it_y) * W_WIDTH + (cords.x + it_x)] =
 					get_pixel(env->textures->arr_tex[num_tex], it_x, it_y, color);
 			it_x++;
