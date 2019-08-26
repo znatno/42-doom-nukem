@@ -127,15 +127,15 @@ int		find_smallest_y(t_sector *sector, t_record rec)
 	int 		least_y;
 
 	walk_sec = sector;
-	least_y = 100000;
+	least_y = -1;
 	while (walk_sec)
 	{
 		walk_ver = walk_sec->vertexes;
 		while (walk_ver)
 		{
-			if (walk_ver->xy1.y > rec.least_y && walk_ver->xy1.y < least_y)
+			if (walk_ver->xy1.y < rec.least_y && walk_ver->xy1.y > least_y)
 				least_y = walk_ver->xy1.y;
-			if (walk_ver->xy1.y > rec.least_y && walk_ver->xy1.y < least_y)
+			if (walk_ver->xy1.y < rec.least_y && walk_ver->xy1.y > least_y)
 				least_y = walk_ver->xy2.y;
 			walk_ver = walk_ver->next;
 		}
@@ -156,8 +156,8 @@ t_record	*create_vertex_list(t_sector *sectors)
 	curr = NULL;
 	record->head_ver = NULL;
 	record->least_x = -1;
-	record->least_y = -1;
-	while((record->least_y = find_smallest_y(sectors, *record)) != 100000)
+	record->least_y = 100000;
+	while((record->least_y = find_smallest_y(sectors, *record)) != -1)
 	{
 		if (curr == NULL)
 		{
@@ -371,6 +371,24 @@ t_index		*create_sector_edge_list(t_sector curr, t_record *rec)
 	return (head);
 }
 
+t_vertex	*reverse_list(t_vertex *vertex)
+{
+	t_vertex	*curr;
+	t_vertex	*next;
+	t_vertex	*prev;
+
+	curr = vertex;
+	prev = NULL;
+	while (curr)
+	{
+		next = curr->next;
+		curr->next = prev;
+		prev = curr;
+		curr = next;
+	}
+	return (prev);
+}
+
 t_rec_sec	*create_sector_list(t_sector *sectors, t_record *record, t_draw *d)
 {
 	t_sector	*walk_sec;
@@ -402,16 +420,51 @@ t_rec_sec	*create_sector_list(t_sector *sectors, t_record *record, t_draw *d)
 	return (head);
 }
 
-t_record *transform_data(t_draw *draw)
+int		sector_orientation(t_sector *curr_s)
+{
+	t_vertex	*needle;
+	t_vertex	*walk_v;
+
+	walk_v = curr_s->vertexes;
+	needle = NULL;
+	while (walk_v)
+	{
+		if (walk_v->xy1.x != walk_v->xy2.x)
+			needle = walk_v;
+		walk_v = walk_v->next;
+	}
+	if (needle)
+	{
+		if (needle->xy1.x > needle->xy2.x)
+			return (0);
+		else if (needle->xy1.x < needle->xy2.x)
+			return (1);
+	}
+	return (-1);
+}
+
+void		transform_sectors_list(t_sector *head_s)
+{
+	t_sector	*walk_s;
+
+	walk_s = head_s;
+	while (walk_s)
+	{
+		 if (sector_orientation(walk_s) == 1)
+		 	walk_s->vertexes = reverse_list(walk_s->vertexes);
+		walk_s = walk_s->next;
+	}
+}
+
+t_record	*transform_data(t_draw *draw)
 {
 	t_record	*record;
-	t_portals   *head_p;
 	t_sector    *head_s;
 
 	head_s = draw->head;
-	head_p = draw->portals;
 	record = create_vertex_list(head_s);
 	print_list_vec(record->head_ver);
+	transform_sectors_list(head_s);
 	record->head_sec = create_sector_list(head_s, record, draw);
 	return (record);
 //	print_list_sec(record);
