@@ -27,6 +27,29 @@ void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head)
 	if (draw->portals != NULL)
 		draw_all_portals(env, draw);
 }
+// TODO: DEL ME AFTER
+int	click_to_text2(t_env *env)
+{
+	int start[2];
+	int end[2];
+	int i;
+
+	i = 0;
+	while (i < 16)
+	{
+		if (i == LEFT || i == RIGHT)
+			i += 1;
+		start[X] = env->textures->cords[i].x;
+		start[Y] = env->textures->cords[i].y;
+		end[X] = env->textures->cords_end[i].x;
+		end[Y] = env->textures->cords_end[i].y;
+		if (env->mouse_x > start[X] && env->mouse_x < end[X] &&
+			env->mouse_y > start[Y] && env->mouse_y < end[Y])
+			return (i);
+		i++;
+	}
+	return (-1);
+}
 
 t_draw *init_draw(t_draw *draw)
 {
@@ -173,18 +196,7 @@ t_env *sdl_main_loop(t_env *env)
 						save = select_sector_mode(env, draw, cur_s);
 					(save) ? draw_text(1500, 305, ft_itoa(save->ceil), env) : 0 == 0;
 					(save) ? draw_text(1500, 365, ft_itoa(save->floor), env) : 0 == 0;
-					(save->object[GUNS_OBJ % 10] == 1) ? (draw_texture(env->textures->cords[GUNS_OBJ], GUNS_OBJ, 0xf98d8d,
-							env), printf("im here\n")) : 0 == 0;
-					(save->object[KITS_OBJ % 10] == 1) ? draw_texture(env->textures->cords[KITS_OBJ], KITS_OBJ, 0xf98d8d,
-																	  env) : 0 == 0;
-					(save->object[ARMOR_OBJ % 10] == 1) ? draw_texture(env->textures->cords[ARMOR_OBJ], ARMOR_OBJ, 0xf98d8d,
-																	   env) : 0 == 0;
-					(save->action[(DEATH_ACT - SHIFT) % 10] == 1) ? draw_texture(env->textures->cords[DEATH_ACT], DEATH_ACT, 0xf98d8d,
-																			   env) : 0 == 0;
-					(save->action[(FLY_ACT - SHIFT) % 10] == 1) ? draw_texture(env->textures->cords[FLY_ACT], FLY_ACT, 0xf98d8d,
-																			   env) : 0 == 0;
-					(save->action[(MIXED_ACT - SHIFT) % 10] == 1) ? draw_texture(env->textures->cords[MIXED_ACT], MIXED_ACT, 0xf98d8d,
-																				 env) : 0 == 0;
+
 				}
 				// FIXME: WALL MOD BLEAT
 				else if (kstate[SDL_SCANCODE_RIGHT] && draw->w_mode && !draw->d_mode && draw->s_mode &&  (draw->head != NULL))
@@ -241,17 +253,18 @@ t_env *sdl_main_loop(t_env *env)
 				{
 					draw_dot(env, draw, head);
 				}
-				draw_select_text(draw, env);
+				if (draw->s_mode && save && click_to_text(env) >= 10 && click_to_text(env) <= 12)
+					save->object[click_to_text(env) % 10] = save->object[click_to_text(env) % 10] == 0;
+				else if ((draw->s_mode && save && click_to_text(env) >= 12 && click_to_text(env) <= 15))
+					save->action[click_to_text(env) % 10 - SHIFT] = save->action[click_to_text(env) % 10 - SHIFT] == 0;
+
+					draw_select_text(draw, env);
 				(draw->s_mode) ? select_sector_mode(env, draw, cur_s)
 				: refresh_screen(draw, env, head);
 				// TODO: SELECT IF OBJECT PICKED
-				if (draw->s_mode && save && click_to_text(env) == GUNS_OBJ)
-				{
-					(save->object[GUNS_OBJ % 10]) ? (save->object[GUNS_OBJ % 10] = 0) : (save->object[GUNS_OBJ % 10] = 1);
-					printf("%d\n", save->object[GUNS_OBJ % 10]);
-				}
 			}
 		}
+		(save && draw->head && cur_s > 0) ? draw_obj_and_action(draw, env, save) : 0 == 0;
 		draw_frame(env);
 		draw_tools(env);
 		SDL_UpdateWindowSurface(env->window);

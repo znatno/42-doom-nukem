@@ -50,7 +50,6 @@
 #define FLY_ACT		14
 #define MIXED_ACT   15
 
-
 #define TEXTURE_COORDS (t_xy){.x = (1470), .y = (442)}
 
 #define TEXTURE_DEFAULT 20
@@ -324,7 +323,7 @@ void	delete_portal(t_draw *draw, t_vertex *cur_v);
 
 int	click_to_text(t_env *env);
 
-
+void	draw_obj_and_action(t_draw *draw, t_env *env, t_sector *save);
 
 /////////////////////////////
 #endif

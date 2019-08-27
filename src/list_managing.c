@@ -399,7 +399,8 @@ void	pop_from_stack_to_list(t_env *env, t_draw *draw, t_stack **head)
 	ft_bzero(&cur_s->object, 3);
 	ft_bzero(&cur_s->action, 3);
 	cur_s->object[0] = 1;
-	cur_s->object[1] = 1;
+	cur_s->object[1] = 0;
+	cur_s->object[2] = 1;
 	head_v = NULL;
 }
 

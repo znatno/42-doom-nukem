@@ -35,6 +35,37 @@ int	click_to_text(t_env *env)
 	return (-1);
 }
 
+void	draw_obj_and_action(t_draw *draw, t_env *env, t_sector *save)
+{
+		(save->object[GUNS_OBJ % 10] == 1) ? (draw_texture(env->textures->cords[GUNS_OBJ], GUNS_OBJ, 0xf98d8d,
+														   env)) : (draw_texture(env->textures->cords[GUNS_OBJ],
+																				 GUNS_OBJ, 0xffffff,
+																				 env));
+		(save->object[KITS_OBJ % 10] == 1) ? draw_texture(env->textures->cords[KITS_OBJ], KITS_OBJ, 0xf98d8d,
+														  env) : draw_texture(env->textures->cords[KITS_OBJ], KITS_OBJ,
+																			  0xffffff,
+																			  env);
+		(save->object[ARMOR_OBJ % 10] == 1) ? draw_texture(env->textures->cords[ARMOR_OBJ], ARMOR_OBJ, 0xf98d8d,
+														   env) : draw_texture(env->textures->cords[ARMOR_OBJ],
+																			   ARMOR_OBJ, 0xffffff,
+																			   env);
+		(save->action[(DEATH_ACT - SHIFT) % 10] == 1) ? draw_texture(env->textures->cords[DEATH_ACT], DEATH_ACT,
+																	 0xf98d8d,
+																	 env) : draw_texture(
+				env->textures->cords[DEATH_ACT], DEATH_ACT, 0xffffff,
+				env);
+		(save->action[(FLY_ACT - SHIFT) % 10] == 1) ? draw_texture(env->textures->cords[FLY_ACT], FLY_ACT, 0xf98d8d,
+																   env) : draw_texture(env->textures->cords[FLY_ACT],
+																					   FLY_ACT, 0xffffff,
+																					   env);
+		(save->action[(MIXED_ACT - SHIFT) % 10] == 1) ? draw_texture(env->textures->cords[MIXED_ACT], MIXED_ACT,
+																	 0xf98d8d,
+																	 env) : draw_texture(
+				env->textures->cords[MIXED_ACT], MIXED_ACT, 0xffffff,
+				env);
+}
+
+
 void	draw_select_text(t_draw *draw, t_env *env)
 {
 	int	text_select;
@@ -101,8 +132,9 @@ void	draw_select_text(t_draw *draw, t_env *env)
 		draw_texture(env->textures->cords[text_select], text_select, 0xf98d8d,
 					 env);
 	}
-	if (text_select > -1)
+	if (text_select > -1 && text_select <= 9)
 	{
+
 		env->textures->selected = text_select;
 			draw_texture(env->textures->cords[text_select], text_select, 0xf98d8d, env);
 	}
