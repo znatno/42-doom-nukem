@@ -325,6 +325,8 @@ int	click_to_text(t_env *env);
 
 void	draw_obj_and_action(t_draw *draw, t_env *env, t_sector *save);
 
+void	hide_obj_and_actions(t_env *env);
+
 /////////////////////////////
 #endif
 

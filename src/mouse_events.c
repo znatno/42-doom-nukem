@@ -35,6 +35,13 @@ int	click_to_text(t_env *env)
 	return (-1);
 }
 
+void	hide_obj_and_actions(t_env *env)
+{
+	int i = 10;
+	while (i++ < 16)
+	draw_texture(env->textures->cords[i], i, 0x000000, env);
+}
+
 void	draw_obj_and_action(t_draw *draw, t_env *env, t_sector *save)
 {
 		(save->object[GUNS_OBJ % 10] == 1) ? (draw_texture(env->textures->cords[GUNS_OBJ], GUNS_OBJ, 0xf98d8d,
@@ -116,6 +123,7 @@ void	draw_select_text(t_draw *draw, t_env *env)
 		draw->s_mode = 0;
 		draw->w_mode = 0;
 		draw->d_mode = 1;
+//		hide_obj_and_actions(env);
 		draw->ceil_mode = false;
 		draw->floor_mode = false;
 		if (draw->s_mode)
