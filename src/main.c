@@ -99,7 +99,14 @@ t_sector		*select_sector_mode(t_env *env, t_draw *draw, int key)
 	int 		i;
 
 	cur_s = draw->head;
+
+
+
+
+
 	clear_screen(env);
+	if (draw->place_p.x > 0 && (draw->place_p.y > 0) && draw->head && draw->s_mode)
+		draw_texture((t_xy) {.x = draw->place_p.x * 10, .y =  draw->place_p.y * 10}, PLAYER, 0xfffffff, env);
 	draw_desk(env);
 	i = 0;
 	while (draw->head != NULL && cur_s)
@@ -150,13 +157,13 @@ t_env *sdl_main_loop(t_env *env)
 	draw->ceil_mode = false;
 	draw->floor_mode = false;
 	draw->w_mode = false;
-	draw->p_mode;
 	draw->s_count = 0;
 	draw->p_count = 0;
 	save = NULL;
 
 	cur_s = 0;
 	cur_v = 0;
+
 	int i = 0;
 	while (loop && env->sdl_error == NONE)
 	{
@@ -168,7 +175,7 @@ t_env *sdl_main_loop(t_env *env)
 				if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
 				{
 //					print_all_sectors(draw, draw->head);к
-					record_data(transform_data(draw));
+				//	record_data(transform_data(draw));
 					loop = 0;
 				}
 				else if (kstate[SDL_SCANCODE_SPACE] && !draw->s_mode)
@@ -194,12 +201,14 @@ t_env *sdl_main_loop(t_env *env)
 				else if (kstate[SDL_SCANCODE_RETURN] && save && draw->head && draw->s_mode)
 				{
 					SDL_GetMouseState(&env->mouse_x, &env->mouse_y);
-					printf("---------------\n%d %d\n----------------\n",env->mouse_x, env->mouse_y);
+						draw->player = save;
 					if(place_player((t_xyf) {.x = (float)env->mouse_x , .y = (float)env->mouse_y}, save))
-						printf("successful placement\n");
-					else
-						printf("failure\n");
-					draw->p_mode = true;
+					{
+						draw_texture((t_xy) {.x = env->mouse_x, .y = env->mouse_y}, PLAYER, 0xfffffff, env);
+						draw->place_p.x = env->mouse_x / 10;
+						draw->place_p.y = env->mouse_y / 10;
+						select_sector_mode(env, draw, cur_s);
+					}
 				}
 				else if (kstate[SDL_SCANCODE_RIGHT] && draw->s_mode && !draw->w_mode && (draw->head != NULL))
 				{
@@ -273,12 +282,6 @@ t_env *sdl_main_loop(t_env *env)
 					save->object[click_to_text(env) % 10] = save->object[click_to_text(env) % 10] == 0;
 				else if ((draw->s_mode && !draw->w_mode && save && click_to_text(env) >= 12 && click_to_text(env) <= 15))
 					save->action[click_to_text(env) % 10 - SHIFT] = save->action[click_to_text(env) % 10 - SHIFT] == 0;
-				else if (draw->s_mode && !draw->w_mode && save && click_to_text(env) == PLAYER)
-				{
-
-					draw->player = save;
-					printf("%p",draw->player);
-				}
 					draw_select_text(draw, env);
 				(draw->s_mode) ? select_sector_mode(env, draw, cur_s)
 				: refresh_screen(draw, env, head);

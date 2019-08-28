@@ -79,7 +79,7 @@ int		place_player(t_xyf cords, t_sector *sector)
 			sum_angles -= curr_angle;
 		walk_v = walk_v->next;
 	}
-	if (sum_angles >= 359.0 && sum_angles <= 361.0)
+	if ((sum_angles >= 359.0 && sum_angles <= 361.0))
 		return (1);
 	return (0);
 }
