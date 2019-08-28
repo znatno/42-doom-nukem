@@ -18,10 +18,12 @@
 # include "SDL_image.h"
 # include "SDL_ttf.h"
 
+# define WALL_MOD_CONDITION draw->w_mode && !draw->d_mode && draw->s_mode && (draw->head != NULL)
+
 #define W_WIDTH 1600
 #define W_HEIGHT 950
 #define W_DRAW 1400
-#define H_DRAW 800
+#define H_DRAW 940
 #define X		0
 #define Y		1
 #define CEIL		0
@@ -34,6 +36,31 @@
 #define RIGHT		7
 #define SELECT_MODE 8
 #define WALL_MODE	9
+
+#define SHIFT 3
+
+#define GUNS_OBJ    10
+#define KITS_OBJ    11
+#define ARMOR_OBJ   12
+
+// obj[0][1][2]
+
+// actions[0][1][2]
+#define DEATH_ACT	13
+#define FLY_ACT		14
+#define MIXED_ACT   15
+
+#define TEXTURE_COORDS (t_xy){.x = (1470), .y = (442)}
+
+#define TEXTURE_DEFAULT 20
+#define TEXTURE_WOOD 20
+#define TEXTURE_SKULLS 21
+#define TEXTURE_BLOODY 22
+#define TEXTURE_MESS 23
+#define TEXTURE_FOREST 24
+#define TEXTURE_WALL 25
+#define TEXTURE_CARPET 26
+#define TEXTURE_MAX 26
 
 #define A	0
 #define B	1
@@ -82,6 +109,7 @@ typedef struct s_vertex
 {
 	t_xy xy1;
 	t_xy xy2;
+	int texture;
 	struct s_vertex *next;
 } t_vertex;
 
@@ -144,6 +172,8 @@ typedef struct s_sector
     int floor;
     int ceil;
     int walls;
+	bool object[3];
+	bool action[3];
     struct s_sector *next;
 } t_sector;
 
@@ -153,6 +183,7 @@ typedef struct s_draw
     t_portals   *portals;
     t_xy f_p[256];
     t_xy temp;
+    t_sector *player;
     int counter;
   	int s_count;
   	int p_count;
@@ -242,6 +273,8 @@ void 			print_all_portals(t_draw *draw);
 
 void	draw_select_text(t_draw *draw, t_env *env);
 
+void	draw_wall(t_xy cords ,uint32_t num_tex, t_env *env);
+
 
 /*
  * stack boi
@@ -292,9 +325,17 @@ void	record_to_file(t_record *rec);
 
 void	delete_portal(t_draw *draw, t_vertex *cur_v);
 
-char		*ft_itof(long double k);
+////MOUSE EVENTS/////////////
 
-void	record_data(t_record *record);
+int	click_to_text(t_env *env);
+
+void	draw_obj_and_action(t_draw *draw, t_env *env, t_sector *save);
+
+void	hide_obj_and_actions(t_env *env);
+
+void draw_player(t_draw *draw, t_env *env, t_sector *save);
+
+/////////////////////////////
 #endif
 
 

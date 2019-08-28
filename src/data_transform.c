@@ -420,41 +420,7 @@ t_rec_sec	*create_sector_list(t_sector *sectors, t_record *record, t_draw *d)
 	return (head);
 }
 
-int		sector_orientation(t_sector *curr_s)
-{
-	t_vertex	*needle;
-	t_vertex	*walk_v;
 
-	walk_v = curr_s->vertexes;
-	needle = NULL;
-	while (walk_v)
-	{
-		if (walk_v->xy1.x != walk_v->xy2.x)
-			needle = walk_v;
-		walk_v = walk_v->next;
-	}
-	if (needle)
-	{
-		if (needle->xy1.x > needle->xy2.x)
-			return (0);
-		else if (needle->xy1.x < needle->xy2.x)
-			return (1);
-	}
-	return (-1);
-}
-
-void		transform_sectors_list(t_sector *head_s)
-{
-	t_sector	*walk_s;
-
-	walk_s = head_s;
-	while (walk_s)
-	{
-		 if (sector_orientation(walk_s) == 1)
-		 	walk_s->vertexes = reverse_list(walk_s->vertexes);
-		walk_s = walk_s->next;
-	}
-}
 
 t_record	*transform_data(t_draw *draw)
 {
@@ -464,7 +430,6 @@ t_record	*transform_data(t_draw *draw)
 	head_s = draw->head;
 	record = create_vertex_list(head_s);
 	print_list_vec(record->head_ver);
-	transform_sectors_list(head_s);
 	record->head_sec = create_sector_list(head_s, record, draw);
 	return (record);
 //	print_list_sec(record);
