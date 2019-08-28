@@ -96,7 +96,7 @@ void	draw_tools(t_env *env)
 	draw_texture(env->textures->cords[FLOOR], FLOOR, 0xffffff, env);
 //	draw_texture(env->textures->cords[LEFT], LEFT, 0xffffff, env);
 //	draw_texture(env->textures->cords[RIGHT], RIGHT, 0xffffff ,env);
-	draw_texture(env->textures->cords[PLAYER], PLAYER, 0xffffff, env);
+//	draw_texture(env->textures->cords[PLAYER], PLAYER, 0xffffff, env);
 	draw_texture(env->textures->cords[OBJECTS], OBJECTS, 0xffffff, env);
 //	draw_texture(env->textures->cords[GUNS_OBJ], GUNS_OBJ, 0xffffff, env);
 //	draw_texture(env->textures->cords[KITS_OBJ], KITS_OBJ, 0xffffff, env);

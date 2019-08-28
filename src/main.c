@@ -1,4 +1,5 @@
 #include "duke_nukem_editor.h"
+
 void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head)
 {
 	t_sector *cur_s;
@@ -253,11 +254,16 @@ t_env *sdl_main_loop(t_env *env)
 				{
 					draw_dot(env, draw, head);
 				}
-				if (draw->s_mode && save && click_to_text(env) >= 10 && click_to_text(env) <= 12)
+				if (draw->s_mode && !draw->w_mode && save && click_to_text(env) >= 10 && click_to_text(env) <= 12)
 					save->object[click_to_text(env) % 10] = save->object[click_to_text(env) % 10] == 0;
-				else if ((draw->s_mode && save && click_to_text(env) >= 12 && click_to_text(env) <= 15))
+				else if ((draw->s_mode && !draw->w_mode && save && click_to_text(env) >= 12 && click_to_text(env) <= 15))
 					save->action[click_to_text(env) % 10 - SHIFT] = save->action[click_to_text(env) % 10 - SHIFT] == 0;
+				else if (draw->s_mode && !draw->w_mode && save && click_to_text(env) == PLAYER)
+				{
 
+					draw->player = save;
+					printf("%p",draw->player);
+				}
 					draw_select_text(draw, env);
 				(draw->s_mode) ? select_sector_mode(env, draw, cur_s)
 				: refresh_screen(draw, env, head);
@@ -265,6 +271,7 @@ t_env *sdl_main_loop(t_env *env)
 			}
 		}
 		(save && draw->head && cur_s > 0 && !draw->d_mode) ? draw_obj_and_action(draw, env, save) : 0 == 0;
+		(save && draw->head) ? draw_player(draw, env, save) : 0 == 0;
 		draw_frame(env);
 		draw_tools(env);
 		SDL_UpdateWindowSurface(env->window);

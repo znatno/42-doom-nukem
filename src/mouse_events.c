@@ -42,6 +42,12 @@ void	hide_obj_and_actions(t_env *env)
 	draw_texture(env->textures->cords[i], i, 0x000000, env);
 }
 
+void draw_player(t_draw *draw, t_env *env, t_sector *save)
+{
+	(draw->player == save) ? draw_texture(env->textures->cords[PLAYER], PLAYER, 0xf98d8d,
+										  env) : draw_texture(env->textures->cords[PLAYER], PLAYER, 0xffffff, env);
+}
+
 void	draw_obj_and_action(t_draw *draw, t_env *env, t_sector *save)
 {
 		(save->object[GUNS_OBJ % 10] == 1) ? (draw_texture(env->textures->cords[GUNS_OBJ], GUNS_OBJ, 0xf98d8d,
@@ -140,7 +146,7 @@ void	draw_select_text(t_draw *draw, t_env *env)
 		draw_texture(env->textures->cords[text_select], text_select, 0xf98d8d,
 					 env);
 	}
-	if (text_select > -1 && text_select <= 9)
+	if (text_select > -1 && text_select <= 9 && text_select != 5)
 	{
 
 		env->textures->selected = text_select;

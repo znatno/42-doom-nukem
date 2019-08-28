@@ -178,6 +178,7 @@ typedef struct s_draw
     t_portals   *portals;
     t_xy f_p[256];
     t_xy temp;
+    t_sector *player;
     int counter;
   	int s_count;
   	int p_count;
@@ -326,6 +327,8 @@ int	click_to_text(t_env *env);
 void	draw_obj_and_action(t_draw *draw, t_env *env, t_sector *save);
 
 void	hide_obj_and_actions(t_env *env);
+
+void draw_player(t_draw *draw, t_env *env, t_sector *save);
 
 /////////////////////////////
 #endif
