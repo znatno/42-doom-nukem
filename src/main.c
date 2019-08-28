@@ -1,4 +1,5 @@
 #include "duke_nukem_editor.h"
+
 void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head)
 {
 	t_sector *cur_s;
@@ -26,6 +27,29 @@ void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head)
 
 	if (draw->portals != NULL)
 		draw_all_portals(env, draw);
+}
+// TODO: DEL ME AFTER
+int	click_to_text2(t_env *env)
+{
+	int start[2];
+	int end[2];
+	int i;
+
+	i = 0;
+	while (i < 16)
+	{
+		if (i == LEFT || i == RIGHT)
+			i += 1;
+		start[X] = env->textures->cords[i].x;
+		start[Y] = env->textures->cords[i].y;
+		end[X] = env->textures->cords_end[i].x;
+		end[Y] = env->textures->cords_end[i].y;
+		if (env->mouse_x > start[X] && env->mouse_x < end[X] &&
+			env->mouse_y > start[Y] && env->mouse_y < end[Y])
+			return (i);
+		i++;
+	}
+	return (-1);
 }
 
 t_draw *init_draw(t_draw *draw)
@@ -104,78 +128,6 @@ t_sector		*select_sector_mode(t_env *env, t_draw *draw, int key)
 	return (save);
 }
 
-//t_sector		*select_wall_mode(t_env *env, t_draw *draw, int key)
-//{
-//	t_sector 	*cur_s;
-//	t_vertex 	*cur_v;
-//	t_sector 	*save;
-//	int 		i;
-//
-//	cur_s = draw->head;
-//	clear_screen(env);
-//	draw_desk(env);
-//	i = 0;
-//	while (draw->head != NULL && cur_s)
-//	{
-//		i++;
-//		cur_v = cur_s->vertexes;
-//		while (cur_v)
-//		{
-//			if (i == key)
-//			{
-//				line(cur_v->xy1, cur_v->xy2, env, VIOLET);
-//				save = cur_s;
-//			}
-//			else
-//				line(cur_v->xy1, cur_v->xy2, env, WHITE);
-//			if (!(find_portal_for_draw(env, draw, cur_v, cur_s)))
-//				delete_portal(draw, cur_v);
-//			cur_v = cur_v->next;
-//		}
-//		cur_s = cur_s->next;
-//	}
-//	if (draw->portals != NULL)
-//	{
-//		draw_all_portals(env, draw);
-//	}
-//	return (save);
-//}
-
-//void 		select_sector_mode(t_env *env, t_draw *draw, int key)
-//{
-//	t_sector 	*cur_s;
-//	t_vertex 	*cur_v;
-//	int 		i;
-//
-//	cur_s = draw->head;
-//	clear_screen(env);
-//	draw_desk(env);
-//	i = 0;
-//	while (draw->head != NULL && cur_s)
-//	{
-//		i++;
-//		cur_v = cur_s->vertexes;
-//		while (cur_v)
-//		{
-//			if (i == key)
-//			{
-//
-//				line(cur_v->xy1, cur_v->xy2, env, VIOLET);
-//			}
-//			else
-//				line(cur_v->xy1, cur_v->xy2, env, WHITE);
-//			if (!(find_portal_for_draw(env, draw, cur_v, cur_s)))
-//				delete_portal(draw, cur_v);
-//			cur_v = cur_v->next;
-//		}
-//		cur_s = cur_s->next;
-//	}
-//	if (draw->portals != NULL)
-//	{
-//		draw_all_portals(env, draw);
-//	}
-//}
-
 t_env *sdl_main_loop(t_env *env)
 {
 	const Uint8 *kstate;
@@ -238,50 +190,47 @@ t_env *sdl_main_loop(t_env *env)
 					stack_pop(head);
 					refresh_screen(draw, env, head);
 				}
-				else if (kstate[SDL_SCANCODE_RIGHT] && draw->s_mode && !draw->w_mode)
+				else if (kstate[SDL_SCANCODE_RIGHT] && draw->s_mode && !draw->w_mode && (draw->head != NULL))
 				{
-					if (draw->head != NULL)
-					{
 						if (draw->s_count > 1)
 							cur_s += (draw->s_count > cur_s) ? 1 : (-cur_s + 1);
 						else
 							cur_s = 1;
 						save = select_sector_mode(env, draw, cur_s);
-						draw_text(1500, 305, ft_itoa(save->ceil), env);
-						draw_text(1500, 365, ft_itoa(save->floor), env);
-					}
+					(save) ? draw_text(1500, 305, ft_itoa(save->ceil), env) : 0 == 0;
+					(save) ? draw_text(1500, 365, ft_itoa(save->floor), env) : 0 == 0;
+
 				}
 				// FIXME: WALL MOD BLEAT
-				else if (kstate[SDL_SCANCODE_RIGHT] && draw->w_mode && !draw->d_mode && draw->s_mode)
+				else if (kstate[SDL_SCANCODE_RIGHT] && draw->w_mode && !draw->d_mode && draw->s_mode &&  (draw->head != NULL))
 				{
-					if (draw->head != NULL)
-					{
 						save = select_sector_mode(env, draw, cur_s);
 						(cur_v > save->walls) ? cur_v = 1 : cur_v;
 						save_v = save_vertex(env, draw, cur_v++, save);
 						draw_text(1500, 305, ft_itoa(save->ceil), env);
 						draw_text(1500, 365, ft_itoa(save->floor), env);
-					}
+
+					(cur_v > 1) ? draw_wall(TEXTURE_COORDS, save_v->texture, env) : 0 == 0;
 				}
-				else if (kstate[SDL_SCANCODE_UP] && draw->floor_mode && draw->s_mode)
+				else if (kstate[SDL_SCANCODE_UP] && WALL_MOD_CONDITION && cur_v > 1)
 				{
-					if (draw->head != NULL)
-					{
+					(save_v->texture < TEXTURE_MAX) ? save_v->texture += 1 : (save_v->texture = TEXTURE_DEFAULT);
+					draw_wall(TEXTURE_COORDS, save_v->texture, env);
+				}
+				else if (kstate[SDL_SCANCODE_UP] && draw->floor_mode && draw->s_mode && (draw->head != NULL))
+				{
 						save = select_sector_mode(env, draw, cur_s);
 						draw_text(1500, 365, ft_itoa(save->floor), env);
 						(save->floor + 10 >= save->ceil) ? (save->floor = save->ceil - 10) : 0 == 0;
 						save->floor++;
 						draw_select_text(draw, env);
-					}
 				}
-				else if (kstate[SDL_SCANCODE_DOWN] && draw->floor_mode && draw->s_mode){
-					if (draw->head != NULL)
-					{
+				else if (kstate[SDL_SCANCODE_DOWN] && draw->floor_mode && draw->s_mode && draw->head != NULL)
+				{
 						save = select_sector_mode(env, draw, cur_s);
 						draw_text(1500, 365, ft_itoa(save->floor), env);
 						(save->floor < 1) ? save->floor = 0 : save->floor--;
 						draw_select_text(draw, env);
-					}
 				}
 				else if (kstate[SDL_SCANCODE_UP] && draw->ceil_mode && draw->s_mode && draw->head){
 					save = select_sector_mode(env, draw, cur_s);
@@ -305,15 +254,26 @@ t_env *sdl_main_loop(t_env *env)
 				&& env->mouse_y < H_DRAW - 20 && env->mouse_y > 15 &&
 						env->mouse_x > 15 && !draw->s_mode)
 				{
-					printf("MOUSE : wall = %d select = %d draw %d\n", draw->s_mode, draw->w_mode, draw->d_mode);
 					draw_dot(env, draw, head);
 				}
-				draw_select_text(draw, env);
-				(draw->s_mode) ? select_sector_mode(env, draw, cur_s)
+				if (draw->s_mode && !draw->w_mode && save && click_to_text(env) >= 10 && click_to_text(env) <= 12)
+					save->object[click_to_text(env) % 10] = save->object[click_to_text(env) % 10] == 0;
+				else if ((draw->s_mode && !draw->w_mode && save && click_to_text(env) >= 12 && click_to_text(env) <= 15))
+					save->action[click_to_text(env) % 10 - SHIFT] = save->action[click_to_text(env) % 10 - SHIFT] == 0;
+				else if (draw->s_mode && !draw->w_mode && save && click_to_text(env) == PLAYER)
+				{
 
+					draw->player = save;
+					printf("%p",draw->player);
+				}
+					draw_select_text(draw, env);
+				(draw->s_mode) ? select_sector_mode(env, draw, cur_s)
 				: refresh_screen(draw, env, head);
+				// TODO: SELECT IF OBJECT PICKED
 			}
 		}
+		(save && draw->head && cur_s > 0 && !draw->d_mode) ? draw_obj_and_action(draw, env, save) : 0 == 0;
+		(save && draw->head) ? draw_player(draw, env, save) : 0 == 0;
 		draw_frame(env);
 		draw_tools(env);
 		SDL_UpdateWindowSurface(env->window);

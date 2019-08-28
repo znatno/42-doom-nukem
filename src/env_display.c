@@ -46,11 +46,14 @@ void			draw_frame(t_env *env)
     t_xy	edge[2];
 
     edge[0].x = W_DRAW;
-    edge[0].y = H_DRAW;
+    edge[0].y = W_HEIGHT;
     edge[1].x = W_DRAW;
     edge[1].y = 0;
-    line(edge[0], edge[1], env, 0xffffff00);
-    edge[1].x = 0;
-    edge[1].y = H_DRAW;
-    line(edge[0], edge[1], env, 0xffffff00);
+    line(edge[0], edge[1], env, 0x009900);
+    edge[0].x += 1;
+	edge[1].x += 1;
+	line(edge[0], edge[1], env, 0x00AA00);
+	edge[0].x += 1;
+	edge[1].x += 1;
+	line(edge[0], edge[1], env, 0x00FF00);
 }

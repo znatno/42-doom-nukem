@@ -23,6 +23,14 @@ uint32_t	get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y, uint32_t color)
 		return (color);
 }
 
+uint32_t	get_pixel_wall(SDL_Surface *sur, uint32_t x, uint32_t y)
+{
+	uint32_t		*pixel;
+
+	pixel = sur->pixels + y * sur->pitch + x * sur->format->BytesPerPixel;
+	return (*pixel);
+}
+
 void	draw_text_black(uint32_t cord_x, uint32_t cord_y, char *text, t_env *env)
 {
 	TTF_Font	*font = TTF_OpenFont("../fonts/FiraSans-Regular.ttf", 32);
@@ -86,20 +94,20 @@ void	draw_tools(t_env *env)
 	draw_texture(env->textures->cords[REFRESH], REFRESH, 0xffffff, env);
 	draw_texture(env->textures->cords[CEIL], CEIL, 0xffffff, env);
 	draw_texture(env->textures->cords[FLOOR], FLOOR, 0xffffff, env);
-	draw_texture(env->textures->cords[LEFT], LEFT, 0xffffff, env);
-	draw_texture(env->textures->cords[RIGHT], RIGHT, 0xffffff ,env);
-	draw_texture(env->textures->cords[PLAYER], PLAYER, 0xffffff, env);
+//	draw_texture(env->textures->cords[LEFT], LEFT, 0xffffff, env);
+//	draw_texture(env->textures->cords[RIGHT], RIGHT, 0xffffff ,env);
+//	draw_texture(env->textures->cords[PLAYER], PLAYER, 0xffffff, env);
 	draw_texture(env->textures->cords[OBJECTS], OBJECTS, 0xffffff, env);
-	line((t_xy){.x = 1495,.y = 700}, (t_xy){.x = 1495, .y = 930}, env, 0xffffff);
-	line((t_xy){.x = 1410,.y = 730}, (t_xy){.x = 1590, .y = 730}, env, 0xffffff);
+//	draw_texture(env->textures->cords[GUNS_OBJ], GUNS_OBJ, 0xffffff, env);
+//	draw_texture(env->textures->cords[KITS_OBJ], KITS_OBJ, 0xffffff, env);
+//	draw_texture(env->textures->cords[ARMOR_OBJ], ARMOR_OBJ, 0xffffff, env);
+//	draw_texture(env->textures->cords[DEATH_ACT], DEATH_ACT, 0xffffff, env);
+//	draw_texture(env->textures->cords[FLY_ACT], FLY_ACT, 0xffffff, env);
+//	draw_texture(env->textures->cords[MIXED_ACT], MIXED_ACT, 0xffffff, env);
 	draw_text(1480, 15, "- draw", env);
 	draw_text(1480, 75, "- select", env);
 	draw_text(1480, 135, "- wall", env);
 	draw_text(1475, 195, "- refresh", env);
-//	draw_text(1480, 305, "- 20", env);
-//	draw_text(1480, 365, "- 0", env);
-	draw_text(1480, 515, "x -", env);
-	draw_text(1480, 550, "y -", env);
 	if (env->textures->selected >= 0)
 		draw_texture(env->textures->cords[env->textures->selected], env->textures->selected, 0xf98d8d, env);
 }
@@ -119,8 +127,34 @@ void	draw_texture(t_xy cords ,uint32_t num_tex, uint32_t color,t_env *env)
 		it_x = 0;
 		while (it_x < size_w)
 		{
+		alloca(1);
+
 			env->buffer[(cords.y + it_y) * W_WIDTH + (cords.x + it_x)] =
 					get_pixel(env->textures->arr_tex[num_tex], it_x, it_y, color);
+			it_x++;
+		}
+		it_y++;
+	}
+}
+
+void	draw_wall(t_xy cords ,uint32_t num_tex, t_env *env)
+{
+	uint32_t it_x;
+	uint32_t it_y;
+	uint32_t size_w;
+	uint32_t size_h;
+
+
+	it_y = 0;
+	size_w = env->textures->arr_tex[num_tex]->w;
+	size_h = env->textures->arr_tex[num_tex]->h;
+	while (it_y < size_h)
+	{
+		it_x = 0;
+		while (it_x < size_w)
+		{
+			env->buffer[(cords.y + it_y) * W_WIDTH + (cords.x + it_x)] =
+					get_pixel_wall(env->textures->arr_tex[num_tex], it_x, it_y);
 			it_x++;
 		}
 		it_y++;

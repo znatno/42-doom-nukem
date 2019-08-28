@@ -62,6 +62,31 @@
 #define TEXTURE_CARPET 26
 #define TEXTURE_MAX 26
 
+#define SHIFT 3
+
+#define GUNS_OBJ    10
+#define KITS_OBJ    11
+#define ARMOR_OBJ   12
+
+// obj[0][1][2]
+
+// actions[0][1][2]
+#define DEATH_ACT	13
+#define FLY_ACT		14
+#define MIXED_ACT   15
+
+#define TEXTURE_COORDS (t_xy){.x = (1470), .y = (442)}
+
+#define TEXTURE_DEFAULT 20
+#define TEXTURE_WOOD 20
+#define TEXTURE_SKULLS 21
+#define TEXTURE_BLOODY 22
+#define TEXTURE_MESS 23
+#define TEXTURE_FOREST 24
+#define TEXTURE_WALL 25
+#define TEXTURE_CARPET 26
+#define TEXTURE_MAX 26
+
 #define A	0
 #define B	1
 
