@@ -150,6 +150,7 @@ t_env *sdl_main_loop(t_env *env)
 	draw->ceil_mode = false;
 	draw->floor_mode = false;
 	draw->w_mode = false;
+	draw->p_mode;
 	draw->s_count = 0;
 	draw->p_count = 0;
 	save = NULL;
@@ -189,6 +190,16 @@ t_env *sdl_main_loop(t_env *env)
 				{
 					stack_pop(head);
 					refresh_screen(draw, env, head);
+				}
+				else if (kstate[SDL_SCANCODE_RETURN] && save && draw->head && draw->s_mode)
+				{
+					SDL_GetMouseState(&env->mouse_x, &env->mouse_y);
+					printf("---------------\n%d %d\n----------------\n",env->mouse_x, env->mouse_y);
+					if(place_player((t_xyf) {.x = (float)env->mouse_x , .y = (float)env->mouse_y}, save))
+						printf("successful placement\n");
+					else
+						printf("failure\n");
+					draw->p_mode = true;
 				}
 				else if (kstate[SDL_SCANCODE_RIGHT] && draw->s_mode && !draw->w_mode && (draw->head != NULL))
 				{
@@ -249,7 +260,9 @@ t_env *sdl_main_loop(t_env *env)
 			}
 			if (ev.type == SDL_MOUSEBUTTONDOWN)
 			{
+
 				SDL_GetMouseState(&env->mouse_x, &env->mouse_y);
+
 				if (ev.button.clicks && env->mouse_x < W_DRAW - 20
 				&& env->mouse_y < H_DRAW - 20 && env->mouse_y > 15 &&
 						env->mouse_x > 15 && !draw->s_mode)

@@ -60,15 +60,24 @@ int		place_player(t_xyf cords, t_sector *sector)
 
 	sum_angles = 0.0;
 	walk_v = sector->vertexes;
-	while (walk_v->next)
+	while (walk_v)
 	{
-		xy[0] = vv_to_v(cords.x, cords.y, walk_v->xy1.x, walk_v->xy1.y);
-		xy[0] = vv_to_v(cords.x, cords.y, walk_v->next->xy1.x, walk_v->next->xy1.y);
+		if (!walk_v->next)
+		{
+			xy[0] = vv_to_v(cords.x, cords.y, walk_v->xy1.x, walk_v->xy1.y);
+			xy[1] = vv_to_v(cords.x, cords.y, walk_v->xy2.x, walk_v->xy2.y);
+		}
+		else
+		{
+			xy[0] = vv_to_v(cords.x, cords.y, walk_v->xy1.x, walk_v->xy1.y);
+			xy[1] = vv_to_v(cords.x, cords.y, walk_v->next->xy1.x, walk_v->next->xy1.y);
+		}
 		curr_angle = radian_to_grades(acosf(angle_vv(scalar_product(xy[0], xy[1]), len_vector(xy[0]), len_vector(xy[1]))));
 		if (vector_product(xy[0], xy[1]) > 0)
 			sum_angles += curr_angle;
 		else
 			sum_angles -= curr_angle;
+		walk_v = walk_v->next;
 	}
 	if (sum_angles >= 359.0 && sum_angles <= 361.0)
 		return (1);
