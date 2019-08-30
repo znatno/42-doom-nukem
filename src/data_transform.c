@@ -12,54 +12,6 @@
 
 #include "duke_nukem_editor.h"
 
-void	print_list_vec(t_xy_l *head)
-{
-	t_xy_l	*walk;
-
-	walk = head;
-	while (walk)
-	{
-		printf("*************\n");
-		printf("*x=%3d|y=%3d* # index == %d\n", walk->x, walk->y, walk->index);
-		printf("*************\n");
-		printf(" \\   |     /\n");
-		printf("  \\  |   /\n");
-		printf("   \\ | /\n");
-		printf("    \\|/\n");
-		printf("     |\n");
-		printf("     v\n");
-		walk = walk->next;
-	}
-}
-
-void	print_list_sec(t_record *rec)
-{
-	t_rec_sec	*walk_sec;
-	t_index		*walk_ver;
-
-	walk_sec = rec->head_sec;
-	while (walk_sec)
-	{
-		walk_ver = walk_sec->head_ind;
-		while (walk_ver)
-		{
-			printf("*************\n");
-			printf("*index = %3d*\n", walk_ver->index);
-			printf("*************\n");
-			printf(" \\   |     /\n");
-			printf("  \\  |   /\n");
-			printf("   \\ | /\n");
-			printf("    \\|/\n");
-			printf("     |\n");
-			printf("     v\n");
-			walk_ver = walk_ver->next;
-		}
-		printf("---------------------\n");
-		printf("---------------------\n");
-		walk_sec = walk_sec->next;
-	}
-}
-
 int		find_smallest_x(t_sector *sector, int y, int x)
 {
 	t_sector	*walk_sec;
@@ -371,24 +323,6 @@ t_index		*create_sector_edge_list(t_sector curr, t_record *rec)
 	return (head);
 }
 
-t_vertex	*reverse_list(t_vertex *vertex)
-{
-	t_vertex	*curr;
-	t_vertex	*next;
-	t_vertex	*prev;
-
-	curr = vertex;
-	prev = NULL;
-	while (curr)
-	{
-		next = curr->next;
-		curr->next = prev;
-		prev = curr;
-		curr = next;
-	}
-	return (prev);
-}
-
 t_rec_sec	*create_sector_list(t_sector *sectors, t_record *record, t_draw *d)
 {
 	t_sector	*walk_sec;
@@ -407,8 +341,8 @@ t_rec_sec	*create_sector_list(t_sector *sectors, t_record *record, t_draw *d)
 		curr->index_s = index;
 		curr->head_ind = create_sector_edge_list(*walk_sec, record);
 		curr->head_por = create_sector_portal_list(record->head_ver, curr, d->portals, d->head);
-		curr->ceil = 20.0;
-		curr->floor = 0.0;
+		curr->ceil = walk_sec->ceil;
+		curr->floor = walk_sec->floor;
 		if (head == NULL)
 			head = curr;
 		else
@@ -429,8 +363,10 @@ t_record	*transform_data(t_draw *draw)
 
 	head_s = draw->head;
 	record = create_vertex_list(head_s);
-	print_list_vec(record->head_ver);
 	record->head_sec = create_sector_list(head_s, record, draw);
+	record->player_sec = get_index_sec(draw->place_p.sect_p, draw->head);
+	record->player_x = draw->place_p.x;
+	record->player_y = draw->place_p.y;
 	return (record);
 //	print_list_sec(record);
 }
