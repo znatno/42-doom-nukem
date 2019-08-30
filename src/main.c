@@ -152,6 +152,33 @@ void	delete_sector_del(t_env *env, t_draw *draw, t_stack **head)
 	refresh_screen(draw, env, head);
 }
 
+void	player_placement_return(t_env *env, t_draw *draw)
+{
+	SDL_GetMouseState(&env->mouse_x, &env->mouse_y);
+	draw->player = draw->save;
+	draw->place_p.sect_p = draw->save;
+	if(place_player((t_xyf) {.x = (float)env->mouse_x , .y = (float)env->mouse_y}, draw->save))
+	{
+		draw_texture((t_xy) {.x = env->mouse_x, .y = env->mouse_y}, PLAYER, 0xfffffff, env);
+		draw->place_p.x = env->mouse_x / 10;
+		draw->place_p.y = env->mouse_y / 10;
+		select_sector_mode(env, draw, draw->cur_s);
+	}
+}
+
+void	player_placement_return(t_env *env, t_draw *draw)
+
+void	wall_selection_right(t_env *env, t_draw *draw)
+{
+	if (draw->s_count > 1)
+		draw->cur_s += (draw->s_count > draw->cur_s) ? 1 : (-draw->cur_s + 1);
+	else
+		draw->cur_s = 1;
+	draw->save = select_sector_mode(env, draw, draw->cur_s);
+	(draw->save) ? draw_text(1500, 305, ft_itoa(draw->save->ceil), env) : 0 == 0;
+	(draw->save) ? draw_text(1500, 365, ft_itoa(draw->save->floor), env) : 0 == 0;
+}
+
 void	delete_line_backspace(t_env *env, t_draw *draw, t_stack **head)
 {
 	stack_pop(head);
@@ -181,7 +208,7 @@ t_env *sdl_main_loop(t_env *env)
 	draw->save_v = NULL;
 	draw->s_count = 0;
 	draw->p_count = 0;
-	save = NULL;
+	draw->save = NULL;
 
 	draw->cur_s = 0;
 	draw->cur_v = 0;
@@ -206,39 +233,17 @@ t_env *sdl_main_loop(t_env *env)
 					delete_sector_del(env, draw, head);
 				else if (draw->kstate[SDL_SCANCODE_BACKSPACE] && !draw->s_mode)
 					delete_line_backspace(env, draw, head);
-				else if (draw->kstate[SDL_SCANCODE_RETURN] && save && draw->head && draw->s_mode)
-				{
-					SDL_GetMouseState(&env->mouse_x, &env->mouse_y);
-						draw->player = save;
-						draw->place_p.sect_p = save;
-					if(place_player((t_xyf) {.x = (float)env->mouse_x , .y = (float)env->mouse_y}, save))
-					{
-						draw_texture((t_xy) {.x = env->mouse_x, .y = env->mouse_y}, PLAYER, 0xfffffff, env);
-						draw->place_p.x = env->mouse_x / 10;
-						draw->place_p.y = env->mouse_y / 10;
-						select_sector_mode(env, draw, draw->cur_s);
-					}
-				}
+				else if (draw->kstate[SDL_SCANCODE_RETURN] && draw->save && draw->head && draw->s_mode)
+					player_placement_return(env, draw);
 				else if (draw->kstate[SDL_SCANCODE_RIGHT] && draw->s_mode && !draw->w_mode && (draw->head != NULL))
-				{
-						if (draw->s_count > 1)
-							draw->cur_s += (draw->s_count > draw->cur_s) ? 1 : (-draw->cur_s + 1);
-						else
-							draw->cur_s = 1;
-						save = select_sector_mode(env, draw, draw->cur_s);
-					(save) ? draw_text(1500, 305, ft_itoa(save->ceil), env) : 0 == 0;
-					(save) ? draw_text(1500, 365, ft_itoa(save->floor), env) : 0 == 0;
-
-				}
-				// FIXME: WALL MOD BLEAT
+					wall_selection_right(env, draw);
 				else if (draw->kstate[SDL_SCANCODE_RIGHT] && draw->w_mode && !draw->d_mode && draw->s_mode &&  (draw->head != NULL))
 				{
-						save = select_sector_mode(env, draw, draw->cur_s);
-						(draw->cur_v > save->walls) ? draw->cur_v = 1 : draw->cur_v;
-						draw->save_v = save_vertex(env, draw, draw->cur_v++, save);
-						draw_text(1500, 305, ft_itoa(save->ceil), env);
-						draw_text(1500, 365, ft_itoa(save->floor), env);
-
+						draw->save = select_sector_mode(env, draw, draw->cur_s);
+						(draw->cur_v > draw->save->walls) ? draw->cur_v = 1 : draw->cur_v;
+						draw->save_v = save_vertex(env, draw, draw->cur_v++, draw->save);
+						draw_text(1500, 305, ft_itoa(draw->save->ceil), env);
+						draw_text(1500, 365, ft_itoa(draw->save->floor), env);
 					(draw->cur_v > 1) ? draw_wall(TEXTURE_COORDS, draw->save_v->texture, env) : 0 == 0;
 				}
 				else if (draw->kstate[SDL_SCANCODE_UP] && WALL_MOD_CONDITION && draw->cur_v > 1)
@@ -248,31 +253,31 @@ t_env *sdl_main_loop(t_env *env)
 				}
 				else if (draw->kstate[SDL_SCANCODE_UP] && draw->floor_mode && draw->s_mode && (draw->head != NULL))
 				{
-						save = select_sector_mode(env, draw, draw->cur_s);
-						draw_text(1500, 365, ft_itoa(save->floor), env);
-						(save->floor + 10 >= save->ceil) ? (save->floor = save->ceil - 10) : 0 == 0;
-						save->floor++;
+						draw->save = select_sector_mode(env, draw, draw->cur_s);
+						draw_text(1500, 365, ft_itoa(draw->save->floor), env);
+						(draw->save->floor + 10 >= draw->save->ceil) ? (draw->save->floor = draw->save->ceil - 10) : 0 == 0;
+						draw->save->floor++;
 						draw_select_text(draw, env);
 				}
 				else if (draw->kstate[SDL_SCANCODE_DOWN] && draw->floor_mode && draw->s_mode && draw->head != NULL)
 				{
-						save = select_sector_mode(env, draw, draw->cur_s);
-						draw_text(1500, 365, ft_itoa(save->floor), env);
-						(save->floor < 1) ? save->floor = 0 : save->floor--;
+						draw->save = select_sector_mode(env, draw, draw->cur_s);
+						draw_text(1500, 365, ft_itoa(draw->save->floor), env);
+						(draw->save->floor < 1) ? draw->save->floor = 0 : draw->save->floor--;
 						draw_select_text(draw, env);
 				}
 				else if (draw->kstate[SDL_SCANCODE_UP] && draw->ceil_mode && draw->s_mode && draw->head){
-					save = select_sector_mode(env, draw, draw->cur_s);
-					draw_text(1500, 305, ft_itoa(save->ceil),env);
-					(save->ceil - 10 <= save->floor) ? (save->ceil = save->floor + 10) : 0 == 0;
+					draw->save = select_sector_mode(env, draw, draw->cur_s);
+					draw_text(1500, 305, ft_itoa(draw->save->ceil),env);
+					(draw->save->ceil - 10 <= draw->save->floor) ? (draw->save->ceil = draw->save->floor + 10) : 0 == 0;
 					draw_select_text(draw, env);
-					save->ceil++;
+					draw->save->ceil++;
 				}
 				else if (draw->kstate[SDL_SCANCODE_DOWN] && draw->ceil_mode && draw->s_mode && draw->head){
-					save = select_sector_mode(env, draw, draw->cur_s);
-					draw_text(1500, 305, ft_itoa(save->ceil),env);
-					(save->ceil < 10) ? save->ceil = 20 : save->ceil--;
-					(save->ceil - 10 <= save->floor) ? (save->ceil = save->floor + 10) : 0 == 0;
+					draw->save = select_sector_mode(env, draw, draw->cur_s);
+					draw_text(1500, 305, ft_itoa(draw->save->ceil),env);
+					(draw->save->ceil < 10) ? draw->save->ceil = 20 : draw->save->ceil--;
+					(draw->save->ceil - 10 <= draw->save->floor) ? (draw->save->ceil = draw->save->floor + 10) : 0 == 0;
 					draw_select_text(draw, env);
 				}
 			}
@@ -287,18 +292,18 @@ t_env *sdl_main_loop(t_env *env)
 				{
 					draw_dot(env, draw, head);
 				}
-				if (draw->s_mode && !draw->w_mode && save && click_to_text(env) >= 10 && click_to_text(env) <= 12)
-					save->object[click_to_text(env) % 10] = save->object[click_to_text(env) % 10] == 0;
-				else if ((draw->s_mode && !draw->w_mode && save && click_to_text(env) >= 12 && click_to_text(env) <= 15))
-					save->action[click_to_text(env) % 10 - SHIFT] = save->action[click_to_text(env) % 10 - SHIFT] == 0;
+				if (draw->s_mode && !draw->w_mode && draw->save && click_to_text(env) >= 10 && click_to_text(env) <= 12)
+					draw->save->object[click_to_text(env) % 10] = draw->save->object[click_to_text(env) % 10] == 0;
+				else if ((draw->s_mode && !draw->w_mode && draw->save && click_to_text(env) >= 12 && click_to_text(env) <= 15))
+					draw->save->action[click_to_text(env) % 10 - SHIFT] = draw->save->action[click_to_text(env) % 10 - SHIFT] == 0;
 					draw_select_text(draw, env);
 				(draw->s_mode) ? select_sector_mode(env, draw, draw->cur_s)
 				: refresh_screen(draw, env, head);
 				// TODO: SELECT IF OBJECT PICKED
 			}
 		}
-		(save && draw->head && draw->cur_s > 0 && !draw->d_mode) ? draw_obj_and_action(draw, env, save) : 0 == 0;
-		(save && draw->head) ? draw_player(draw, env, save) : 0 == 0;
+		(draw->save && draw->head && draw->cur_s > 0 && !draw->d_mode) ? draw_obj_and_action(draw, env, draw->save) : 0 == 0;
+		(draw->save && draw->head) ? draw_player(draw, env, draw->save) : 0 == 0;
 		draw_frame(env);
 		draw_tools(env);
 		SDL_UpdateWindowSurface(env->window);
