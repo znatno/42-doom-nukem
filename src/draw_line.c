@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   draw_line.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ggavryly <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/08/30 21:16:07 by ggavryly          #+#    #+#             */
+/*   Updated: 2019/08/30 21:16:19 by ggavryly         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "duke_nukem_editor.h"
 
 void	pixel_put(t_line line, t_env *env)
@@ -47,7 +59,7 @@ void	draw_dy(t_line line, t_env *env, int i)
 	i++;
 	while (i--)
 	{
-		pixel_put(line,env);
+		pixel_put(line, env);
 		line.tmp_y += line.py;
 		d += 2 * line.dx;
 		if (d > 0)

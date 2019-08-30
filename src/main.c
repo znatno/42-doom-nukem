@@ -289,8 +289,8 @@ t_env *sdl_main_loop(t_env *env)
 				// TODO: SELECT IF OBJECT PICKED
 			}
 		}
-		(save && draw->head && cur_s > 0 && !draw->d_mode) ? draw_obj_and_action(draw, env, save) : 0 == 0;
-		(save && draw->head) ? draw_player(draw, env, save) : 0 == 0;
+		(save && draw->head && cur_s > 0 && !draw->d_mode) ? draw_obj_and_action(env, save) : 0;
+		(save && draw->head) ? draw_player(draw, env, save) : 0;
 		draw_frame(env);
 		draw_tools(env);
 		SDL_UpdateWindowSurface(env->window);
