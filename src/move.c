@@ -29,13 +29,14 @@ int		move_or_not(t_xyz where ,t_sector sector, unsigned sect_num)
 	{
 		xy[0] = vv_to_v(where.x, where.y,sector.vertex[j].x, sector.vertex[j].y);
 		xy[1] = vv_to_v(where.x, where.y, sector.vertex[j + 1].x, sector.vertex[j + 1].y);
-		cur_angle = GET_ANGLE_V0_V1(xy[0], xy[1]);
+		cur_angle = angles(xy[0], xy[1]);
 		if (vector_product(xy[0], xy[1]) > 0)
 			sum_angles += cur_angle;
 		else
 			sum_angles -= cur_angle;
 	}
-	if (sum_angles >= 359.0 && sum_angles <= 361.0)
+//	printf("%f - angle\n", sum_angles);
+	if ((sum_angles >= 357.0 && sum_angles <= 363.0) || (sum_angles >= -363.0 && sum_angles <= -357.0))
 		res = sect_num;
 	return (res);
 }
@@ -54,6 +55,7 @@ void	move_player(t_player *plr, t_sector **sectors, float dx, float dy)
 	sect = &(*sectors)[plr->sector];
 	vert = sect->vertex;
 	i = 0;
+	flag = -2;
 	plr->where.x += dx;
 	plr->where.y += dy;
 	while (i < sect->npoints)
@@ -61,14 +63,15 @@ void	move_player(t_player *plr, t_sector **sectors, float dx, float dy)
 		if (sect->neighbors[i] >= 0
 				&&
 				intersect_box(px, py, px + dx, py + dy,
-						vert[i + 0].x, vert[i + 0].y,
+						vert[i + 0].x, vert[i].y,
 						vert[i + 1].x, vert[i + 1].y)
 				&&
 				point_side(px + dx, py + dy,
-						vert[i + 0].x, vert[i + 0].y,
+						vert[i + 0].x, vert[i].y,
 						vert[i + 1].x, vert[i + 1].y) < 0)
 		{
 			flag = move_or_not(plr->where, (*sectors)[sect->neighbors[i]], sect->neighbors[i]);
+			printf("flag_value - %d\n", flag);
 			if (flag >= 0 && flag < plr->num_scts)
 				plr->sector = sect->neighbors[i];
 			else if (flag == -1)
@@ -76,12 +79,21 @@ void	move_player(t_player *plr, t_sector **sectors, float dx, float dy)
 				plr->where.x -= dx;
 				plr->where.y -= dy;
 			}
-			printf("Moved to another sector "); //
-			printf("| curr sec: %d\n",plr->sector); //
 			break ;
 		}
 		i++;
 	}
+	if (flag == -2)
+	{
+		printf("-2\n");
+		flag = move_or_not(plr->where, (*sectors)[plr->sector], plr->sector);
+		if (flag == -1)
+		{
+			plr->where.x -= dx;
+			plr->where.y -= dy;
+		}
+	}
+//	printf("player_x - %f| player_y - %f\n", plr->where.x, plr->where.y);
 	plr->anglesin = sinf(plr->angle);
 	plr->anglecos = cosf(plr->angle);
 }
@@ -94,7 +106,7 @@ void		chholebump(t_sector **sectors, t_sector sect, const unsigned int *s,
 	float xd;
 	float yd;
 
-	printf("Check Bump.\n");
+//	printf("Check Bump.\n");
 	hole_low = sect.neighbors[*s] <
 			0 ? 9e9 : MAX(sect.floor, (*sectors)[sect.neighbors[*s]].floor);
 	hole_high = sect.neighbors[*s] <

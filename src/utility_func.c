@@ -45,7 +45,9 @@ float	scalar_product(t_xy xy0, t_xy xy1)
 float	angle_vv(float scalar_product, float len0, float len1)
 {
 	float res = scalar_product / (len0 * len1);
-	return (res);
+	if (scalar_product != 0 && len0 != 0 && len1 != 0)
+		return (res);
+	return (-100);
 }
 
 float	radian_to_grades(float rad)
@@ -59,3 +61,22 @@ float	vector_product(t_xy xy0, t_xy xy1)
 	float res = ((xy0.x)*(xy1.y) - (xy1.x)*(xy0.y));
 	return (res);
 }
+
+float	angles(t_xy xy0, t_xy xy1)
+{
+	float	len0;
+	float	len1;
+	float	scalar_p;
+	float	angle;
+
+	len0 = len_vector(xy0);
+	len1 = len_vector(xy1);
+	if (len0 == 0 || len1 == 0)
+		return (-1);
+	scalar_p = scalar_product(xy0, xy1);
+	if (scalar_p == 0)
+		return (-1);
+	angle = radian_to_grades(acosf(angle_vv(scalar_p, len0, len1)));
+	return (angle);
+}
+

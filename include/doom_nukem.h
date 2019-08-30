@@ -426,6 +426,7 @@ float			point_side(float px, float py, float x0, float y0,
 
 void			move_player(t_player *plr, t_sector **sectors,
 							float dx, float dy);
+float			angles(t_xy xy0, t_xy xy1);
 
 void			check_move(t_player *plr, t_sector **sc);
 void			check_fall(t_player *plr, t_sector **sectors);
