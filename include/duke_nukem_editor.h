@@ -225,8 +225,10 @@ typedef struct s_draw
 	t_place_p place_p;
 	t_sector 	*save;
 	t_vertex 	*save_v;
+	SDL_Event 	ev;
 	const Uint8 *kstate;
-    int counter;
+	int loop;
+   	int counter;
   	int s_count;
   	int p_count;
 	int cur_s;
