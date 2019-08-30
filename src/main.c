@@ -135,16 +135,37 @@ t_sector		*select_sector_mode(t_env *env, t_draw *draw, int key)
 	return (save);
 }
 
+void	finish_sector_space(t_draw *draw, t_env *env, t_stack **head)
+{
+	draw->key = SPACE;
+	if (stack_more_than_two(head))
+	{
+		draw_dot(env, draw, head);
+		refresh_screen(draw, env, head);
+	}
+	draw->key = 0;
+}
+
+void	delete_sector_del(t_env *env, t_draw *draw, t_stack **head)
+{
+	delete_sector_from_list(env, draw);
+	refresh_screen(draw, env, head);
+}
+
+void	delete_line_backspace(t_env *env, t_draw *draw, t_stack **head)
+{
+	stack_pop(head);
+	refresh_screen(draw, env, head);
+}
+
 t_env *sdl_main_loop(t_env *env)
 {
-	const Uint8 *kstate;
+
 	t_sector 	*save;
-	t_vertex 	*save_v;
 	t_draw *draw;
 	SDL_Event ev;
 	int loop;
-	int cur_s;
-	int cur_v;
+
 
 	//STACK VARS
 	t_stack **head = ft_memalloc(sizeof(stack_t**));
@@ -157,48 +178,35 @@ t_env *sdl_main_loop(t_env *env)
 	draw->ceil_mode = false;
 	draw->floor_mode = false;
 	draw->w_mode = false;
+	draw->save_v = NULL;
 	draw->s_count = 0;
 	draw->p_count = 0;
 	save = NULL;
 
-	cur_s = 0;
-	cur_v = 0;
+	draw->cur_s = 0;
+	draw->cur_v = 0;
 
 	int i = 0;
 	while (loop && env->sdl_error == NONE)
 	{
-		kstate = SDL_GetKeyboardState(NULL);
+		draw->kstate = SDL_GetKeyboardState(NULL);
 		while (SDL_PollEvent(&ev))
 		{
 			if (ev.type == SDL_KEYDOWN)
 			{
-				if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
+				if (draw->kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
 				{
 //					print_all_sectors(draw, draw->head);к
-					record_data(transform_data(draw));
+//					record_data(transform_data(draw));
 					loop = 0;
 				}
-				else if (kstate[SDL_SCANCODE_SPACE] && !draw->s_mode)
-				{
-					draw->key = SPACE;
-					if (stack_more_than_two(head))
-					{
-						draw_dot(env, draw, head);
-						refresh_screen(draw, env, head);
-					}
-					draw->key = 0;
-				}
-				else if (kstate[SDL_SCANCODE_DELETE])
-				{
-					delete_sector_from_list(env, draw);
-					refresh_screen(draw, env, head);
-				}
-				else if (kstate[SDL_SCANCODE_BACKSPACE] && !draw->s_mode)
-				{
-					stack_pop(head);
-					refresh_screen(draw, env, head);
-				}
-				else if (kstate[SDL_SCANCODE_RETURN] && save && draw->head && draw->s_mode)
+				else if (draw->kstate[SDL_SCANCODE_SPACE] && !draw->s_mode)
+					finish_sector_space(draw, env, head);
+				else if (draw->kstate[SDL_SCANCODE_DELETE])
+					delete_sector_del(env, draw, head);
+				else if (draw->kstate[SDL_SCANCODE_BACKSPACE] && !draw->s_mode)
+					delete_line_backspace(env, draw, head);
+				else if (draw->kstate[SDL_SCANCODE_RETURN] && save && draw->head && draw->s_mode)
 				{
 					SDL_GetMouseState(&env->mouse_x, &env->mouse_y);
 						draw->player = save;
@@ -208,60 +216,60 @@ t_env *sdl_main_loop(t_env *env)
 						draw_texture((t_xy) {.x = env->mouse_x, .y = env->mouse_y}, PLAYER, 0xfffffff, env);
 						draw->place_p.x = env->mouse_x / 10;
 						draw->place_p.y = env->mouse_y / 10;
-						select_sector_mode(env, draw, cur_s);
+						select_sector_mode(env, draw, draw->cur_s);
 					}
 				}
-				else if (kstate[SDL_SCANCODE_RIGHT] && draw->s_mode && !draw->w_mode && (draw->head != NULL))
+				else if (draw->kstate[SDL_SCANCODE_RIGHT] && draw->s_mode && !draw->w_mode && (draw->head != NULL))
 				{
 						if (draw->s_count > 1)
-							cur_s += (draw->s_count > cur_s) ? 1 : (-cur_s + 1);
+							draw->cur_s += (draw->s_count > draw->cur_s) ? 1 : (-draw->cur_s + 1);
 						else
-							cur_s = 1;
-						save = select_sector_mode(env, draw, cur_s);
+							draw->cur_s = 1;
+						save = select_sector_mode(env, draw, draw->cur_s);
 					(save) ? draw_text(1500, 305, ft_itoa(save->ceil), env) : 0 == 0;
 					(save) ? draw_text(1500, 365, ft_itoa(save->floor), env) : 0 == 0;
 
 				}
 				// FIXME: WALL MOD BLEAT
-				else if (kstate[SDL_SCANCODE_RIGHT] && draw->w_mode && !draw->d_mode && draw->s_mode &&  (draw->head != NULL))
+				else if (draw->kstate[SDL_SCANCODE_RIGHT] && draw->w_mode && !draw->d_mode && draw->s_mode &&  (draw->head != NULL))
 				{
-						save = select_sector_mode(env, draw, cur_s);
-						(cur_v > save->walls) ? cur_v = 1 : cur_v;
-						save_v = save_vertex(env, draw, cur_v++, save);
+						save = select_sector_mode(env, draw, draw->cur_s);
+						(draw->cur_v > save->walls) ? draw->cur_v = 1 : draw->cur_v;
+						draw->save_v = save_vertex(env, draw, draw->cur_v++, save);
 						draw_text(1500, 305, ft_itoa(save->ceil), env);
 						draw_text(1500, 365, ft_itoa(save->floor), env);
 
-					(cur_v > 1) ? draw_wall(TEXTURE_COORDS, save_v->texture, env) : 0 == 0;
+					(draw->cur_v > 1) ? draw_wall(TEXTURE_COORDS, draw->save_v->texture, env) : 0 == 0;
 				}
-				else if (kstate[SDL_SCANCODE_UP] && WALL_MOD_CONDITION && cur_v > 1)
+				else if (draw->kstate[SDL_SCANCODE_UP] && WALL_MOD_CONDITION && draw->cur_v > 1)
 				{
-					(save_v->texture < TEXTURE_MAX) ? save_v->texture += 1 : (save_v->texture = TEXTURE_DEFAULT);
-					draw_wall(TEXTURE_COORDS, save_v->texture, env);
+					(draw->save_v->texture < TEXTURE_MAX) ? draw->save_v->texture += 1 : (draw->save_v->texture = TEXTURE_DEFAULT);
+					draw_wall(TEXTURE_COORDS, draw->save_v->texture, env);
 				}
-				else if (kstate[SDL_SCANCODE_UP] && draw->floor_mode && draw->s_mode && (draw->head != NULL))
+				else if (draw->kstate[SDL_SCANCODE_UP] && draw->floor_mode && draw->s_mode && (draw->head != NULL))
 				{
-						save = select_sector_mode(env, draw, cur_s);
+						save = select_sector_mode(env, draw, draw->cur_s);
 						draw_text(1500, 365, ft_itoa(save->floor), env);
 						(save->floor + 10 >= save->ceil) ? (save->floor = save->ceil - 10) : 0 == 0;
 						save->floor++;
 						draw_select_text(draw, env);
 				}
-				else if (kstate[SDL_SCANCODE_DOWN] && draw->floor_mode && draw->s_mode && draw->head != NULL)
+				else if (draw->kstate[SDL_SCANCODE_DOWN] && draw->floor_mode && draw->s_mode && draw->head != NULL)
 				{
-						save = select_sector_mode(env, draw, cur_s);
+						save = select_sector_mode(env, draw, draw->cur_s);
 						draw_text(1500, 365, ft_itoa(save->floor), env);
 						(save->floor < 1) ? save->floor = 0 : save->floor--;
 						draw_select_text(draw, env);
 				}
-				else if (kstate[SDL_SCANCODE_UP] && draw->ceil_mode && draw->s_mode && draw->head){
-					save = select_sector_mode(env, draw, cur_s);
+				else if (draw->kstate[SDL_SCANCODE_UP] && draw->ceil_mode && draw->s_mode && draw->head){
+					save = select_sector_mode(env, draw, draw->cur_s);
 					draw_text(1500, 305, ft_itoa(save->ceil),env);
 					(save->ceil - 10 <= save->floor) ? (save->ceil = save->floor + 10) : 0 == 0;
 					draw_select_text(draw, env);
 					save->ceil++;
 				}
-				else if (kstate[SDL_SCANCODE_DOWN] && draw->ceil_mode && draw->s_mode && draw->head){
-					save = select_sector_mode(env, draw, cur_s);
+				else if (draw->kstate[SDL_SCANCODE_DOWN] && draw->ceil_mode && draw->s_mode && draw->head){
+					save = select_sector_mode(env, draw, draw->cur_s);
 					draw_text(1500, 305, ft_itoa(save->ceil),env);
 					(save->ceil < 10) ? save->ceil = 20 : save->ceil--;
 					(save->ceil - 10 <= save->floor) ? (save->ceil = save->floor + 10) : 0 == 0;
@@ -284,12 +292,12 @@ t_env *sdl_main_loop(t_env *env)
 				else if ((draw->s_mode && !draw->w_mode && save && click_to_text(env) >= 12 && click_to_text(env) <= 15))
 					save->action[click_to_text(env) % 10 - SHIFT] = save->action[click_to_text(env) % 10 - SHIFT] == 0;
 					draw_select_text(draw, env);
-				(draw->s_mode) ? select_sector_mode(env, draw, cur_s)
+				(draw->s_mode) ? select_sector_mode(env, draw, draw->cur_s)
 				: refresh_screen(draw, env, head);
 				// TODO: SELECT IF OBJECT PICKED
 			}
 		}
-		(save && draw->head && cur_s > 0 && !draw->d_mode) ? draw_obj_and_action(draw, env, save) : 0 == 0;
+		(save && draw->head && draw->cur_s > 0 && !draw->d_mode) ? draw_obj_and_action(draw, env, save) : 0 == 0;
 		(save && draw->head) ? draw_player(draw, env, save) : 0 == 0;
 		draw_frame(env);
 		draw_tools(env);

@@ -223,9 +223,14 @@ typedef struct s_draw
     t_xy temp;
     t_sector *player;
 	t_place_p place_p;
+	t_sector 	*save;
+	t_vertex 	*save_v;
+	const Uint8 *kstate;
     int counter;
   	int s_count;
   	int p_count;
+	int cur_s;
+	int cur_v;
     bool s_mode;
     bool d_mode;
     bool w_mode;
