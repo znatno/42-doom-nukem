@@ -105,8 +105,8 @@ t_sector		*select_sector_mode(t_env *env, t_draw *draw, int key)
 
 
 	clear_screen(env);
-	if (draw->place_p.x > 0 && (draw->place_p.y > 0) && draw->head && draw->s_mode)
-		draw_texture((t_xy) {.x = draw->place_p.x * 10, .y =  draw->place_p.y * 10}, PLAYER, 0xfffffff, env);
+	if (draw->place_p.x > 4 && (draw->place_p.y > 4) && draw->head && draw->s_mode)
+		draw_texture((t_xy) {.x = draw->place_p.x * 10 - 19, .y =  draw->place_p.y * 10 - 19}, PLAYER, 0xfffffff, env);
 	draw_desk(env);
 	i = 0;
 	while (draw->head != NULL && cur_s)
@@ -175,7 +175,7 @@ t_env *sdl_main_loop(t_env *env)
 				if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
 				{
 //					print_all_sectors(draw, draw->head);к
-				//	record_data(transform_data(draw));
+					record_data(transform_data(draw));
 					loop = 0;
 				}
 				else if (kstate[SDL_SCANCODE_SPACE] && !draw->s_mode)
@@ -202,6 +202,7 @@ t_env *sdl_main_loop(t_env *env)
 				{
 					SDL_GetMouseState(&env->mouse_x, &env->mouse_y);
 						draw->player = save;
+						draw->place_p.sect_p = save;
 					if(place_player((t_xyf) {.x = (float)env->mouse_x , .y = (float)env->mouse_y}, save))
 					{
 						draw_texture((t_xy) {.x = env->mouse_x, .y = env->mouse_y}, PLAYER, 0xfffffff, env);

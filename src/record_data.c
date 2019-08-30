@@ -91,9 +91,27 @@ void	sector_record(t_rec_sec *head_s, int fd)
 	}
 }
 
-void	player_record()
+void	player_record(t_record *record, int fd)
 {
-	//record player to file
+	char		*tmp;
+	char 		*itoa_tmp;
+
+	tmp = (char *)malloc(sizeof(char) * 256);
+	ft_bzero(tmp, 256);
+	tmp = ft_strcpy(tmp,"\nplayer ");
+	itoa_tmp = ft_itoa(record->player_x);
+	tmp = ft_strcat(tmp,itoa_tmp);
+	free(itoa_tmp);
+	tmp = ft_strcat(tmp," ");
+	itoa_tmp = ft_itoa(record->player_y);
+	tmp = ft_strcat(tmp,itoa_tmp);
+	free(itoa_tmp);
+	tmp = ft_strcat(tmp, " 0 ");
+	itoa_tmp = ft_itoa(record->player_sec);
+	tmp = ft_strcat(tmp, itoa_tmp);
+	free(itoa_tmp);
+	write(fd, tmp, ft_strlen(tmp));
+	free(tmp);
 }
 
 
@@ -104,6 +122,6 @@ void	record_data(t_record *record)
 	fd = open_create_map();
 	vertex_record(record->head_ver, fd);
 	sector_record(record->head_sec, fd);
-//	player_record(player, fd);
+	player_record(record, fd);
 	close(fd);
 }

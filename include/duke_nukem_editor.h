@@ -110,6 +110,11 @@
 # define YELLOW (RED | GREEN)
 # define CYAN (BLUE | GREEN)
 
+typedef struct s_xyf {
+	float x;
+	float y;
+}				t_xyf;
+
 typedef struct s_xy {
     int x;
     int y;
@@ -175,8 +180,9 @@ typedef struct	s_record
 	int 		least_y;
 	t_xy_l		*head_ver;
 	t_rec_sec	*head_sec;
-	float 		player_x;
-	float 		player_y;
+	int 		player_x;
+	int			player_y;
+	int 		player_sec;
 }				t_record;
 
 typedef struct s_line {
@@ -202,6 +208,13 @@ typedef struct s_sector
     struct s_sector *next;
 } t_sector;
 
+
+typedef struct	s_place_p {
+	int 		x;
+	int 		y;
+	t_sector 	*sect_p;
+} 				t_place_p;
+
 typedef struct s_draw
 {
     t_sector    *head;
@@ -209,6 +222,7 @@ typedef struct s_draw
     t_xy f_p[256];
     t_xy temp;
     t_sector *player;
+	t_place_p place_p;
     int counter;
   	int s_count;
   	int p_count;
@@ -350,6 +364,22 @@ void	record_to_file(t_record *rec);
 
 void	delete_portal(t_draw *draw, t_vertex *cur_v);
 
+int 	get_index_sec(t_sector *sec, t_sector *head_sec);
+
+t_xy	get_point_cords(int index, t_xy_l *head_vi);
+
+int		get_index(t_xy ab, t_xy_l *list);
+
+t_xy_l	*create_vertex(t_sector *sector, int y);
+
+t_record	*create_vertex_list(t_sector *sectors);
+
+t_portal	*create_sector_portal_list(t_xy_l *head_vi, t_rec_sec *curr_s, t_portals *portals, t_sector *sectors);
+
+t_index		*create_sector_edge_list(t_sector curr, t_record *rec);
+
+t_rec_sec	*create_sector_list(t_sector *sectors, t_record *record, t_draw *d);
+
 ////MOUSE EVENTS/////////////
 
 int	click_to_text(t_env *env);
@@ -360,6 +390,9 @@ void	hide_obj_and_actions(t_env *env);
 
 void draw_player(t_draw *draw, t_env *env, t_sector *save);
 
+int		place_player(t_xyf cords, t_sector *sector);
+
+void	record_data(t_record *record);
 /////////////////////////////
 #endif
 
