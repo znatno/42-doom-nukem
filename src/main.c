@@ -64,6 +64,9 @@ t_draw *init_draw(t_draw *draw)
 	draw->head = NULL;
 	draw->portals = NULL;
 	draw->loop = 1;
+	draw->place_p.sect_p = NULL;
+	draw->place_p.x = 0;
+	draw->place_p.y = 0;
 	draw->s_mode = false;
 	draw->d_mode = false;
 	draw->ceil_mode = false;
@@ -111,11 +114,6 @@ t_sector		*select_sector_mode(t_env *env, t_draw *draw, int key)
 	int 		i;
 
 	cur_s = draw->head;
-
-
-
-
-
 	clear_screen(env);
 	if (draw->place_p.x > 4 && (draw->place_p.y > 4) && draw->head && draw->s_mode)
 		draw_texture((t_xy) {.x = draw->place_p.x * 10 - 19, .y =  draw->place_p.y * 10 - 19}, PLAYER, 0xfffffff, env);

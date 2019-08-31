@@ -137,7 +137,6 @@ void	draw_select_text(t_draw *draw, t_env *env)
 	}
 	if (text_select == WALL_MODE && draw->s_mode && !draw->d_mode)
 	{
-		printf("TEXT_SELECT_W_M: wall = %d select = %d draw %d\n", draw->s_mode, draw->w_mode, draw->d_mode);
 		draw->w_mode = true;
 		draw->d_mode = false;
 		draw->s_mode = true;
