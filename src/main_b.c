@@ -75,7 +75,8 @@ t_sector				*check_player_select_mode(t_env *env, t_draw *draw)
 	return (draw->head);
 }
 
-t_sector				ssm(t_env *env, t_draw *draw, int key, int i)
+t_sector				*select_sector_mode(t_env *env,
+		t_draw *draw, int key, int i)
 {
 	t_sector			*cur_s;
 	t_vertex			*cur_v;

@@ -1,22 +1,8 @@
-vertex 80 128
-vertex 78 76
-vertex 70 116
-vertex 64 10 26 104 106
-vertex 60 6
-vertex 52 118
-vertex 46 18
-vertex 44 4
-vertex 38 46
-vertex 34 12
-vertex 32 124
-vertex 26 52
-vertex 20 26
-vertex 18 16 120
-vertex 14 78
-vertex 12 100
+vertex 82 64
+vertex 70 112
+vertex 24 54
+vertex 16 72
 
-sector 22 55	 1 4 9 12 16 15 11 14 18 19 17 13 8 6 6 6 6 5	 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
-sector 0 20	 10 7 3 4 12	 -1 -1 -1 -1 -1
-sector 0 20	 0 2 5 1	 -1 -1 -1 -1
+sector 0 20	 1 0 2 3	 -1 -1 -1 -1
 
-player 78 46 0 0
+player 78 42 0 0

@@ -48,7 +48,6 @@ t_draw	*init_draw(t_draw *draw)
 void	init_vars(t_env *env)
 {
 	env->sdl_error = NONE;
-	env->zoom = 20;
 }
 
 void	finish_sector_space(t_draw *draw, t_env *env, t_stack **head)

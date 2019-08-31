@@ -85,7 +85,6 @@ void	texture_load(t_env *env)
 	env->textures->arr_tex = arr_tex;
 	texture_cords(env);
 	texture_cords_end(env);
-	env->textures->pre = -1;
 	env->textures->selected = -1;
 }
 
