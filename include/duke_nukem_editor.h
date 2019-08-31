@@ -35,6 +35,7 @@
 # define K_D draw->kstate[SDL_SCANCODE_DOWN]
 # define K_ENTER draw->kstate[SDL_SCANCODE_RETURN]
 # define N_H (draw->head != NULL)
+# define N_H_N (draw->head->next != NULL)
 
 #define W_WIDTH 1600
 #define W_HEIGHT 950
@@ -373,7 +374,7 @@ void find_portal(t_env *env, t_draw *draw, t_vertex *temp, t_sector *temp_s);
 
 int find_portal_for_draw(t_env *env, t_draw *draw, t_vertex *temp, t_sector *temp_s);
 
-void	pop_from_stack_to_list(t_env *env, t_draw *draw, t_stack **head);
+void	pop_from_stack_to_list(t_env *env, t_draw *draw, t_stack **head, int i);
 
 void	draw_all_portals(t_env *env, t_draw *draw);
 
@@ -446,7 +447,6 @@ void	select_ceil_up(t_env *env, t_draw *draw);
 
 void	select_ceil_down(t_env *env, t_draw *draw);
 
- // main_c
 void	last_iteration(t_env *env, t_draw *draw);
 
 void	choose_event(t_env *env, t_draw *draw, t_stack **head);
@@ -462,6 +462,10 @@ void init_vars(t_env *env);
 t_sector 			*last_portal(t_draw *draw);
 void			new_portal(t_draw *draw, t_vertex *temp,
 						   t_sector *temp_s, t_sector *cur_s);
+
+t_sector	*pop_helper(t_draw *draw, t_sector *cur_s);
+
+t_vertex	*pop_helper_b(t_vertex *head_v, t_xy cpf[2], t_sector *cur_s);
 #endif
 
 

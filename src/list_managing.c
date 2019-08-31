@@ -1,101 +1,59 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   list_managing.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vopolonc <vopolonc@student.unit.ua>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/08/31 15:22:58 by vopolonc          #+#    #+#             */
+/*   Updated: 2019/08/31 15:23:00 by vopolonc         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "duke_nukem_editor.h"
 
-
-
-//void delete_portal(t_env *env, t_draw *draw, t_vertex *temp, t_sector *temp_s)
-//{
-//	t_portals *cur;
-//
-//
-//	cur = draw->portals;
-//	while (cur)
-//	{
-//		cur = cur->next;
-////		if (cur-> == temp_s || cur->sec_b == temp_s)
-//			printf("DA DA YDALI\n");
-//	}
-//	printf("\n---------\n");
-//
-//}
-
-
-
-/*
- * NEW FUNCTIONS TODO: implement new functions
- */
-
-
-//void	find_wall_in_list(t_draw *draw, int cur_s)
-//{
-//	int count;
-//
-//	count = 0;
-//
-//}
-
-void 	malloc_list(t_sector *sect)
+t_sector		*zero_objects(t_sector *cur_s, int i)
 {
-	sect = sect->next;
-	sect->vertexes = ft_memalloc(sizeof(t_vertex));
-	sect->vertexes->next = NULL;
-	sect->next = NULL;
+	cur_s->walls = i;
+	ft_bzero(&cur_s->object, 3);
+	ft_bzero(&cur_s->action, 3);
 }
 
-void 	malloc_list_first(t_sector *sect)
+void			pop_from_stack_to_list(t_env *env,
+		t_draw *draw, t_stack **head, int i)
 {
-	sect->vertexes = ft_memalloc(sizeof(t_vertex));
-	sect->vertexes->next = NULL;
-	sect->next = NULL;
-}
+	t_sector	*cur_s;
+	t_vertex	*head_v;
+	t_xy		cpf[2];
 
-void	pop_from_stack_to_list(t_env *env, t_draw *draw, t_stack **head)
-{
-	t_sector *cur_s;
-	t_vertex *cur_v;
-	t_vertex *head_v;
-	t_xy cur_data;
-	t_xy prev_data;
-	t_xy first_data;
-	int i;
-
-	i = 0;
-	cur_s = last_in_list(draw);
-	cur_s->floor = DEFAULT_FLOOR;
-	cur_s->ceil = DEFAULT_CEIL;
-	first_data = stack_pop(head);
-	cur_data = first_data; //
-
-	head_v = cur_s->vertexes;
-	head_v->xy1 = first_data;
-	head_v->xy2 = cur_data;
-	while (cur_data.x != -42)
+	cur_s = pop_helper(draw, cur_s);
+	cpf[1] = stack_pop(head);
+	cpf[0] = cpf[1];
+	head_v = pop_helper_b(head_v, cpf, cur_s);
+	while (cpf[0].x != -42 && ++i)
 	{
-		i++;
 		head_v->texture = TEXTURE_DEFAULT;
-		head_v->xy1 = cur_data;
-		cur_data = stack_pop(head);
-		(cur_data.x != -42) ? (head_v->xy2 = cur_data) : (head_v->xy2 = first_data);
-		(draw->head->next != NULL) ? find_portal(env, draw, head_v, cur_s) : 0 == 0;
-		if (cur_data.x != -42)
+		head_v->xy1 = cpf[0];
+		cpf[0] = stack_pop(head);
+		if (cpf[0].x != -42)
+			(head_v->xy2 = cpf[0]);
+		else
+			(head_v->xy2 = cpf[1]);
+		(N_H_N) ? find_portal(env, draw, head_v, cur_s) : 0 == 0;
+		if (cpf[0].x != -42)
 		{
 			head_v->next = ft_memalloc(sizeof(t_vertex));
 			head_v = head_v->next;
 		}
 	}
-	cur_s->walls = i;
-	ft_bzero(&cur_s->object, 3);
-	ft_bzero(&cur_s->action, 3);
-	cur_s->object[0] = 1;
-	cur_s->object[1] = 0;
-	cur_s->object[2] = 1;
-	head_v = NULL;
+	cur_s = zero_objects(cur_s, i);
 }
 
-void save_stack_to_list (t_env *env, t_draw *draw, t_stack **head)
+void			save_stack_to_list(t_env *env, t_draw *draw, t_stack **head)
 {
-	t_sector *sect;
+	t_sector	*sect;
 
-	if (!draw->head) // first element in list
+	if (!draw->head)
 	{
 		sect = ft_memalloc(sizeof(t_sector));
 		draw->head = sect;
@@ -107,6 +65,6 @@ void save_stack_to_list (t_env *env, t_draw *draw, t_stack **head)
 		sect->next = ft_memalloc(sizeof(t_sector));
 		malloc_list(sect);
 	}
-	pop_from_stack_to_list(env, draw, head);
+	pop_from_stack_to_list(env, draw, head, 0);
 	draw->s_count++;
 }
