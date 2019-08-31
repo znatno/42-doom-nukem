@@ -1,100 +1,6 @@
 #include "duke_nukem_editor.h"
 
 
-// TODO: add wall mode
-// FIXME: Если сектор по номеру не первый и все его грани, это порталы, то будет СЭГФОУЛТ
-
-void print_sector(t_sector *temp)
-{
-	t_vertex *cur;
-
-	cur = temp->vertexes;
-	while (cur)
-	{
-		printf("x1 = %d y1 = %d \n x2 = %d y2 = %d\n\n",
-			   cur->xy1.x, cur->xy1.y, cur->xy2.x, cur->xy2.y);
-		cur = cur->next;
-	}
-	// free(cur);
-}
-
-//int	check_if_deleted_portal(t_draw *draw, t_portals *cur)
-//{
-//	printf("cur->sec_a = %p\n cur->sec_b = %p\n\n", cur->sec_a->vertexes, cur->sec_b->vertexs);
-//	//	if (cur->sec_a == NULL || cur->sec_b == NULL)
-////	{
-////		free(cur);
-////		cur = NULL;
-////		return (1);
-////	}
-////	else
-//		return (0);
-//}
-
-void	del_cur_portal(t_draw *draw, t_portals *cur)
-{
-	t_portals *head;
-	t_portals *del_me;
-	t_portals *prev;
-
-	if (draw->p_count > 1 && draw->s_count > 1)
-	{
-		head = draw->portals;
-		while (head->next != cur)
-		{
-			head = head->next;
-		}
-		del_me = head->next;
-		prev = del_me->next;
-		head->next = prev;
-		free(del_me);
-	}
-	else
-	{
-		del_me = draw->portals;
-		draw->portals->next = NULL;
-		free(del_me);
-		draw->portals = NULL;
-	}
-	draw->p_count--;
-}
-void	delete_portal(t_draw *draw, t_vertex *cur_v)
-{
-	t_portals *cur;
-	int i;
-
-	i = 0;
-	cur = draw->portals;
-	while (cur)
-	{
-		if (((cur->xy1.x == cur_v->xy1.x &&
-			  cur->xy1.y == cur_v->xy1.y &&
-			  cur->xy2.x == cur_v->xy2.x &&
-			  cur->xy2.y == cur_v->xy2.y)
-			 || (cur->xy1.x == cur_v->xy2.x &&
-				 cur->xy1.y == cur_v->xy2.y &&
-				 cur->xy2.x == cur_v->xy1.x &&
-				 cur->xy2.y == cur_v->xy1.y)))
-				del_cur_portal(draw,cur);
-			cur = cur->next;
-	}
-}
-
-
-void	draw_all_portals(t_env *env, t_draw *draw)
-{
-		t_portals *cur;
-		int i;
-
-		i = 0;
-		cur = draw->portals;
-		while (cur)
-		{
-			printf("%d\n",++i);
-			line(cur->xy1, cur->xy2, env, RED);
-			cur = cur->next;
-		}
-}
 
 void print_all_sectors(t_draw *draw, t_sector *temp)
 {
@@ -117,17 +23,7 @@ void print_all_sectors(t_draw *draw, t_sector *temp)
 
 
 
-t_sector *last_portal(t_draw *draw)
-{
-	t_portals *cur;
 
-	cur = draw->portals;
-	while (cur->next)
-	{
-		cur = cur->next;
-	}
-	return (cur);
-}
 t_portals 	*malloc_portal(t_portals *portal, t_vertex *data, t_sector *temp_s, t_sector *cur_s)
 {
 	portal->sec_a = cur_s;

@@ -459,6 +459,7 @@ t_draw 	*init_draw(t_draw *draw);
 
 void init_vars(t_env *env);
 
+t_sector 			*last_portal(t_draw *draw);
 #endif
 
 
