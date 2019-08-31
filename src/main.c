@@ -87,46 +87,6 @@ void	delete_line_backspace(t_env *env, t_draw *draw, t_stack **head)
 	refresh_screen(draw, env, head);
 }
 
-void	select_texture_up(t_env *env, t_draw *draw)
-{
-	(draw->save_v->texture < TEXTURE_MAX) ? draw->save_v->texture += 1 : (draw->save_v->texture = TEXTURE_DEFAULT);
-	draw_wall(TEXTURE_COORDS, draw->save_v->texture, env);
-}
-
-void	select_floor_up(t_env *env, t_draw *draw)
-{
-	draw->save = select_sector_mode(env, draw, draw->cur_s, 0);
-	draw_text(1500, 365, ft_itoa(draw->save->floor), env);
-	(draw->save->floor + 10 >= draw->save->ceil) ? (draw->save->floor = draw->save->ceil - 10) : 0 == 0;
-	draw->save->floor++;
-	draw_select_text(draw, env);
-}
-
-void	select_floor_down(t_env *env, t_draw *draw)
-{
-	draw->save = select_sector_mode(env, draw, draw->cur_s, 0);
-	draw_text(1500, 365, ft_itoa(draw->save->floor), env);
-	(draw->save->floor < 1) ? draw->save->floor = 0 : draw->save->floor--;
-	draw_select_text(draw, env);
-}
-
-void	select_ceil_up(t_env *env, t_draw *draw)
-{
-	draw->save = select_sector_mode(env, draw, draw->cur_s, 0);
-	draw_text(1500, 305, ft_itoa(draw->save->ceil),env);
-	(draw->save->ceil - 10 <= draw->save->floor) ? (draw->save->ceil = draw->save->floor + 10) : 0 == 0;
-	draw_select_text(draw, env);
-	draw->save->ceil++;
-}
-
-void	select_ceil_down(t_env *env, t_draw *draw)
-{
-	draw->save = select_sector_mode(env, draw, draw->cur_s, 0);
-	draw_text(1500, 305, ft_itoa(draw->save->ceil),env);
-	(draw->save->ceil < 10) ? draw->save->ceil = 20 : draw->save->ceil--;
-	(draw->save->ceil - 10 <= draw->save->floor) ? (draw->save->ceil = draw->save->floor + 10) : 0 == 0;
-	draw_select_text(draw, env);
-}
 
 
 
