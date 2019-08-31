@@ -75,7 +75,7 @@ void	wall_selection_right(t_env *env, t_draw *draw)
 {
 	draw->save = select_sector_mode(env, draw, draw->cur_s, 0);
 	(draw->cur_v > draw->save->walls) ? draw->cur_v = 1 : draw->cur_v;
-	draw->save_v = save_vertex(env, draw, draw->cur_v++, draw->save);
+	draw->save_v = save_vertex(env, draw->cur_v++, draw->save);
 	draw_text(1500, 305, ft_itoa(draw->save->ceil), env);
 	draw_text(1500, 365, ft_itoa(draw->save->floor), env);
 	(draw->cur_v > 1) ? draw_wall(TEXTURE_COORDS, draw->save_v->texture, env) : 0 == 0;

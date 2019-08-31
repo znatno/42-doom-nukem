@@ -19,6 +19,9 @@
 # include "SDL_ttf.h"
 
 # define WALL_MOD_CONDITION draw->w_mode && !draw->d_mode && draw->s_mode && (draw->head != NULL)
+# define PLAYER_PLACEMENT_CONDITION draw->place_p.x > 4 && (draw->place_p.y > 4) && draw->head && draw->s_mode
+
+# define ssm *select_sector_mode
 
 #define W_WIDTH 1600
 #define W_HEIGHT 950
@@ -404,7 +407,7 @@ void	record_data(t_record *record);
 
 void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head);
 
-t_vertex 		*save_vertex(t_env *env, t_draw *draw, int key, t_sector *save);
+t_vertex 		*save_vertex(t_env *env, int key, t_sector *save);
 
 t_sector		*select_sector_mode(t_env *env, t_draw *draw, int key, int i);
 

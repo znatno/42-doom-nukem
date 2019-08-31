@@ -1,14 +1,26 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main_b.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vopolonc <vopolonc@student.unit.ua>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/08/31 13:47:26 by vopolonc          #+#    #+#             */
+/*   Updated: 2019/08/31 13:47:30 by vopolonc         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "duke_nukem_editor.h"
 
-void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head)
+void					refresh_screen(t_draw *draw, t_env *env, t_stack **head)
 {
-	t_sector *cur_s;
-	t_vertex *cur_v;
+	t_sector			*cur_s;
+	t_vertex			*cur_v;
 
 	cur_s = draw->head;
 	clear_screen(env);
 	draw_desk(env);
-	stack_draw(env,draw ,head);
+	stack_draw(env, draw, head);
 	while (draw->head != NULL && cur_s)
 	{
 		cur_v = cur_s->vertexes;
@@ -25,11 +37,11 @@ void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head)
 		draw_all_portals(env, draw);
 }
 
-t_vertex 		*save_vertex(t_env *env, t_draw *draw, int key, t_sector *save)
+t_vertex				*save_vertex(t_env *env, int key, t_sector *save)
 {
-	t_sector 	*cur_s;
-	t_vertex 	*cur_v;
-	int 		i;
+	t_sector			*cur_s;
+	t_vertex			*cur_v;
+	int					i;
 
 	cur_s = save;
 	i = 0;
@@ -48,22 +60,24 @@ t_vertex 		*save_vertex(t_env *env, t_draw *draw, int key, t_sector *save)
 		}
 		cur_s = cur_s->next;
 	}
+	return (cur_v);
 }
 
-t_sector 			*check_player_select_mode(t_env *env, t_draw *draw)
+t_sector				*check_player_select_mode(t_env *env, t_draw *draw)
 {
 	clear_screen(env);
-	if (draw->place_p.x > 4 && (draw->place_p.y > 4) && draw->head && draw->s_mode)
-		draw_texture((t_xy) {.x = draw->place_p.x * 10 - 19, .y =  draw->place_p.y * 10 - 19}, PLAYER, 0xfffffff, env);
+	if (PLAYER_PLACEMENT_CONDITION)
+		draw_texture((t_xy) {.x = draw->place_p.x * 10 - 19,
+					.y = draw->place_p.y * 10 - 19}, PLAYER, 0xfffffff, env);
 	draw_desk(env);
 	return (draw->head);
 }
 
-t_sector		*select_sector_mode(t_env *env, t_draw *draw, int key, int i)
+t_sector				ssm(t_env *env, t_draw *draw, int key, int i)
 {
-	t_sector 	*cur_s;
-	t_vertex 	*cur_v;
-	t_sector 	*save;
+	t_sector			*cur_s;
+	t_vertex			*cur_v;
+	t_sector			*save;
 
 	cur_s = check_player_select_mode(env, draw);
 	while (draw->head != NULL && cur_s && ++i && (cur_v = cur_s->vertexes))
