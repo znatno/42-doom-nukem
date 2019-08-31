@@ -446,7 +446,6 @@ void	select_ceil_up(t_env *env, t_draw *draw);
 
 void	select_ceil_down(t_env *env, t_draw *draw);
 
-
  // main_c
 void	last_iteration(t_env *env, t_draw *draw);
 
@@ -455,6 +454,10 @@ void	choose_event(t_env *env, t_draw *draw, t_stack **head);
 void	mouse_event(t_env *env, t_draw *draw, t_stack **head);
 
 void	choose_event_second(t_env *env, t_draw *draw, t_stack **head);
+
+t_draw 	*init_draw(t_draw *draw);
+
+void init_vars(t_env *env);
 
 #endif
 
