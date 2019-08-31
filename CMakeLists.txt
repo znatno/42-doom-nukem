@@ -48,7 +48,7 @@ file(GLOB all
 #link_directories(~/.brew/Cellar/sdl/1.2.15_1/lib/)
 #link_directories(~/.brew/lib libft/)
 
-add_executable(doom-nukem   ${all} src/main_b.c)
+add_executable(doom-nukem   ${all} src/main_b.c src/main_c.c)
 
 
 #target_link_libraries(doom-nukem -lSDL)

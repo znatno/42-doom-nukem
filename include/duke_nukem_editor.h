@@ -21,7 +21,20 @@
 # define WALL_MOD_CONDITION draw->w_mode && !draw->d_mode && draw->s_mode && (draw->head != NULL)
 # define PLAYER_PLACEMENT_CONDITION draw->place_p.x > 4 && (draw->place_p.y > 4) && draw->head && draw->s_mode
 
+# define OBJ_COND click_to_text(env) >= 10 && click_to_text(env) <= 12
+# define OBJ draw->save->object[click_to_text(env) % 10]
+
+# define ACT_COND click_to_text(env) >= 12 && click_to_text(env) <= 15
+# define ACT draw->save->action[click_to_text(env) % 10 - SHIFT]
 # define ssm *select_sector_mode
+
+# define DRAW_OBJ draw->save && draw->head && draw->cur_s > 0 && !draw->d_mode
+
+# define K_R draw->kstate[SDL_SCANCODE_RIGHT]
+# define K_U draw->kstate[SDL_SCANCODE_UP]
+# define K_D draw->kstate[SDL_SCANCODE_DOWN]
+# define K_ENTER draw->kstate[SDL_SCANCODE_RETURN]
+# define N_H (draw->head != NULL)
 
 #define W_WIDTH 1600
 #define W_HEIGHT 950
@@ -410,6 +423,38 @@ void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head);
 t_vertex 		*save_vertex(t_env *env, int key, t_sector *save);
 
 t_sector		*select_sector_mode(t_env *env, t_draw *draw, int key, int i);
+
+void	sector_selection_right(t_env *env, t_draw *draw);
+
+void	wall_selection_right(t_env *env, t_draw *draw);
+
+void	delete_sector_del(t_env *env, t_draw *draw, t_stack **head);
+
+void	player_placement_return(t_env *env, t_draw *draw);
+
+void	finish_sector_space(t_draw *draw, t_env *env, t_stack **head);
+
+void	delete_line_backspace(t_env *env, t_draw *draw, t_stack **head);
+
+void	select_texture_up(t_env *env, t_draw *draw);
+
+void	select_floor_up(t_env *env, t_draw *draw);
+
+void	select_floor_down(t_env *env, t_draw *draw);
+
+void	select_ceil_up(t_env *env, t_draw *draw);
+
+void	select_ceil_down(t_env *env, t_draw *draw);
+
+
+ // main_c
+void	last_iteration(t_env *env, t_draw *draw);
+
+void	choose_event(t_env *env, t_draw *draw, t_stack **head);
+
+void	mouse_event(t_env *env, t_draw *draw, t_stack **head);
+
+void	choose_event_second(t_env *env, t_draw *draw, t_stack **head);
 
 #endif
 

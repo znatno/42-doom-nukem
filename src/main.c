@@ -128,69 +128,7 @@ void	select_ceil_down(t_env *env, t_draw *draw)
 	draw_select_text(draw, env);
 }
 
-void	mouse_event(t_env *env, t_draw *draw, t_stack **head)
-{
-	SDL_GetMouseState(&env->mouse_x, &env->mouse_y);
 
-	if (draw->ev.button.clicks && env->mouse_x < W_DRAW - 20
-		&& env->mouse_y < H_DRAW - 20 && env->mouse_y > 15 &&
-		env->mouse_x > 15 && !draw->s_mode)
-	{
-		draw_dot(env, draw, head);
-	}
-	if (draw->s_mode && !draw->w_mode && draw->save && click_to_text(env) >= 10 && click_to_text(env) <= 12)
-		draw->save->object[click_to_text(env) % 10] = draw->save->object[click_to_text(env) % 10] == 0;
-	else if ((draw->s_mode && !draw->w_mode && draw->save && click_to_text(env) >= 12 && click_to_text(env) <= 15))
-		draw->save->action[click_to_text(env) % 10 - SHIFT] = draw->save->action[click_to_text(env) % 10 - SHIFT] == 0;
-	draw_select_text(draw, env);
-	(draw->s_mode) ? select_sector_mode(env, draw, draw->cur_s, 0)
-				   : refresh_screen(draw, env, head);
-}
-
-void	last_iteration(t_env *env, t_draw *draw)
-{
-	(draw->save && draw->head && draw->cur_s > 0 && !draw->d_mode) ? draw_obj_and_action(draw, env, draw->save) : 0 == 0;
-	(draw->save && draw->head) ? draw_player(draw, env, draw->save) : 0 == 0;
-	draw_frame(env);
-	draw_tools(env);
-}
-
-void	choose_event_second(t_env *env, t_draw *draw, t_stack **head)
-{
-	if (draw->kstate[SDL_SCANCODE_RIGHT] && draw->s_mode && !draw->w_mode && (draw->head != NULL))
-		sector_selection_right(env, draw);
-	else if (draw->kstate[SDL_SCANCODE_RIGHT] && draw->w_mode && !draw->d_mode && draw->s_mode &&  (draw->head != NULL))
-		wall_selection_right(env, draw);
-	else if (draw->kstate[SDL_SCANCODE_UP] && WALL_MOD_CONDITION && draw->cur_v > 1)
-		select_texture_up(env, draw);
-	else if (draw->kstate[SDL_SCANCODE_UP] && draw->floor_mode && draw->s_mode && (draw->head != NULL))
-		select_floor_up(env, draw);
-	else if (draw->kstate[SDL_SCANCODE_DOWN] && draw->floor_mode && draw->s_mode && draw->head != NULL)
-		select_floor_down(env, draw);
-	else if (draw->kstate[SDL_SCANCODE_UP] && draw->ceil_mode && draw->s_mode && draw->head)
-		select_ceil_up(env, draw);
-	else if (draw->kstate[SDL_SCANCODE_DOWN] && draw->ceil_mode && draw->s_mode && draw->head)
-		select_ceil_down(env, draw);
-}
-
-void	choose_event(t_env *env, t_draw *draw, t_stack **head)
-{
-	if (draw->kstate[SDL_SCANCODE_ESCAPE] || draw->ev.type == SDL_QUIT)
-	{
-//					print_all_sectors(draw, draw->head);
-//					record_data(transform_data(draw));
-		draw->loop = 0;
-	}
-	else if (draw->kstate[SDL_SCANCODE_SPACE] && !draw->s_mode)
-		finish_sector_space(draw, env, head);
-	else if (draw->kstate[SDL_SCANCODE_DELETE])
-		delete_sector_del(env, draw, head);
-	else if (draw->kstate[SDL_SCANCODE_BACKSPACE] && !draw->s_mode)
-		delete_line_backspace(env, draw, head);
-	else if (draw->kstate[SDL_SCANCODE_RETURN] && draw->save && draw->head && draw->s_mode)
-		player_placement_return(env, draw);
-	choose_event_second(env, draw, head);
-}
 
 t_env *sdl_main_loop(t_env *env)
 {
