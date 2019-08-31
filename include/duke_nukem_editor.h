@@ -132,6 +132,13 @@ typedef struct s_xyf {
 	float y;
 }				t_xyf;
 
+typedef struct s_mode
+{
+	bool		ceil_mode;
+	bool		floor_mode;
+	bool		d_mode;
+}				t_mode;
+
 typedef struct s_xy {
     int x;
     int y;
@@ -225,6 +232,16 @@ typedef struct s_sector
     struct s_sector *next;
 } t_sector;
 
+typedef struct	s_font
+{
+	TTF_Font	*font;
+	SDL_Color	color;
+	SDL_Surface	*font_surface;
+	uint32_t	it_x;
+	uint32_t	it_y;
+	uint32_t	size_w;
+	uint32_t	size_h;
+}				t_font;
 
 typedef struct	s_place_p {
 	int 		x;
@@ -398,17 +415,23 @@ t_xy_l	*create_vertex(t_sector *sector, int y);
 
 t_record	*create_vertex_list(t_sector *sectors);
 
-t_portal	*create_sector_portal_list(t_xy_l *head_vi, t_rec_sec *curr_s, t_portals *portals, t_sector *sectors);
+t_portal	*portal_list(t_xy_l *h, t_rec_sec *c, t_portals *p, t_sector *s);
 
 t_index		*create_sector_edge_list(t_sector curr, t_record *rec);
 
 t_rec_sec	*create_sector_list(t_sector *sectors, t_record *record, t_draw *d);
 
+int		a_or_b(t_sector *sectors, t_rec_sec *curr, t_sector *a, t_sector *b);
+
+int		find_smallest_y(t_sector *sector, t_record *rec);
+
+int		find_smallest_x(t_sector *sector, int y, int x);
+
 ////MOUSE EVENTS/////////////
 
 int	click_to_text(t_env *env);
 
-void	draw_obj_and_action(t_draw *draw, t_env *env, t_sector *save);
+void	draw_obj_and_action(t_env *env, t_sector *save);
 
 void	hide_obj_and_actions(t_env *env);
 
@@ -417,6 +440,15 @@ void draw_player(t_draw *draw, t_env *env, t_sector *save);
 int		place_player(t_xyf cords, t_sector *sector);
 
 void	record_data(t_record *record);
+
+///////image_manipulation//////
+
+void	open_font(TTF_Font **f, SDL_Color *color, SDL_Surface **fs, char *text);
+
+void	draw_text_black(uint32_t cord_x, uint32_t cord_y, char *t, t_env *env);
+
+uint32_t	get_pixel_wall(SDL_Surface *sur, uint32_t x, uint32_t y);
+
 /////////////////////////////
 
 void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head);
