@@ -12,9 +12,9 @@
 
 #include "duke_nukem_editor.h"
 
-int		open_create_map()
+int				open_create_map(void)
 {
-	int 	fd;
+	int			fd;
 
 	fd = open("../maps/ya_karta.doom", O_WRONLY | O_TRUNC);
 	if (fd == -1)
@@ -25,11 +25,11 @@ int		open_create_map()
 	return (fd);
 }
 
-void	vertex_record(t_xy_l *vertex, int fd)
+void			vertex_record(t_xy_l *vertex, int fd)
 {
-	t_xy_l	*walk_v;
-	int 	tmp_y;
-	char *tmp;
+	t_xy_l		*walk_v;
+	int			tmp_y;
+	char		*tmp;
 
 	tmp = (char *)malloc(sizeof(char) * 256);
 	ft_bzero(tmp, 256);
@@ -37,7 +37,7 @@ void	vertex_record(t_xy_l *vertex, int fd)
 	while (walk_v)
 	{
 		tmp = ft_strcpy(tmp, "vertex ");
-		tmp = ft_strcat(tmp , ft_itoa(walk_v->y / 10));
+		tmp = ft_strcat(tmp, ft_itoa(walk_v->y / 10));
 		tmp_y = walk_v->y;
 		while (walk_v && walk_v->y == tmp_y)
 		{
@@ -52,59 +52,20 @@ void	vertex_record(t_xy_l *vertex, int fd)
 	write(fd, "\n", 1);
 }
 
-void	sector_record(t_rec_sec *head_s, int fd)
-{
-	t_rec_sec	*walk_s;
-	t_index		*walk_sv;
-	t_portal	*walk_sp;
-	char		*tmp;
-
-	walk_s = head_s;
-	tmp = (char *)malloc(sizeof(char) * 256);
-	ft_bzero(tmp, 256);
-	while (walk_s)
-	{
-		tmp = ft_strcpy(tmp, "sector ");
-		tmp = ft_strcat(tmp, ft_itoa((int)walk_s->floor));
-		tmp = ft_strcat(tmp, " ");
-		tmp = ft_strcat(tmp, ft_itoa((int)walk_s->ceil));
-		tmp = ft_strcat(tmp, "\t");
-		walk_sv = walk_s->head_ind;
-		walk_sp = walk_s->head_por;
-		while (walk_sv && walk_sv->next)
-		{
-			tmp = ft_strcat(tmp, " ");
-			tmp = ft_strcat(tmp, ft_itoa(walk_sv->index));
-			walk_sv = walk_sv->next;
-		}
-		tmp = ft_strcat(tmp, "\t");
-		while (walk_sp)
-		{
-			tmp = ft_strcat(tmp, " ");
-			tmp = ft_strcat(tmp, ((walk_sp->wall_portal == -1) ? ("-1") : (ft_itoa(walk_sp->wall_portal))));
-			walk_sp = walk_sp->next;
-		}
-		tmp = ft_strcat(tmp, "\n");
-		write(fd, tmp, ft_strlen(tmp));
-		ft_bzero(tmp, 256);
-		walk_s = walk_s->next;
-	}
-}
-
-void	player_record(t_record *record, int fd)
+void			player_record(t_record *record, int fd)
 {
 	char		*tmp;
-	char 		*itoa_tmp;
+	char		*itoa_tmp;
 
 	tmp = (char *)malloc(sizeof(char) * 256);
 	ft_bzero(tmp, 256);
-	tmp = ft_strcpy(tmp,"\nplayer ");
+	tmp = ft_strcpy(tmp, "\nplayer ");
 	itoa_tmp = ft_itoa(record->player_x);
-	tmp = ft_strcat(tmp,itoa_tmp);
+	tmp = ft_strcat(tmp, itoa_tmp);
 	free(itoa_tmp);
-	tmp = ft_strcat(tmp," ");
+	tmp = ft_strcat(tmp, " ");
 	itoa_tmp = ft_itoa(record->player_y);
-	tmp = ft_strcat(tmp,itoa_tmp);
+	tmp = ft_strcat(tmp, itoa_tmp);
 	free(itoa_tmp);
 	tmp = ft_strcat(tmp, " 0 ");
 	itoa_tmp = ft_itoa(record->player_sec);
@@ -114,10 +75,9 @@ void	player_record(t_record *record, int fd)
 	free(tmp);
 }
 
-
-void	record_data(t_record *record)
+void			record_data(t_record *record)
 {
-	int fd;
+	int			fd;
 
 	fd = open_create_map();
 	vertex_record(record->head_ver, fd);

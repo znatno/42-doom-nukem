@@ -466,6 +466,15 @@ void			new_portal(t_draw *draw, t_vertex *temp,
 t_sector	*pop_helper(t_draw *draw, t_sector *cur_s);
 
 t_vertex	*pop_helper_b(t_vertex *head_v, t_xy cpf[2], t_sector *cur_s);
+
+void	sector_record(t_rec_sec *head_s, int fd);
+
+t_index		*walk_sv_while(t_index *walk_sv, char *tmp);
+
+char			*gena_pidor(t_rec_sec *walk_s, char *tmp);
+
+t_portal	*walk_sp_while(t_portal *walk_sp, char *tmp);
+
 #endif
 
 
