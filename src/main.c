@@ -1,63 +1,9 @@
 #include "duke_nukem_editor.h"
 
-void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head)
-{
-	t_sector *cur_s;
-	t_vertex *cur_v;
-
-	cur_s = draw->head;
-	clear_screen(env);
-	draw_desk(env);
-	stack_draw(env,draw ,head);
-	while (draw->head != NULL && cur_s)
-	{
-		cur_v = cur_s->vertexes;
-		while (cur_v)
-		{
-			// DRAW PORTALS
-			if (!(find_portal_for_draw(env, draw, cur_v, cur_s)))
-				delete_portal(draw, cur_v);
-//			line(cur_v->xy1, cur_v->xy2, env, RED);
-//			else
-				line(cur_v->xy1, cur_v->xy2, env, WHITE);
-			cur_v = cur_v->next;
-		}
-		cur_s = cur_s->next;
-	}
-
-	if (draw->portals != NULL)
-		draw_all_portals(env, draw);
-}
-// TODO: DEL ME AFTER
-int	click_to_text2(t_env *env)
-{
-	int start[2];
-	int end[2];
-	int i;
-
-	i = 0;
-	while (i < 16)
-	{
-		if (i == LEFT || i == RIGHT)
-			i += 1;
-		start[X] = env->textures->cords[i].x;
-		start[Y] = env->textures->cords[i].y;
-		end[X] = env->textures->cords_end[i].x;
-		end[Y] = env->textures->cords_end[i].y;
-		if (env->mouse_x > start[X] && env->mouse_x < end[X] &&
-			env->mouse_y > start[Y] && env->mouse_y < end[Y])
-			return (i);
-		i++;
-	}
-	return (-1);
-}
-
 t_draw *init_draw(t_draw *draw)
 {
 	if (!(draw = (t_draw *) malloc(sizeof(t_draw))))
-	{
 		exit(13);
-	}
 	I = 0;
 	draw->temp.x = 0;
 	draw->temp.y = 0;
@@ -81,69 +27,7 @@ t_draw *init_draw(t_draw *draw)
 	return (draw);
 }
 
-t_vertex 		*save_vertex(t_env *env, t_draw *draw, int key, t_sector *save)
-{
-	t_sector 	*cur_s;
-	t_vertex 	*cur_v;
-	int 		i;
 
-	cur_s = save;
-	i = 0;
-	while (cur_s)
-	{
-		cur_v = cur_s->vertexes;
-		while (cur_v)
-		{
-			i++;
-			if (i == key)
-			{
-				line(cur_v->xy1, cur_v->xy2, env, CYAN);
-				return (cur_v);
-			}
-			cur_v = cur_v->next;
-		}
-		cur_s = cur_s->next;
-	}
-}
-
-t_sector		*select_sector_mode(t_env *env, t_draw *draw, int key)
-{
-	t_sector 	*cur_s;
-	t_vertex 	*cur_v;
-	t_sector 	*save;
-	int 		i;
-
-	cur_s = draw->head;
-	clear_screen(env);
-	if (draw->place_p.x > 4 && (draw->place_p.y > 4) && draw->head && draw->s_mode)
-		draw_texture((t_xy) {.x = draw->place_p.x * 10 - 19, .y =  draw->place_p.y * 10 - 19}, PLAYER, 0xfffffff, env);
-	draw_desk(env);
-	i = 0;
-	while (draw->head != NULL && cur_s)
-	{
-		i++;
-		cur_v = cur_s->vertexes;
-		while (cur_v)
-		{
-			if (i == key)
-			{
-				line(cur_v->xy1, cur_v->xy2, env, VIOLET);
-				save = cur_s;
-			}
-			else
-				line(cur_v->xy1, cur_v->xy2, env, WHITE);
-			if (!(find_portal_for_draw(env, draw, cur_v, cur_s)))
-				delete_portal(draw, cur_v);
-			cur_v = cur_v->next;
-		}
-		cur_s = cur_s->next;
-	}
-	if (draw->portals != NULL)
-	{
-		draw_all_portals(env, draw);
-	}
-	return (save);
-}
 
 void	finish_sector_space(t_draw *draw, t_env *env, t_stack **head)
 {
@@ -172,7 +56,7 @@ void	player_placement_return(t_env *env, t_draw *draw)
 		draw_texture((t_xy) {.x = env->mouse_x, .y = env->mouse_y}, PLAYER, 0xfffffff, env);
 		draw->place_p.x = env->mouse_x / 10;
 		draw->place_p.y = env->mouse_y / 10;
-		select_sector_mode(env, draw, draw->cur_s);
+		select_sector_mode(env, draw, draw->cur_s, 0);
 	}
 }
 
@@ -182,14 +66,14 @@ void	sector_selection_right(t_env *env, t_draw *draw)
 		draw->cur_s += (draw->s_count > draw->cur_s) ? 1 : (-draw->cur_s + 1);
 	else
 		draw->cur_s = 1;
-	draw->save = select_sector_mode(env, draw, draw->cur_s);
+	draw->save = select_sector_mode(env, draw, draw->cur_s, 0);
 	(draw->save) ? draw_text(1500, 305, ft_itoa(draw->save->ceil), env) : 0 == 0;
 	(draw->save) ? draw_text(1500, 365, ft_itoa(draw->save->floor), env) : 0 == 0;
 }
 
 void	wall_selection_right(t_env *env, t_draw *draw)
 {
-	draw->save = select_sector_mode(env, draw, draw->cur_s);
+	draw->save = select_sector_mode(env, draw, draw->cur_s, 0);
 	(draw->cur_v > draw->save->walls) ? draw->cur_v = 1 : draw->cur_v;
 	draw->save_v = save_vertex(env, draw, draw->cur_v++, draw->save);
 	draw_text(1500, 305, ft_itoa(draw->save->ceil), env);
@@ -211,7 +95,7 @@ void	select_texture_up(t_env *env, t_draw *draw)
 
 void	select_floor_up(t_env *env, t_draw *draw)
 {
-	draw->save = select_sector_mode(env, draw, draw->cur_s);
+	draw->save = select_sector_mode(env, draw, draw->cur_s, 0);
 	draw_text(1500, 365, ft_itoa(draw->save->floor), env);
 	(draw->save->floor + 10 >= draw->save->ceil) ? (draw->save->floor = draw->save->ceil - 10) : 0 == 0;
 	draw->save->floor++;
@@ -220,7 +104,7 @@ void	select_floor_up(t_env *env, t_draw *draw)
 
 void	select_floor_down(t_env *env, t_draw *draw)
 {
-	draw->save = select_sector_mode(env, draw, draw->cur_s);
+	draw->save = select_sector_mode(env, draw, draw->cur_s, 0);
 	draw_text(1500, 365, ft_itoa(draw->save->floor), env);
 	(draw->save->floor < 1) ? draw->save->floor = 0 : draw->save->floor--;
 	draw_select_text(draw, env);
@@ -228,7 +112,7 @@ void	select_floor_down(t_env *env, t_draw *draw)
 
 void	select_ceil_up(t_env *env, t_draw *draw)
 {
-	draw->save = select_sector_mode(env, draw, draw->cur_s);
+	draw->save = select_sector_mode(env, draw, draw->cur_s, 0);
 	draw_text(1500, 305, ft_itoa(draw->save->ceil),env);
 	(draw->save->ceil - 10 <= draw->save->floor) ? (draw->save->ceil = draw->save->floor + 10) : 0 == 0;
 	draw_select_text(draw, env);
@@ -237,7 +121,7 @@ void	select_ceil_up(t_env *env, t_draw *draw)
 
 void	select_ceil_down(t_env *env, t_draw *draw)
 {
-	draw->save = select_sector_mode(env, draw, draw->cur_s);
+	draw->save = select_sector_mode(env, draw, draw->cur_s, 0);
 	draw_text(1500, 305, ft_itoa(draw->save->ceil),env);
 	(draw->save->ceil < 10) ? draw->save->ceil = 20 : draw->save->ceil--;
 	(draw->save->ceil - 10 <= draw->save->floor) ? (draw->save->ceil = draw->save->floor + 10) : 0 == 0;
@@ -259,7 +143,7 @@ void	mouse_event(t_env *env, t_draw *draw, t_stack **head)
 	else if ((draw->s_mode && !draw->w_mode && draw->save && click_to_text(env) >= 12 && click_to_text(env) <= 15))
 		draw->save->action[click_to_text(env) % 10 - SHIFT] = draw->save->action[click_to_text(env) % 10 - SHIFT] == 0;
 	draw_select_text(draw, env);
-	(draw->s_mode) ? select_sector_mode(env, draw, draw->cur_s)
+	(draw->s_mode) ? select_sector_mode(env, draw, draw->cur_s, 0)
 				   : refresh_screen(draw, env, head);
 }
 
@@ -327,7 +211,7 @@ t_env *sdl_main_loop(t_env *env)
 		}
 		last_iteration(env, draw);
 		SDL_UpdateWindowSurface(env->window);
-		SDL_Delay(10);
+//		SDL_Delay(10);
 	}
 	return (env);
 }

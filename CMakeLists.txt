@@ -48,10 +48,10 @@ file(GLOB all
 #link_directories(~/.brew/Cellar/sdl/1.2.15_1/lib/)
 #link_directories(~/.brew/lib libft/)
 
-add_executable(doom-nukem   ${all})
+add_executable(doom-nukem   ${all} src/main_b.c)
 
 
 #target_link_libraries(doom-nukem -lSDL)
-target_link_libraries(doom-nukem -lft -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf) #-g -fsanitize=address)
+target_link_libraries(doom-nukem -O2 -lft -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf) #-g -fsanitize=address)
 #target_link_libraries(doom-nukem "-D_GNU_SOURCE=1" "-D_THREAD_SAFE" "-lSDLmain"
 #"-lSDL -Wl,-framework,Cocoa" "-lft")

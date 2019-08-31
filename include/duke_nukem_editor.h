@@ -401,6 +401,13 @@ int		place_player(t_xyf cords, t_sector *sector);
 
 void	record_data(t_record *record);
 /////////////////////////////
+
+void 				refresh_screen(t_draw *draw, t_env *env, t_stack **head);
+
+t_vertex 		*save_vertex(t_env *env, t_draw *draw, int key, t_sector *save);
+
+t_sector		*select_sector_mode(t_env *env, t_draw *draw, int key, int i);
+
 #endif
 
 
