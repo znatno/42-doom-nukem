@@ -1,10 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vopolonc <vopolonc@student.unit.ua>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/08/31 14:26:39 by vopolonc          #+#    #+#             */
+/*   Updated: 2019/08/31 14:26:40 by vopolonc         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "duke_nukem_editor.h"
 
-t_env *sdl_main_loop(t_env *env)
+t_env			*sdl_main_loop(t_env *env)
 {
-	t_draw *draw;
-	t_stack **head = ft_memalloc(sizeof(stack_t**));
+	t_draw		*draw;
+	t_stack		**head;
 
+	head = ft_memalloc(sizeof(stack_t**));
 	draw = init_draw(draw);
 	draw_desk(env);
 	while (draw->loop && env->sdl_error == NONE)
@@ -19,31 +32,27 @@ t_env *sdl_main_loop(t_env *env)
 		}
 		last_iteration(env, draw);
 		SDL_UpdateWindowSurface(env->window);
-//		SDL_Delay(10);
 	}
 	return (env);
 }
 
-t_env *sdl_init(t_env *env)
+t_env			*sdl_init(t_env *env)
 {
 	init_vars(env);
 	env->window = SDL_CreateWindow("doom-nukem-editor", 910, 510, W_WIDTH,
-								   W_HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
+								W_HEIGHT, SDL_WINDOW_ALLOW_HIGHDPI);
 	env->win_surface = SDL_GetWindowSurface(env->window);
 	env->buffer = (uint32_t *)env->win_surface->pixels;
 	if (!env->window)
-	{
-		//env->sdl_error = ERROR_WINDOW;
 		SDL_GetError();
-	}
 	texture_load(env);
 	return (env);
 }
 
-int main(void)
+int				main(void)
 {
-	t_env *env;
-	t_textures textures;
+	t_env		*env;
+	t_textures	textures;
 
 	env = malloc(sizeof(t_env));
 	env->textures = &textures;
