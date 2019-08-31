@@ -86,9 +86,9 @@ t_sector		*check_if_deleted_sector(t_draw *draw, t_vertex *tmp,
 			free(cur_v);
 			cur_v = tmp;
 		}
+		free(cur_s);
 		cur_s = NULL;
 		draw->head = NULL;
-		free(cur_s);
 		draw->s_count--;
 		return (NULL);
 	}

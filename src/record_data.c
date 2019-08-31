@@ -25,6 +25,15 @@ int				open_create_map(void)
 	return (fd);
 }
 
+void			num_cat(char **tmp, int num)
+{
+	char *number;
+
+	number = ft_itoa(num);
+	*tmp = ft_strcat(*tmp, number);
+	free(number);
+}
+
 void			vertex_record(t_xy_l *vertex, int fd)
 {
 	t_xy_l		*walk_v;
@@ -37,12 +46,12 @@ void			vertex_record(t_xy_l *vertex, int fd)
 	while (walk_v)
 	{
 		tmp = ft_strcpy(tmp, "vertex ");
-		tmp = ft_strcat(tmp, ft_itoa(walk_v->y / 10));
+		num_cat(&tmp, walk_v->y / 10);
 		tmp_y = walk_v->y;
 		while (walk_v && walk_v->y == tmp_y)
 		{
 			tmp = ft_strcat(tmp, " ");
-			tmp = ft_strcat(tmp, ft_itoa(walk_v->x / 10));
+			num_cat(&tmp, walk_v->x / 10);
 			walk_v = walk_v->next;
 		}
 		tmp = ft_strcat(tmp, "\n");
@@ -50,6 +59,7 @@ void			vertex_record(t_xy_l *vertex, int fd)
 		ft_bzero(tmp, 256);
 	}
 	write(fd, "\n", 1);
+	free(tmp);
 }
 
 void			player_record(t_record *record, int fd)
@@ -84,4 +94,5 @@ void			record_data(t_record *record)
 	sector_record(record->head_sec, fd);
 	player_record(record, fd);
 	close(fd);
+	record_free(record);
 }

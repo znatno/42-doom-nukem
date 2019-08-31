@@ -356,6 +356,8 @@ void	draw_select_text(t_draw *draw, t_env *env);
 void	draw_wall(t_xy cords ,uint32_t num_tex, t_env *env);
 
 
+
+
 /*
  * stack boi
  */
@@ -426,6 +428,8 @@ int		a_or_b(t_sector *sectors, t_rec_sec *curr, t_sector *a, t_sector *b);
 int		find_smallest_y(t_sector *sector, t_record *rec);
 
 int		find_smallest_x(t_sector *sector, int y, int x);
+
+void			num_cat(char **tmp, int num);
 
 ////MOUSE EVENTS/////////////
 
@@ -507,6 +511,19 @@ char			*gena_pidor(t_rec_sec *walk_s, char *tmp);
 
 t_portal	*walk_sp_while(t_portal *walk_sp, char *tmp);
 
+float		len_vector(t_xyf free_vector);
+
+float		scalar_product(t_xyf xy0, t_xyf xy1);
+
+float		angle_vv(float scalar_product, float len0, float len1);
+
+float		radian_to_grades(float rad);
+
+float		vector_product(t_xyf xy0, t_xyf xy1);
+
+void	record_free(t_record *record);
+
+void	free_stack(t_stack **head);
 #endif
 
 

@@ -12,6 +12,12 @@
 
 #include "duke_nukem_editor.h"
 
+void	free_stack(t_stack **head)
+{
+	while (*head)
+		stack_pop(head);
+}
+
 t_draw	*init_draw(t_draw *draw)
 {
 	if (!(draw = (t_draw *)malloc(sizeof(t_draw))))

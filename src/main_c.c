@@ -32,7 +32,7 @@ void	mouse_event(t_env *env, t_draw *draw, t_stack **head)
 
 void	last_iteration(t_env *env, t_draw *draw)
 {
-	(DRAW_OBJ) ? draw_obj_and_action(draw, env, draw->save) : 0 == 0;
+	(DRAW_OBJ) ? draw_obj_and_action(env, draw->save) : 0 == 0;
 	(draw->save && draw->head) ? draw_player(draw, env, draw->save) : 0 == 0;
 	draw_frame(env);
 	draw_tools(env);
@@ -60,8 +60,8 @@ void	choose_event(t_env *env, t_draw *draw, t_stack **head)
 {
 	if (draw->kstate[SDL_SCANCODE_ESCAPE] || draw->ev.type == SDL_QUIT)
 	{
-//					print_all_sectors(draw, draw->head);
-//					record_data(transform_data(draw));
+		(N_H) ? record_data(transform_data(draw)) : 0;
+		(*head) ? free_stack(head) : 0;
 		draw->loop = 0;
 	}
 	else if (draw->kstate[SDL_SCANCODE_SPACE] && !draw->s_mode)
@@ -72,5 +72,5 @@ void	choose_event(t_env *env, t_draw *draw, t_stack **head)
 		delete_line_backspace(env, draw, head);
 	else if (K_ENTER && draw->save && draw->head && draw->s_mode)
 		player_placement_return(env, draw);
-	choose_event_second(env, draw, head);
+	(draw->loop) ? choose_event_second(env, draw, head) : 0 == 0;
 }

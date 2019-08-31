@@ -12,7 +12,8 @@
 
 #include "duke_nukem_editor.h"
 
-void		init_new(t_index **head, t_index **pre, t_index **curr_i, int index[2])
+void			init_new(t_index **head, t_index **pre,
+		t_index **curr_i, int index[2])
 {
 	if (index[0] > -1 && index[1] > -1 && *pre == NULL)
 	{
@@ -33,7 +34,7 @@ void		init_new(t_index **head, t_index **pre, t_index **curr_i, int index[2])
 	}
 }
 
-t_index		*create_sector_edge_list(t_sector curr, t_record *rec)
+t_index			*create_sector_edge_list(t_sector curr, t_record *rec)
 {
 	t_vertex	*walk;
 	t_index		*head;
@@ -55,7 +56,8 @@ t_index		*create_sector_edge_list(t_sector curr, t_record *rec)
 	return (head);
 }
 
-t_rec_sec		*init_sector(t_rec_sec *c, t_sector *walk, t_record *r, t_draw *d)
+t_rec_sec		*init_sector(t_rec_sec *c, t_sector *walk,
+		t_record *r, t_draw *d)
 {
 	c = (t_rec_sec *)malloc(sizeof(t_rec_sec));
 	c->next = NULL;
@@ -67,7 +69,7 @@ t_rec_sec		*init_sector(t_rec_sec *c, t_sector *walk, t_record *r, t_draw *d)
 	return (c);
 }
 
-t_rec_sec	*create_sector_list(t_sector *sectors, t_record *r, t_draw *d)
+t_rec_sec		*create_sector_list(t_sector *sectors, t_record *r, t_draw *d)
 {
 	t_sector	*walk_sec;
 	t_rec_sec	*curr;
@@ -94,7 +96,7 @@ t_rec_sec	*create_sector_list(t_sector *sectors, t_record *r, t_draw *d)
 	return (head);
 }
 
-t_record	*transform_data(t_draw *draw)
+t_record		*transform_data(t_draw *draw)
 {
 	t_record	*record;
 	t_sector	*head_s;

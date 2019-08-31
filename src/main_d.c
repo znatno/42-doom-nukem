@@ -21,38 +21,54 @@ void	select_texture_up(t_env *env, t_draw *draw)
 
 void	select_floor_up(t_env *env, t_draw *draw)
 {
+	char *floor;
+
+	floor = ft_itoa(draw->save->floor);
 	draw->save = select_sector_mode(env, draw, draw->cur_s, 0);
-	draw_text(1500, 365, ft_itoa(draw->save->floor), env);
+	draw_text(1500, 365, floor, env);
 	(draw->save->floor + 10 >= draw->save->ceil) ?
 	(draw->save->floor = draw->save->ceil - 10) : 0 == 0;
 	draw->save->floor++;
 	draw_select_text(draw, env);
+	free(floor);
 }
 
 void	select_floor_down(t_env *env, t_draw *draw)
 {
+	char *floor;
+
+	floor = ft_itoa(draw->save->floor);
 	draw->save = select_sector_mode(env, draw, draw->cur_s, 0);
-	draw_text(1500, 365, ft_itoa(draw->save->floor), env);
+	draw_text(1500, 365, floor, env);
 	(draw->save->floor < 1) ? draw->save->floor = 0 : draw->save->floor--;
 	draw_select_text(draw, env);
+	free(floor);
 }
 
 void	select_ceil_up(t_env *env, t_draw *draw)
 {
+	char *ceil;
+
+	ceil = ft_itoa(draw->save->ceil);
 	draw->save = select_sector_mode(env, draw, draw->cur_s, 0);
-	draw_text(1500, 305, ft_itoa(draw->save->ceil), env);
+	draw_text(1500, 305, ceil, env);
 	(draw->save->ceil - 10 <= draw->save->floor) ?
 	(draw->save->ceil = draw->save->floor + 10) : 0 == 0;
 	draw_select_text(draw, env);
 	draw->save->ceil++;
+	free(ceil);
 }
 
 void	select_ceil_down(t_env *env, t_draw *draw)
 {
+	char *ceil;
+
+	ceil = ft_itoa(draw->save->ceil);
 	draw->save = select_sector_mode(env, draw, draw->cur_s, 0);
-	draw_text(1500, 305, ft_itoa(draw->save->ceil), env);
+	draw_text(1500, 305, ceil, env);
 	(draw->save->ceil < 10) ? draw->save->ceil = 20 : draw->save->ceil--;
 	(draw->save->ceil - 10 <= draw->save->floor) ?
 	(draw->save->ceil = draw->save->floor + 10) : 0 == 0;
 	draw_select_text(draw, env);
+	free(ceil);
 }

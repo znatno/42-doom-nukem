@@ -67,8 +67,10 @@ t_sector				*check_player_select_mode(t_env *env, t_draw *draw)
 {
 	clear_screen(env);
 	if (PLAYER_PLACEMENT_CONDITION)
+	{
 		draw_texture((t_xy) {.x = draw->place_p.x * 10 - 19,
-					.y = draw->place_p.y * 10 - 19}, PLAYER, 0xfffffff, env);
+				.y = draw->place_p.y * 10 - 19}, PLAYER, 0xfffffff, env);
+	}
 	draw_desk(env);
 	return (draw->head);
 }

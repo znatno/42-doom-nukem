@@ -15,9 +15,9 @@
 char			*gena_pidor(t_rec_sec *walk_s, char *tmp)
 {
 	tmp = ft_strcpy(tmp, "sector ");
-	tmp = ft_strcat(tmp, ft_itoa((int)walk_s->floor));
+	num_cat(&tmp, (int)walk_s->floor);
 	tmp = ft_strcat(tmp, " ");
-	tmp = ft_strcat(tmp, ft_itoa((int)walk_s->ceil));
+	num_cat(&tmp, (int)walk_s->ceil);
 	tmp = ft_strcat(tmp, "\t");
 	return (tmp);
 }
@@ -27,7 +27,7 @@ t_index			*walk_sv_while(t_index *walk_sv, char *tmp)
 	while (walk_sv && walk_sv->next)
 	{
 		tmp = ft_strcat(tmp, " ");
-		tmp = ft_strcat(tmp, ft_itoa(walk_sv->index));
+		num_cat(&tmp, walk_sv->index);
 		walk_sv = walk_sv->next;
 	}
 	return (walk_sv);
@@ -38,8 +38,8 @@ t_portal		*walk_sp_while(t_portal *walk_sp, char *tmp)
 	while (walk_sp)
 	{
 		tmp = ft_strcat(tmp, " ");
-		tmp = ft_strcat(tmp, ((walk_sp->wall_portal == -1) ? ("-1")
-	: (ft_itoa(walk_sp->wall_portal))));
+		((walk_sp->wall_portal == -1) ? (tmp = ft_strcat(tmp, "-1"))
+	: (num_cat(&tmp, walk_sp->wall_portal)));
 		walk_sp = walk_sp->next;
 	}
 	return (walk_sp);
@@ -68,4 +68,5 @@ void			sector_record(t_rec_sec *head_s, int fd)
 		ft_bzero(tmp, 256);
 		walk_s = walk_s->next;
 	}
+	free(tmp);
 }

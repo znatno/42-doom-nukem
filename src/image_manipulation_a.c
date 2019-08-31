@@ -33,6 +33,7 @@ void	draw_text(uint32_t cord_x, uint32_t cord_y, char *text, t_env *env)
 		}
 		font.it_y++;
 	}
+	SDL_FreeSurface(font.font_surface);
 	TTF_CloseFont(font.font);
 }
 
@@ -69,7 +70,6 @@ void	draw_texture(t_xy cords, uint32_t num_tex, uint32_t color, t_env *env)
 		it_x = 0;
 		while (it_x < size_w)
 		{
-			alloca(1);
 			env->buffer[(cords.y + it_y) * W_WIDTH + (cords.x + it_x)] =
 					get_pixel(env->textures->arr_tex[num_tex],
 							it_x, it_y, color);

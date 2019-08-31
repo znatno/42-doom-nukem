@@ -12,13 +12,8 @@
 
 #include "duke_nukem_editor.h"
 
-t_env			*sdl_main_loop(t_env *env)
+t_env			*sdl_main_loop(t_env *env, t_draw *draw, t_stack **head)
 {
-	t_draw		*draw;
-	t_stack		**head;
-
-	head = ft_memalloc(sizeof(stack_t**));
-	draw = init_draw(draw);
 	draw_desk(env);
 	while (draw->loop && env->sdl_error == NONE)
 	{
@@ -33,6 +28,8 @@ t_env			*sdl_main_loop(t_env *env)
 		last_iteration(env, draw);
 		SDL_UpdateWindowSurface(env->window);
 	}
+	free(*head);
+	free(head);
 	return (env);
 }
 
@@ -52,13 +49,17 @@ t_env			*sdl_init(t_env *env)
 int				main(void)
 {
 	t_env		*env;
+	t_draw		*draw;
 	t_textures	textures;
+	t_stack		**head;
 
+	head = ft_memalloc(sizeof(stack_t**));
 	env = malloc(sizeof(t_env));
+	draw = init_draw(draw);
 	env->textures = &textures;
 	if (!(SDL_Init(SDL_INIT_EVERYTHING) < 0) && !(TTF_Init() < 0))
 	{
-		env = sdl_main_loop(sdl_init(env));
+		env = sdl_main_loop(sdl_init(env), draw, head);
 	}
 	else
 	{

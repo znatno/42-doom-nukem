@@ -36,26 +36,40 @@ void	player_placement_return(t_env *env, t_draw *draw)
 
 void	sector_selection_right(t_env *env, t_draw *draw)
 {
+	char *ceil;
+	char *floor;
+
 	if (draw->s_count > 1)
 		draw->cur_s += (draw->s_count > draw->cur_s) ? 1 : (-draw->cur_s + 1);
 	else
 		draw->cur_s = 1;
 	draw->save = select_sector_mode(env, draw, draw->cur_s, 0);
-	(draw->save) ? draw_text(1500, 305, ft_itoa(draw->save->ceil), env)
+	ceil = ft_itoa(draw->save->ceil);
+	floor = ft_itoa(draw->save->floor);
+	(draw->save) ? draw_text(1500, 305, ceil, env)
 	: 0 == 0;
-	(draw->save) ? draw_text(1500, 365, ft_itoa(draw->save->floor), env)
+	(draw->save) ? draw_text(1500, 365, floor, env)
 	: 0 == 0;
+	free(ceil);
+	free(floor);
 }
 
 void	wall_selection_right(t_env *env, t_draw *draw)
 {
+	char *ceil;
+	char *floor;
+
 	draw->save = select_sector_mode(env, draw, draw->cur_s, 0);
 	(draw->cur_v > draw->save->walls) ? draw->cur_v = 1 : draw->cur_v;
 	draw->save_v = save_vertex(env, draw->cur_v++, draw->save);
-	draw_text(1500, 305, ft_itoa(draw->save->ceil), env);
-	draw_text(1500, 365, ft_itoa(draw->save->floor), env);
+	ceil = ft_itoa(draw->save->ceil);
+	floor = ft_itoa(draw->save->floor);
+	draw_text(1500, 305, ceil, env);
+	draw_text(1500, 365, floor, env);
 	(draw->cur_v > 1) ? draw_wall(TEXTURE_COORDS,
 			draw->save_v->texture, env) : 0 == 0;
+	free(ceil);
+	free(floor);
 }
 
 void	delete_line_backspace(t_env *env, t_draw *draw, t_stack **head)
