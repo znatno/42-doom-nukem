@@ -67,6 +67,5 @@ int				main(void)
 	}
 	SDL_Quit();
 	TTF_Quit();
-	system("leaks doom-nukem");
 	return (0);
 }
