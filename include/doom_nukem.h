@@ -50,7 +50,7 @@
 #define ISDIGIT(c) (c >= '0' && c <= '9')
 #define SEC_COLOR	0x0000ff00
 #define BLACK_COLOR	0x00
-#define FILE_NAME "../test.txt"
+#define FILE_NAME "map-clear.txt"
 #define GET_ANGLE_V0_V1(xy0, xy1) (radian_to_grades(acosf(angle_vv(scalar_product(xy0, xy1), len_vector(xy0), len_vector(xy1)))))
 
 #define RED					0
@@ -99,6 +99,13 @@ typedef struct	s_xyz
 	float	y;
 	float	z;
 }				t_xyz;
+
+typedef struct	s_tex_i
+{
+	uint32_t	wall;
+	uint32_t	ceil;
+	uint32_t	floor;
+}				t_tex_i;
 
 typedef struct s_posf_t
 {
@@ -335,7 +342,7 @@ typedef struct		s_font
 }					t_font;
 void		textures_init(t_sdl_main *sdl);
 float		percentage(int start, int end, int curr);
-void		render(int draw_mode ,int texture_num, t_player *p, t_draw_screen_calc *ds);
+void		render(int draw_mode ,t_tex_i tex_i, t_player *p, t_draw_screen_calc *ds);
 int 		scaler_next(t_scaler *i);
 t_scaler	scalar_init(int a, int b, int c, int d, int f);
 int			ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);

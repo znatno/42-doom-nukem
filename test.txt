@@ -1,10 +1,8 @@
-vertex 18 8 22
-vertex 12 22
-vertex 10 6
-vertex 8 2 12
-vertex 2 2 6
+vertex 20 14
+vertex 16 26
+vertex 12 14
+vertex 8 18
 
-sector 0 20	 7 5 3 4 6	 -1 -1 1 -1 -1
-sector 0 20	 5 2 1 0 3	 0 -1 -1 -1 -1
+sector 0 20	 3 1 0 2	 -1 -1 -1 -1
 
-player 10 12 0 1
+player 17 13 0 0

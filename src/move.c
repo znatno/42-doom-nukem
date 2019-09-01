@@ -71,7 +71,6 @@ void	move_player(t_player *plr, t_sector **sectors, float dx, float dy)
 						vert[i + 1].x, vert[i + 1].y) < 0)
 		{
 			flag = move_or_not(plr->where, (*sectors)[sect->neighbors[i]], sect->neighbors[i]);
-			printf("flag_value - %d\n", flag);
 			if (flag >= 0 && flag < plr->num_scts)
 				plr->sector = sect->neighbors[i];
 			else if (flag == -1)
@@ -85,7 +84,6 @@ void	move_player(t_player *plr, t_sector **sectors, float dx, float dy)
 	}
 	if (flag == -2)
 	{
-		printf("-2\n");
 		flag = move_or_not(plr->where, (*sectors)[plr->sector], plr->sector);
 		if (flag == -1)
 		{
@@ -93,7 +91,6 @@ void	move_player(t_player *plr, t_sector **sectors, float dx, float dy)
 			plr->where.y -= dy;
 		}
 	}
-//	printf("player_x - %f| player_y - %f\n", plr->where.x, plr->where.y);
 	plr->anglesin = sinf(plr->angle);
 	plr->anglecos = cosf(plr->angle);
 }

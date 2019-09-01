@@ -16,11 +16,18 @@ void	decor_init(t_sdl_main *sdl)
 {
 	SDL_Surface		**arr_tex;
 
-	arr_tex = (SDL_Surface **)malloc(sizeof(SDL_Surface *) * 1);
-	arr_tex[0] = IMG_Load("../textures-doom/true_love.png");
+	arr_tex = (SDL_Surface **)malloc(sizeof(SDL_Surface *) * 4);
+	arr_tex[0] = IMG_Load("../doom_decor/blood_hand_decor.png");
+	arr_tex[1] = IMG_Load("../doom_decor/face_decor.png");
+	arr_tex[2] = IMG_Load("../doom_decor/scary_decor.png");
+	arr_tex[3] = IMG_Load("../doom_decor/illuminate_decor.png");
+	arr_tex[4] = IMG_Load("../doom_decor/eye_decor.png");
 
-	arr_tex[0] = SDL_ConvertSurfaceFormat(arr_tex[0], SDL_PIXELFORMAT_ABGR32, 0);
-//	arr_tex[1] = SDL_ConvertSurfaceFormat(arr_tex[1], SDL_PIXELFORMAT_ARGB32, 0);
+	arr_tex[0] = SDL_ConvertSurfaceFormat(arr_tex[0], SDL_PIXELFORMAT_ARGB32, 0);
+	arr_tex[1] = SDL_ConvertSurfaceFormat(arr_tex[1], SDL_PIXELFORMAT_ARGB32, 0);
+	arr_tex[2] = SDL_ConvertSurfaceFormat(arr_tex[2], SDL_PIXELFORMAT_ARGB32, 0);
+	arr_tex[3] = SDL_ConvertSurfaceFormat(arr_tex[3], SDL_PIXELFORMAT_ARGB32, 0);
+	arr_tex[4] = SDL_ConvertSurfaceFormat(arr_tex[4], SDL_PIXELFORMAT_ARGB32, 0);
 	sdl->textures->decor_tex = arr_tex;
 }
 
@@ -29,12 +36,13 @@ void	textures_init(t_sdl_main *sdl)
 	SDL_Surface		**arr_tex;
 
 	arr_tex = (SDL_Surface **)malloc(sizeof(SDL_Surface *) * 6);
-	arr_tex[0] = IMG_Load("../textures-doom/brick.jpg");
-	arr_tex[1] = IMG_Load("../textures-doom/steel_0.jpg");
-	arr_tex[2] = IMG_Load("../textures-doom/steel_1.jpg");
-	arr_tex[3] = IMG_Load("../textures-doom/wall_grey.jpg");
-	arr_tex[4] = IMG_Load("../textures-doom/wood_white_0.jpg");
-	arr_tex[5] = IMG_Load("../textures-doom/wood_white_1.jpg");
+	arr_tex[0] = IMG_Load("../doom_textures/bloody_game.jpg");
+	arr_tex[1] = IMG_Load("../doom_textures/carpet_game.jpg");
+	arr_tex[2] = IMG_Load("../doom_textures/forest_game.jpg");
+	arr_tex[3] = IMG_Load("../doom_textures/mess_game.jpg");
+	arr_tex[4] = IMG_Load("../doom_textures/scull_game.jpg");
+	arr_tex[5] = IMG_Load("../doom_textures/wall_game.jpg");
+	arr_tex[6] = IMG_Load("../doom_textures/ground.jpg");
 
 	arr_tex[0] = SDL_ConvertSurfaceFormat(arr_tex[0], SDL_PIXELFORMAT_ARGB32, 0);
 	arr_tex[1] = SDL_ConvertSurfaceFormat(arr_tex[1], SDL_PIXELFORMAT_ARGB32, 0);
@@ -42,7 +50,8 @@ void	textures_init(t_sdl_main *sdl)
 	arr_tex[3] = SDL_ConvertSurfaceFormat(arr_tex[3], SDL_PIXELFORMAT_ARGB32, 0);
 	arr_tex[4] = SDL_ConvertSurfaceFormat(arr_tex[4], SDL_PIXELFORMAT_ARGB32, 0);
 	arr_tex[5] = SDL_ConvertSurfaceFormat(arr_tex[5], SDL_PIXELFORMAT_ARGB32, 0);
+	arr_tex[6] = SDL_ConvertSurfaceFormat(arr_tex[6], SDL_PIXELFORMAT_ARGB32, 0);
 	sdl->textures->arr_tex = arr_tex;
 	decor_init(sdl);
-	decor_texture(sdl,5,0, (t_xy_uint){.x = 50, .y = 50});
+	decor_texture(sdl,5,4, (t_xy_uint){.x = 50, .y = 50});
 }

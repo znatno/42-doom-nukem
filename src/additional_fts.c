@@ -66,7 +66,7 @@ int			color_transoform(int	color, float percent)
 	return (color);
 }
 
-void		draw_ceil_floor(t_draw_screen_calc *ds, t_player *p)
+void		draw_ceil_floor(t_draw_screen_calc *ds, t_player *p, t_tex_i tex_i)
 {
 	uint32_t *pix = (uint32_t *)p->sdl->buffer;
 	for(int y = ds->i->y_top[ds->it->x]; y <= ds->i->y_bottom[ds->it->x]; ++y)
@@ -86,28 +86,28 @@ void		draw_ceil_floor(t_draw_screen_calc *ds, t_player *p)
 		ds->i->txtx1 = (unsigned int)(ds->f->mapx * 256);
 		ds->i->txtz = (unsigned int)(ds->f->mapz * 256);
 		if (y < ds->i->cya)
-			pix[y * W + ds->it->x] = ft_get_pixel(p->sdl->textures->arr_tex[2], ds->i->txtx1 % p->sdl->textures->arr_tex[3]->w, ds->i->txtz % p->sdl->textures->arr_tex[3]->h);
+			pix[y * W + ds->it->x] = color_transoform(ft_get_pixel(p->sdl->textures->arr_tex[tex_i.ceil], ds->i->txtx1 % p->sdl->textures->arr_tex[tex_i.ceil]->w, ds->i->txtz % p->sdl->textures->arr_tex[tex_i.ceil]->h),ds->f->perc_light);
 		else
-			pix[y * W + ds->it->x] = ft_get_pixel(p->sdl->textures->arr_tex[5], ds->i->txtx1 % p->sdl->textures->arr_tex[5]->w, ds->i->txtz % p->sdl->textures->arr_tex[5]->h);
+			pix[y * W + ds->it->x] = color_transoform(ft_get_pixel(p->sdl->textures->arr_tex[tex_i.floor], ds->i->txtx1 % p->sdl->textures->arr_tex[tex_i.floor]->w, ds->i->txtz % p->sdl->textures->arr_tex[tex_i.floor]->h), ds->f->perc_light);
 	}
 }
 
-void		render(int draw_mode ,int texture_num, t_player *p, t_draw_screen_calc *ds)
+void		render(int draw_mode ,t_tex_i tex_i, t_player *p, t_draw_screen_calc *ds)
 {
 	if (draw_mode == TOP_PORTAL_WALL)
 		vline2(ds->i->cya, ds->i->cnya - 1,
 			   scalar_init(ds->i->ya, ds->i->cya, ds->i->yb, 0,
-						   p->sdl->textures->arr_tex[2]->w - 1), ds->i->txtx, p, ds, texture_num);
+						   p->sdl->textures->arr_tex[tex_i.wall]->w - 1), ds->i->txtx, p, ds, tex_i.wall);
 	else if (draw_mode == BOTTOM_PORTAL_WALL)
 		vline2(ds->i->cnyb + 1, ds->i->cyb,
 			   scalar_init(ds->i->ya, ds->i->cnyb + 1, ds->i->yb, 0,
-						   p->sdl->textures->arr_tex[2]->w - 1), ds->i->txtx, p, ds,texture_num);
+						   p->sdl->textures->arr_tex[tex_i.wall]->w - 1), ds->i->txtx, p, ds,tex_i.wall);
 	else if (draw_mode == FULL_WALL)
 		vline2(ds->i->cya, ds->i->cyb,
 			   scalar_init(ds->i->ya, ds->i->cya, ds->i->yb, 0,
-						   p->sdl->textures->arr_tex[2]->w - 1), ds->i->txtx, p, ds, 5);
+						   p->sdl->textures->arr_tex[tex_i.wall]->w - 1), ds->i->txtx, p, ds, tex_i.wall);
 	else if (draw_mode == CEIL || draw_mode == FLOOR)
-		draw_ceil_floor(ds, p);
+		draw_ceil_floor(ds, p, tex_i);
 }
 
 void 		vline2(int y1,int y2, t_scaler ty, unsigned txtx, t_player *p, t_draw_screen_calc *ds, int tn)

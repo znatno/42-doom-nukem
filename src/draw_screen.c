@@ -142,13 +142,13 @@ void	find_intersect(t_draw_screen_calc *ds)
 	}
 	if (fabsf(ds->f->tx2 - ds->f->tx1) > fabsf(ds->f->tz2 - ds->f->tz1))
 	{
-		ds->i->u0 = (int)((ds->f->tx1 - ds->s->org1.x) * 1023 / (ds->s->org2.x - ds->s->org1.x));
-		ds->i->u1 =(int)((ds->f->tx2 - ds->s->org1.x) * 1023 / (ds->s->org2.x - ds->s->org1.x));
+		ds->i->u0 = (int)((ds->f->tx1 - ds->s->org1.x) * 600 / (ds->s->org2.x - ds->s->org1.x));
+		ds->i->u1 =(int)((ds->f->tx2 - ds->s->org1.x) * 600 / (ds->s->org2.x - ds->s->org1.x));
 	}
 	else
 	{
-		ds->i->u0 =(int)((ds->f->tz1 - ds->s->org1.y) * 1023 / (ds->s->org2.y - ds->s->org1.y));
-		ds->i->u1 = (int)((ds->f->tz2 - ds->s->org1.y) * 1023 / (ds->s->org2.y - ds->s->org1.y));
+		ds->i->u0 =(int)((ds->f->tz1 - ds->s->org1.y) * 600 / (ds->s->org2.y - ds->s->org1.y));
+		ds->i->u1 = (int)((ds->f->tz2 - ds->s->org1.y) * 600 / (ds->s->org2.y - ds->s->org1.y));
 	}
 }
 
@@ -199,7 +199,7 @@ void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p, t_game *g)
 {
 	/* Calculate the Z coordinate for this point. (Only used for lighting.) */
 	ds->i->z = (int)roundf(((ds->it->x - ds->i->x1) * (ds->f->tz2-ds->f->tz1)
-			/ (ds->i->x2-ds->i->x1) + ds->f->tz1) * 8);
+			/ (ds->i->x2-ds->i->x1) + ds->f->tz1) * 16);
 	ds->i->z = (ds->i->z > 250) ? (250) : (ds->i->z);
 
 	ds->f->perc_light = percentage(250, 0, ds->i->z); //light percent by ds-i->z
@@ -211,7 +211,7 @@ void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p, t_game *g)
 	ds->i->cyb = CLAMP(ds->i->yb, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]); // bottom
 	/* Render ceiling: everything above this sector's ceiling height-> */
 	/* Render floor: everything below this sector's floor height-> */
-	render(CEIL, 0, p, ds);
+	render(CEIL, (t_tex_i){.ceil = 1, .floor = 4}, p, ds);
 }
 
 void	render_ceil_floor(t_draw_screen_calc *ds, t_player *p)
@@ -223,13 +223,13 @@ void	render_ceil_floor(t_draw_screen_calc *ds, t_player *p)
 	ds->i->cnya = CLAMP(ds->i->nya, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]);
 	ds->i->cnyb = CLAMP(ds->i->nyb, ds->i->y_top[ds->it->x], ds->i->y_bottom[ds->it->x]);
 
-	render(TOP_PORTAL_WALL, 3, p, ds);
+	render(TOP_PORTAL_WALL, (t_tex_i){.wall = 5}, p, ds);
 	/* If our ceiling is higher than their ceiling, render upper wall */
 //	ds->i->r1 = 0x010101 * (255 - ds->i->z); // top portal wall color
 //	ds->i->r2 = 0x010101 * (255 - ds->i->z); // bottom portal wall color
 
 	ds->i->y_top[ds->it->x] = CLAMP(MAX(ds->i->cya, ds->i->cnya), ds->i->y_top[ds->it->x], H - 1); // Shrink the remaining window below these ceilings
-	render(BOTTOM_PORTAL_WALL, 3, p, ds);
+	render(BOTTOM_PORTAL_WALL, (t_tex_i){.wall = 5}, p, ds);
 	/* If our floor is lower than their floor, render bottom wall */
 //	render(BOTTOM_PORTAL_WALL, 0, p, ds); // Between their and our floor
 //	SDL_UpdateWindowSurface(p->sdl->window);
@@ -244,7 +244,7 @@ void	render_sector(t_draw_screen_calc *ds, t_player *p, t_game *g)
 		render_ceil_floor(ds, p);
 	else
 	{
-		render(FULL_WALL, 5, p, ds);
+		render(FULL_WALL, (t_tex_i){.wall = 5}, p, ds);
 		/* There's no neighbor. Render wall from top (cya = ceiling level) to bottom (cyb = floor level). */
 //		ds->i->r = 0x010101 * (255 - ds->i->z); // wall color = 0x010101 * (255 - ds->i->z)
 //		SDL_UpdateWindowSurface(p->sdl->window);
@@ -321,7 +321,7 @@ void	draw_screen(t_game *g)
 				continue;
 			}
 			ds.i->u0 = 0;
-			ds.i->u1 = 1023;
+			ds.i->u1 = 600;
 			/* If it's partially behind the player, clip it against player's view frustrum */
 			if (ds.f->tz1 <= 0 || ds.f->tz2 <= 0)
 				find_intersect(&ds);
