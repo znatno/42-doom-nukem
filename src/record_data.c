@@ -14,7 +14,7 @@
 
 char	*trim_itof(char *flt)
 {
-	int		i;
+	int	i;
 
 	i = ft_strlen(flt);
 	if (flt[i - 1] == '0')
@@ -25,9 +25,9 @@ char	*trim_itof(char *flt)
 	return (flt);
 }
 
-int		open_create_map()
+int		open_create_map(void)
 {
-	int 	fd;
+	int	fd;
 
 	fd = open("../maps/ya_karta.doom", O_WRONLY);
 	if (fd == -1)
@@ -40,8 +40,8 @@ int		open_create_map()
 
 void	vertex_record(t_xy *vertex, int num_vertex, int fd)
 {
-	int i;
-	char *tmp;
+	int		i;
+	char	*tmp;
 
 	i = 0;
 	tmp = (char *)malloc(sizeof(char) * 256);
@@ -49,7 +49,7 @@ void	vertex_record(t_xy *vertex, int num_vertex, int fd)
 	while (i < num_vertex)
 	{
 		tmp = ft_strcpy(tmp, "vertex ");
-		tmp = ft_strcat(tmp , trim_itof(ft_itof(vertex[i].y)));
+		tmp = ft_strcat(tmp, trim_itof(ft_itof(vertex[i].y)));
 		tmp = ft_strcat(tmp, " ");
 		tmp = ft_strcat(tmp, trim_itof(ft_itof(vertex[i].x)));
 		tmp = ft_strcat(tmp, "\n");
@@ -62,7 +62,7 @@ void	vertex_record(t_xy *vertex, int num_vertex, int fd)
 void	sector_record(t_sector *sectors, int num_sectors, int fd)
 {
 	int		i;
-	char 	*tmp;
+	char	*tmp;
 
 	i = 0;
 	tmp = (char *)malloc(sizeof(char) * 256);
@@ -79,19 +79,3 @@ void	sector_record(t_sector *sectors, int num_sectors, int fd)
 		i++;
 	}
 }
-
-void	player_record()
-{
-	//record player to file
-}
-
-//void	record_data(t_xy *vertex, int num_vertex, t_sector *sectors, int num_sectors)
-//{
-//	int fd;
-//
-//	fd = open_create_map();
-//	vertex_record(vertex, num_vertex, fd);
-//	sector_record(sectors, num_sectors, fd);
-//	player_record(player, fd);
-//	close(fd);
-//}
