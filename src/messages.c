@@ -14,9 +14,9 @@
 
 void	show_msg(t_game *g, t_msg m, t_font font)
 {
-	SDL_Surface *surface_msg;
-	SDL_Texture *msg;
-	SDL_Rect msg_rect;
+	SDL_Surface	*surface_msg;
+	SDL_Texture	*msg;
+	SDL_Rect	msg_rect;
 
 	surface_msg = TTF_RenderText_Blended(font.ttf, m.text, font.color);
 	msg = SDL_CreateTextureFromSurface(g->sdl.renderer, surface_msg);
