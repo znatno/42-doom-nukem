@@ -53,14 +53,10 @@ int			color_transoform(int color, float percent)
 
 void		draw_ceil_floor(t_draw_screen_calc *ds, t_player *p, t_tex_i tex_i)
 {
-	uint32_t *pix;
-	int y;
+	uint32_t *pix = (uint32_t *)p->sdl->buffer;
 
-	y = ds->i->y_top[ds->it->x];
-	pix = (uint32_t *)p->sdl->buffer;
-	while (y <= ds->i->y_bottom[ds->it->x])
+/*	while (y <= ds->i->y_bottom[ds->it->x])
 	{
-		++y;
 		if (y >= ds->i->cya && y <= ds->i->cyb)
 			y = ds->i->cyb;
 		else
@@ -79,8 +75,8 @@ void		draw_ceil_floor(t_draw_screen_calc *ds, t_player *p, t_tex_i tex_i)
 		else
 			pix[y * W + ds->it->x] = color_transoform(ft_get_pixel(p->sdl->textures->arr_tex[tex_i.floor], ds->i->txtx1 % p->sdl->textures->arr_tex[tex_i.floor]->w, ds->i->txtz % p->sdl->textures->arr_tex[tex_i.floor]->h), ds->f->perc_light);
 		}
-	}
-/*	for(int y = ds->i->y_top[ds->it->x]; y <= ds->i->y_bottom[ds->it->x]; ++y)
+	}*/
+	for(int y = ds->i->y_top[ds->it->x]; y <= ds->i->y_bottom[ds->it->x]; ++y)
 	{
 		if (y >= ds->i->cya && y <= ds->i->cyb)
 		{
@@ -100,24 +96,27 @@ void		draw_ceil_floor(t_draw_screen_calc *ds, t_player *p, t_tex_i tex_i)
 			pix[y * W + ds->it->x] = color_transoform(ft_get_pixel(p->sdl->textures->arr_tex[tex_i.ceil], ds->i->txtx1 % p->sdl->textures->arr_tex[tex_i.ceil]->w, ds->i->txtz % p->sdl->textures->arr_tex[tex_i.ceil]->h),ds->f->perc_light);
 		else
 			pix[y * W + ds->it->x] = color_transoform(ft_get_pixel(p->sdl->textures->arr_tex[tex_i.floor], ds->i->txtx1 % p->sdl->textures->arr_tex[tex_i.floor]->w, ds->i->txtz % p->sdl->textures->arr_tex[tex_i.floor]->h), ds->f->perc_light);
-	}*/
+	}
 }
 
-void		render(int draw_mode ,t_tex_i tex_i, t_player *p, t_draw_screen_calc *ds)
+void		render(int dm, t_tex_i tex_i, t_player *p, t_draw_screen_calc *ds)
 {
-	if (draw_mode == TOP_PORTAL_WALL)
+	if (dm == TOP_PORTAL_WALL)
 		vline2(ds->i->cya, ds->i->cnya - 1,
-			   scalar_init(ds->i->ya, ds->i->cya, ds->i->yb, 0,
-						   p->sdl->textures->arr_tex[tex_i.wall]->w - 1), ds->i->txtx, p, ds, tex_i.wall);
-	else if (draw_mode == BOTTOM_PORTAL_WALL)
+				scalar_init(ds->i->ya, ds->i->cya, ds->i->yb, 0,
+						p->sdl->textures->arr_tex[tex_i.wall]->w - 1),
+						ds->i->txtx, p, ds, tex_i.wall);
+	else if (dm == BOTTOM_PORTAL_WALL)
 		vline2(ds->i->cnyb + 1, ds->i->cyb,
-			   scalar_init(ds->i->ya, ds->i->cnyb + 1, ds->i->yb, 0,
-						   p->sdl->textures->arr_tex[tex_i.wall]->w - 1), ds->i->txtx, p, ds,tex_i.wall);
-	else if (draw_mode == FULL_WALL)
+				scalar_init(ds->i->ya, ds->i->cnyb + 1, ds->i->yb, 0,
+						p->sdl->textures->arr_tex[tex_i.wall]->w - 1),
+						ds->i->txtx, p, ds, tex_i.wall);
+	else if (dm == FULL_WALL)
 		vline2(ds->i->cya, ds->i->cyb,
-			   scalar_init(ds->i->ya, ds->i->cya, ds->i->yb, 0,
-						   p->sdl->textures->arr_tex[tex_i.wall]->w - 1), ds->i->txtx, p, ds, tex_i.wall);
-	else if (draw_mode == CEIL || draw_mode == FLOOR)
+				scalar_init(ds->i->ya, ds->i->cya, ds->i->yb, 0,
+						p->sdl->textures->arr_tex[tex_i.wall]->w - 1),
+						ds->i->txtx, p, ds, tex_i.wall);
+	else if (dm == CEIL || dm == FLOOR)
 		draw_ceil_floor(ds, p, tex_i);
 }
 
@@ -150,12 +149,12 @@ void		vline(int y1, int y2, int color, t_player *plr, t_draw_screen_calc *ds)
 	y1 = CLAMP(y1, 0, H - 1);
 	y2 = CLAMP(y2, 0, H - 1);
 	if (y2 == y1)
-		pix[y1 * W + x] = BLACK_COLOR; //нижня межа вікна
+		pix[y1 * W + x] = BLACK_COLOR;
 	else if (y2 > y1)
 	{
-		pix[y1 * W + x] = color; //проміжок секторів
+		pix[y1 * W + x] = color;
 		if (y1 == 0 || y1 == 1)
-			pix[y1 * W + x] = BLACK_COLOR; //верхня межа вікна
+			pix[y1 * W + x] = BLACK_COLOR;
 		for (int y = y1 + 1; y <= y2; ++y)
 		{
 			pix[y * W + x] = color;
@@ -163,10 +162,6 @@ void		vline(int y1, int y2, int color, t_player *plr, t_draw_screen_calc *ds)
 		pix[y2 * W + x] = color;
 	}
 }
-
-/*
-**	Quit
-*/
 
 int			exit_doom(t_game *g)
 {

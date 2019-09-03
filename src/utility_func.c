@@ -12,15 +12,6 @@
 
 #include "doom_nukem.h"
 
-float	cos_to_angle(float cos)
-{
-	float angle;
-
-
-
-	return (angle);
-}
-
 t_xy	vv_to_v(float x0, float y0, float x1, float y1)		//x0,y0 x1,y1 = x,y пространственный вектор до свободного
 {
 	t_xy	xy;

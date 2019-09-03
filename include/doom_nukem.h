@@ -181,37 +181,6 @@ typedef struct			s_sdl_main
 	int					*buffer;
 }						t_sdl_main;
 
-// Player: location
-typedef struct		s_player
-{
-	t_xyz			where;		// Current position
-	t_xyz			vlct;		// velocity, curr motion vector / швидкість
-	float			angle;		// камера по X-осі, yaw — по Y-осі
-	float
-	anglesin;
-	float			anglecos;
-	float			yaw;		// Looking towards (and sin() and cos() thereof)
-	unsigned		sector;		// Which sector the player is currently in
-	unsigned int	num_scts;	// Number of Sectors
-	bool			ground;
-	bool			falling;
-	bool			moving;
-	bool			ducking;	// присяд
-	bool 			run;		// пришвидшення
-	bool 			fly;		// політ
-	float			eyeheight;
-	t_keys			key;		// WASD провірка натиску клавіш
-	t_move_vec		mv;			// вектор руху
-	float 			speed;		// швидкість, менша для присяду
-	int 			pushing;
-	float			aclrt;		// acceleration / прискорення
-	t_xy_int		ms;			// mouse aiming
-	float 			ms_yaw;
-	t_sdl_main		*sdl;
-
-	bool			draw_look; // для перегляду відмальовування полінійно
-}					t_player;
-
 typedef struct	s_tmp_iter
 {
 	int 		start_do;
@@ -340,14 +309,6 @@ typedef struct		s_font
 	int 			size;
 	SDL_Color		color;
 }					t_font;
-void		textures_init(t_sdl_main *sdl);
-float		percentage(int start, int end, int curr);
-void		render(int draw_mode ,t_tex_i tex_i, t_player *p, t_draw_screen_calc *ds);
-int 		scaler_next(t_scaler *i);
-t_scaler	scalar_init(int a, int b, int c, int d, int f);
-int			ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);
-void 		vline2(int y1,int y2, t_scaler ty, unsigned txtx, t_player *p, t_draw_screen_calc *ds, int tn);
-void		vline_texture(int y1, int y2, int text_num, t_player *plr, t_draw_screen_calc *ds);
 
 typedef struct		s_msg
 {
@@ -376,6 +337,40 @@ t_obj			// прототип структури для об'єкта
 }
 */
 
+
+// Player: location
+typedef struct		s_player
+{
+	t_xyz			where;		// Current position
+	t_xyz			vlct;		// velocity, curr motion vector / швидкість
+	float			angle;		// камера по X-осі, yaw — по Y-осі
+	float
+			anglesin;
+	float			anglecos;
+	float			yaw;		// Looking towards (and sin() and cos() thereof)
+	unsigned		sector;		// Which sector the player is currently in
+	unsigned int	num_scts;	// Number of Sectors
+	bool			ground;
+	bool			falling;
+	bool			moving;
+	bool			ducking;	// присяд
+	bool 			run;		// пришвидшення
+	bool 			fly;		// політ
+	float			eyeheight;
+	t_keys			key;		// WASD провірка натиску клавіш
+	t_move_vec		mv;			// вектор руху
+	float 			speed;		// швидкість, менша для присяду
+	int 			pushing;
+	float			aclrt;		// acceleration / прискорення
+	t_xy_int		ms;			// mouse aiming
+	float 			ms_yaw;
+	t_sdl_main		*sdl;
+	t_scaler			*ts;
+	t_draw_screen_calc	*ds;
+
+	bool			draw_look; // для перегляду відмальовування полінійно
+}					t_player;
+
 typedef struct		s_game
 {
 	t_player	plr;
@@ -387,7 +382,6 @@ typedef struct		s_game
 
 	int			error;		// для виводу тексту помилки при виході
 }					t_game;
-
 
 /*
 ** Initialize functions
@@ -462,5 +456,13 @@ void			clear_msg(t_msg *m);
  */
 
 void	decor_texture(t_sdl_main *sdl, uint32_t t_n, uint32_t d_n, t_xy_uint cords);
+void		textures_init(t_sdl_main *sdl);
+float		percentage(int start, int end, int curr);
+void		render(int draw_mode ,t_tex_i tex_i, t_player *p, t_draw_screen_calc *ds);
+int 		scaler_next(t_scaler *i);
+t_scaler	scalar_init(int a, int b, int c, int d, int f);
+int			ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);
+void 		vline2(int y1,int y2, t_scaler ty, unsigned txtx, t_player *p, t_draw_screen_calc *ds, int tn);
+void		vline_texture(int y1, int y2, int text_num, t_player *plr, t_draw_screen_calc *ds);
 
 #endif
