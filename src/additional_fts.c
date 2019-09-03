@@ -12,37 +12,23 @@
 
 #include "doom_nukem.h"
 
-/*
-**	Needs to prevent leaks on exit
-*/
-
 void		unload_data(t_game *g)
 {
-	for (unsigned a = 0; a < g->plr.num_scts; ++a)
-		free(g->sectors[a].vertex);
-	for (unsigned a = 0; a < g->plr.num_scts; ++a)
-		free(g->sectors[a].neighbors);
+	unsigned a;
+
+	a = 0;
+	while (a < g->plr.num_scts)
+		free(g->sectors[a++].vertex);
+	a = 0;
+	while (a < g->plr.num_scts)
+		free(g->sectors[a++].neighbors);
 	free(g->sectors);
 	g->sectors = NULL;
 	g->plr.num_scts = 0;
-
-	for (unsigned a = 0; a < FONTS_NUM; ++a)
-		clear_font(&g->fonts[a]);
-	/*
-	free(g->fonts);
-	*/
-
-	/*
-	for (unsigned a = 0; a < MAX_MSGS; ++a)
-		clear_msg(&g->msgs[a]);
-	free(g->msgs);
-	*/
+	a = 0;
+	while (a < FONTS_NUM)
+		clear_font(&g->fonts[a++]);
 }
-
-/*
-** vline:
-** Draw a vertical line on screen, with a different color pixel in top & bottom
-*/
 
 float		percentage(int start, int end, int curr)
 {
@@ -54,7 +40,7 @@ float		percentage(int start, int end, int curr)
 	return ((dist == 0) ? 1.0 : (place / dist));
 }
 
-int			color_transoform(int	color, float percent)
+int			color_transoform(int color, float percent)
 {
 	int		rgb[3];
 
@@ -62,14 +48,39 @@ int			color_transoform(int	color, float percent)
 	rgb[GREEN] = ((color >> 16) & 0xFF) * percent;
 	rgb[BLUE] = ((color >> 24) & 0xFF) * percent;
 	color = ((rgb[BLUE] << 24) | (rgb[GREEN] << 16) | rgb[RED] << 8);
-
 	return (color);
 }
 
 void		draw_ceil_floor(t_draw_screen_calc *ds, t_player *p, t_tex_i tex_i)
 {
-	uint32_t *pix = (uint32_t *)p->sdl->buffer;
-	for(int y = ds->i->y_top[ds->it->x]; y <= ds->i->y_bottom[ds->it->x]; ++y)
+	uint32_t *pix;
+	int y;
+
+	y = ds->i->y_top[ds->it->x];
+	pix = (uint32_t *)p->sdl->buffer;
+	while (y <= ds->i->y_bottom[ds->it->x])
+	{
+		++y;
+		if (y >= ds->i->cya && y <= ds->i->cyb)
+			y = ds->i->cyb;
+		else
+		{
+			ds->f->hei = y < ds->i->cya ? ds->f->yceil : ds->f->yfloor;
+			ds->f->mapz = ds->f->hei * H * V_FOV / ((H / 2 - (float) y) - p->yaw * H * V_FOV);
+			ds->f->mapx = ds->f->mapz * (W / 2 - (float) ds->it->x) / (W * H_FOV);
+			ds->f->rtx = ds->f->mapz * ds->f->pcos + ds->f->mapx * ds->f->psin;
+			ds->f->rtz = ds->f->mapz * ds->f->psin - ds->f->mapx * ds->f->pcos;
+			ds->f->mapx = ds->f->rtx + p->where.x;
+			ds->f->mapz = ds->f->rtz + p->where.y;
+			ds->i->txtx1 = (unsigned int) (ds->f->mapx * 256);
+			ds->i->txtz = (unsigned int) (ds->f->mapz * 256);
+		if (y < ds->i->cya)
+			pix[y * W + ds->it->x] = color_transoform(ft_get_pixel(p->sdl->textures->arr_tex[tex_i.ceil], ds->i->txtx1 % p->sdl->textures->arr_tex[tex_i.ceil]->w, ds->i->txtz % p->sdl->textures->arr_tex[tex_i.ceil]->h),ds->f->perc_light);
+		else
+			pix[y * W + ds->it->x] = color_transoform(ft_get_pixel(p->sdl->textures->arr_tex[tex_i.floor], ds->i->txtx1 % p->sdl->textures->arr_tex[tex_i.floor]->w, ds->i->txtz % p->sdl->textures->arr_tex[tex_i.floor]->h), ds->f->perc_light);
+		}
+	}
+/*	for(int y = ds->i->y_top[ds->it->x]; y <= ds->i->y_bottom[ds->it->x]; ++y)
 	{
 		if (y >= ds->i->cya && y <= ds->i->cyb)
 		{
@@ -89,7 +100,7 @@ void		draw_ceil_floor(t_draw_screen_calc *ds, t_player *p, t_tex_i tex_i)
 			pix[y * W + ds->it->x] = color_transoform(ft_get_pixel(p->sdl->textures->arr_tex[tex_i.ceil], ds->i->txtx1 % p->sdl->textures->arr_tex[tex_i.ceil]->w, ds->i->txtz % p->sdl->textures->arr_tex[tex_i.ceil]->h),ds->f->perc_light);
 		else
 			pix[y * W + ds->it->x] = color_transoform(ft_get_pixel(p->sdl->textures->arr_tex[tex_i.floor], ds->i->txtx1 % p->sdl->textures->arr_tex[tex_i.floor]->w, ds->i->txtz % p->sdl->textures->arr_tex[tex_i.floor]->h), ds->f->perc_light);
-	}
+	}*/
 }
 
 void		render(int draw_mode ,t_tex_i tex_i, t_player *p, t_draw_screen_calc *ds)
