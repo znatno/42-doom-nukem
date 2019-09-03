@@ -365,8 +365,6 @@ typedef struct		s_player
 	t_xy_int		ms;			// mouse aiming
 	float 			ms_yaw;
 	t_sdl_main		*sdl;
-	t_scaler			*ts;
-	t_draw_screen_calc	*ds;
 
 	bool			draw_look; // для перегляду відмальовування полінійно
 }					t_player;
