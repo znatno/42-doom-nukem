@@ -187,7 +187,7 @@ void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p)
 {
 	/* Calculate the Z coordinate for this point. (Only used for lighting.) */
 	ds->i->z = (int)roundf(((ds->it->x - ds->i->x1) * (ds->f->tz2-ds->f->tz1)
-			/ (ds->i->x2-ds->i->x1) + ds->f->tz1) * 8);
+			/ (ds->i->x2-ds->i->x1) + ds->f->tz1) * p->light);
 	ds->i->z = (ds->i->z > 250) ? (250) : (ds->i->z);
 	/* Acquire the Y coordinates for our ceiling & floor for this X coordinate-> Clamp them-> */
 	ds->i->ya = (ds->it->x - ds->i->x1) * (ds->i->y2a - ds->i->y1a) / (ds->i->x2 - ds->i->x1) + ds->i->y1a;

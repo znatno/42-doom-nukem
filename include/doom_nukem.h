@@ -144,6 +144,9 @@ typedef struct			s_sdl_main
 typedef	struct 		s_weapons
 {
 	int 			***pistol_sprite;
+	int 			***lighter_sprite;
+	int 			type;
+	double 			sprite_counter;
 }					t_weapons;
 
 // Player: location
@@ -172,6 +175,7 @@ typedef struct		s_player
 	t_xy_int			ms;			// mouse aiming
 	float 			ms_yaw;
 	t_sdl_main		*sdl;
+	int				light;
 
 	bool			draw_look; // для перегляду відмальовування полінійно
 }					t_player;
