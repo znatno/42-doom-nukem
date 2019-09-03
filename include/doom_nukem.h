@@ -25,11 +25,11 @@
 # include "SDL.h"
 # include "SDL_mixer.h"
 # include "SDL_image.h"
-# include "SDL2/SDL_ttf.h"
+# include "SDL_ttf.h"
 
 /* Define window size */
-# define W 640
-# define H 480
+# define W 1024
+# define H 768
 
 #define YAW(y, z) (y + z * plr.yaw)	// Y-axis angle of player camera
 #define MAX_QUE	32					// max num of sectors what will be rendered
@@ -316,7 +316,8 @@ typedef struct		s_game
 	t_font		fonts[FONTS_NUM];
 	t_msg		msgs[MAX_MSGS];
 	t_weapons	wpn;
-//	t_obj		*objs;		// масив зчитаних об'єктів
+	bool		key_down;
+	//	t_obj		*objs;		// масив зчитаних об'єктів
 
 	int			error;		// для виводу тексту помилки при виході
 }					t_game;

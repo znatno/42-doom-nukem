@@ -18,10 +18,11 @@ void		events(t_game *g)
 {
 	const uint8_t	*kstate;	//	array of keyboard keys states
 	SDL_Event		ev;
-
+	Uint8 			mouse_state = 0;
 	kstate = SDL_GetKeyboardState(NULL);
 	while (SDL_PollEvent(&ev))
 	{
+		mouse_state = 0;
 		if (kstate[SDL_SCANCODE_ESCAPE] || ev.type == SDL_QUIT)
 			exit_doom(g);
 
@@ -30,22 +31,47 @@ void		events(t_game *g)
 		g->plr.key.s = kstate[SDL_SCANCODE_S];
 		g->plr.key.d = kstate[SDL_SCANCODE_D];
 		g->plr.draw_look = kstate[SDL_SCANCODE_L];
-		if (ev.button.button == SDL_BUTTON_LEFT && g->wpn.sprite_counter == 1 && g->wpn.type == 1)
+
+//		if (ev.button.button == SDL_BUTTON_LEFT && g->wpn.sprite_counter == 1 && g->wpn.type == 1)
+//		{
+//			if (g->wpn.sprite_counter == 1)
+//				g->wpn.sprite_counter += 0.5;
+//			printf("hello");
+//		}
+//		if (SDL_MOUSEBUTTONDOWN || SDL_MOUSEBUTTONUP) {
+//			mouse_state = ev.button.state;
+//			printf("MOUSE STAT = %d\n", mouse_state);
+//		}
+//		if (SDL_MOUSEMOTION) {
+//			mouse_state = ev.motion.state;
+//			printf("MOUTION STAT = %d\n", mouse_state);
+//		}
+//		if (ev.button.state &&  g->wpn.sprite_counter == 1 && g->wpn.type == 2)
+//		{
+//			if (g->wpn.sprite_counter == 1)
+//				g->wpn.sprite_counter += 1;
+//			g->plr.light = 8;
+//		}
+//		if (!ev.button.state && g->wpn.sprite_counter == 2 && g->wpn.type == 2)
+//		{
+//			g->wpn.sprite_counter = 1;
+//			g->plr.light = 16;
+//		}
+		if (ev.type == SDL_MOUSEBUTTONDOWN && g->wpn.sprite_counter == 1 && g->wpn.type == 2)
 		{
-			if (g->wpn.sprite_counter == 1)
-				g->wpn.sprite_counter += 0.5;
-		}
-		if (ev.button.button == SDL_BUTTON_LEFT && g->wpn.sprite_counter == 1 && g->wpn.type == 2)
-		{
+
+//			g->key_down = 1;
 			if (g->wpn.sprite_counter == 1)
 				g->wpn.sprite_counter += 1;
 			g->plr.light = 8;
 		}
-		if (!ev.button.button == SDL_BUTTON_LEFT && g->wpn.sprite_counter == 2 && g->wpn.type == 2)
+		if (ev.type == SDL_MOUSEBUTTONUP && g->wpn.sprite_counter == 2 && g->wpn.type == 2)
 		{
+//			g->key_down = 0;
 			g->wpn.sprite_counter = 1;
 			g->plr.light = 16;
 		}
+		printf("key_down = %d\n", g->key_down);
 		if (ev.type == SDL_KEYDOWN)
 		{
 			if (ev.key.keysym.sym == 'f' && !g->plr.ducking)
@@ -56,7 +82,28 @@ void		events(t_game *g)
 				g->plr.vlct.z += 0.5;
 				g->plr.falling = 1;
 			}
-
+//			if (g->wpn.sprite_counter == 1 && g->wpn.type == 2)
+//			{
+//				if (g->wpn.sprite_counter == 1)
+//					g->wpn.sprite_counter += 1;
+//				g->plr.light = 8;
+//			}
+//			if (g->wpn.sprite_counter == 2 && g->wpn.type == 2)
+//			{
+//				g->wpn.sprite_counter = 1;
+//				g->plr.light = 16;
+//			}
+//			if (ev.button.button == SDL_BUTTON_LEFT && g->wpn.sprite_counter == 1 && g->wpn.type == 2)
+//			{
+//				if (g->wpn.sprite_counter == 1)
+//					g->wpn.sprite_counter += 1;
+//				g->plr.light = 8;
+//			}
+//			if (!(ev.button.button == SDL_BUTTON_LEFT && g->wpn.sprite_counter == 2 && g->wpn.type == 2))
+//			{
+//				g->wpn.sprite_counter = 1;
+//				g->plr.light = 16;
+//			}
 			if (ev.key.keysym.sym == 'p')
 			{
 				g->msgs[1] = create_msg("Between two girls & one cup",
@@ -96,6 +143,7 @@ void		events(t_game *g)
 		g->plr.speed = g->plr.run && g->plr.eyeheight != DUCK_H ? 0.28f : 0.20f;
 		SDL_PumpEvents(); // обработчик событий
 	}
+
 }
 
 void		draw_cur_lighter_sprite(t_game *g, int width, int height, int curSprite)
@@ -115,12 +163,14 @@ void		draw_cur_lighter_sprite(t_game *g, int width, int height, int curSprite)
 		x_img = width;
 		while (x < 128 - 1 && x_img < W)
 		{
-			x_num += 0.35;
+			x_num += 0.5;
 			x = (int)x_num;
-			if (g->wpn.lighter_sprite[curSprite][y][x] != 0x000000)
+			if (g->wpn.lighter_sprite[curSprite][y][x] != 255)
 				g->sdl.buffer[height * W + x_img] = g->wpn.lighter_sprite[curSprite][y][x];
+//			printf("%d ", g->wpn.lighter_sprite[curSprite][y][x]);
 			x_img++;
 		}
+//		printf("\n");
 		y_num += 0.5;
 		y = (int)y_num;
 		height++;
@@ -182,9 +232,7 @@ void		draw_weapons(t_game *g)
 	if (g->wpn.type == 1)
 		draw_pistol(g);
 	else if (g->wpn.type == 2)
-	{
 		draw_lighter(g);
-	}
 }
 
 void		game_loop(t_game *g)
@@ -273,10 +321,10 @@ SDL_Surface		*load_lighter_part(int sprite)
 
 	curSprite = (SDL_Surface *)malloc(sizeof(SDL_Surface));
 	if (sprite == 0)
-		curSprite = IMG_Load("../sprites/5.png");
+		curSprite = IMG_Load("../sprites/3.png");
 	if (sprite == 1)
 		curSprite = IMG_Load("../sprites/1.png");
-	curSprite = SDL_ConvertSurfaceFormat(curSprite, SDL_PIXELFORMAT_RGBA32, 0);
+	curSprite = SDL_ConvertSurfaceFormat(curSprite, SDL_PIXELFORMAT_ARGB32, 0);
 	return (curSprite);
 }
 
