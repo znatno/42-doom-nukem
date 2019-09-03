@@ -124,7 +124,7 @@ void		game_loop(t_game *g)
 
 		/* Horizontal collision detection */
 		if (g->plr.moving)
-			check_move(&g->plr, &g->sectors);
+			check_move(&g->plr, &g->sectors, -1);
 
 		/* mouse aiming */
 		g->plr.ms.x = 0;
@@ -136,7 +136,7 @@ void		game_loop(t_game *g)
 
 		/* player moving */
 		g->plr.mv = (t_move_vec){.x = 0.f, .y = 0.f};
-		move_player(&g->plr, &g->sectors, 0, 0);
+		move_player(&g->plr, &g->sectors, 0, 0, -1);
 		if (g->plr.key.w)
 			g->plr.mv = (t_move_vec){.x = g->plr.mv.x + g->plr.anglecos * g->plr.speed,
 						  .y = g->plr.mv.y + g->plr.anglesin * g->plr.speed};

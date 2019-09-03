@@ -403,7 +403,7 @@ float			scalar_product(t_xy xy0, t_xy xy1);
 float			angle_vv(float scalar_product, float len0, float len1);
 float			radian_to_grades(float rad);
 float			vector_product(t_xy xy0, t_xy xy1);
-int				move_or_not(t_xyz where ,t_sector sector, unsigned sect_num);
+int				move_or_not(t_xyz where ,t_sector sector, unsigned sect_num, int j);
 
 /*
 **  "math_fts.c" Math functions for vectors and other things
@@ -426,10 +426,10 @@ float			point_side(float px, float py, float x0, float y0,
 */
 
 void			move_player(t_player *plr, t_sector **sectors,
-							float dx, float dy);
+							float dx, float dy, int i);
 float			angles(t_xy xy0, t_xy xy1);
 
-void			check_move(t_player *plr, t_sector **sc);
+void			check_move(t_player *plr, t_sector **sc, unsigned int s);
 void			check_fall(t_player *plr, t_sector **sectors);
 
 /*
