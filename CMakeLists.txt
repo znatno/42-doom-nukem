@@ -42,7 +42,8 @@ link_directories(${SDL2_LIBRARY}
 
 file(GLOB all
         "${INCLUDE}*.h"
-        "${SOURCE}*.c")
+        "${SOURCE}*.c"
+        "src/utility_func1.c")
 
 #include_directories(~/.brew/Cellar/sdl/1.2.15_1/include/SDL/)
 #include_directories(~/.brew/include/SDL libft/include/)
