@@ -257,6 +257,9 @@ typedef struct	s_calc_tmp_int
 //	unsigned	r;
 	unsigned	txtz;
 	unsigned	txtx1;
+	int 		y1;
+	int 		y2;
+	int 		tn;
 }				t_calc_tmp_int;
 
 
@@ -472,7 +475,7 @@ void		render(int draw_mode ,t_tex_i tex_i, t_player *p, t_draw_screen_calc *ds);
 int 		scaler_next(t_scaler *i);
 t_scaler	scalar_init(int a, int b, int c, int d, int f);
 int			ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);
-void 		vline2(int y1,int y2, t_scaler ty, unsigned txtx, t_player *p, t_draw_screen_calc *ds, int tn);
+void 		vline2(t_scaler ty, unsigned txtx, t_player *p, t_draw_screen_calc *ds);
 void		vline_texture(int y1, int y2, int text_num, t_player *plr, t_draw_screen_calc *ds);
 int		check_file(int fd);
 void	*ft_realloc(void *ptr, size_t size);
@@ -483,5 +486,14 @@ t_reader	*reader_coroutine1(t_reader *read, char *line);
 t_reader	*reader_coroutine2(t_reader *read, t_sector **sectors, t_player *p, char *line);
 t_reader	*reader_coroutine3(t_reader *read);
 t_reader	*reader_coroutine4(t_reader *read, char *line, t_player *p, t_sector **sectors);
-
+void		unload_data(t_game *g);
+float		percentage(int start, int end, int curr);
+int			color_transoform(int color, float percent);
+void		pix2(t_player *p, t_draw_screen_calc *ds, int y, t_tex_i tex_i);
+void		pix1(t_player *p, t_draw_screen_calc *ds, int y, t_tex_i tex_i);
+void		draw_ceil_floor(t_draw_screen_calc *ds, t_player *p, t_tex_i tex_i);
+int			exit_doom(t_game *g);
+int			scaler_next(t_scaler *i);
+t_scaler	scalar_init(int a, int b, int c, int d, int f);
+int			ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);
 #endif
