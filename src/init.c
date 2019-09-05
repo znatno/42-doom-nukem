@@ -26,10 +26,6 @@ void	init_sdl(t_game *g)
 		exit_doom(g);
 
 	g->sdl.textures = (t_textures*)malloc(sizeof(t_textures));
-
-	for (int i1 = 0; i1 < H; i1++)
-		for (int i2 = 0; i2 < W; i2++)
-			g->sdl.buffer[i1 * W + i2] = 0x00ffffff;
 	SDL_UpdateTexture(g->sdl.texture, NULL, g->sdl.buffer, W * (sizeof(int)));
 	SDL_RenderCopy(g->sdl.renderer, g->sdl.texture, NULL, NULL);
 	SDL_RenderPresent(g->sdl.renderer);

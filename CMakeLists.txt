@@ -42,8 +42,7 @@ link_directories(${SDL2_LIBRARY}
 
 file(GLOB all
         "${INCLUDE}*.h"
-        "${SOURCE}*.c"
-        "src/utility_func1.c")
+        "${SOURCE}*.c")
 
 #include_directories(~/.brew/Cellar/sdl/1.2.15_1/include/SDL/)
 #include_directories(~/.brew/include/SDL libft/include/)
@@ -55,6 +54,6 @@ add_executable(doom-nukem   ${all})
 
 #target_link_libraries(doom-nukem -lSDL)
 target_link_libraries(doom-nukem -O3 -lft
-                        -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf)
+                        -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lm)
 #target_link_libraries(doom-nukem "-D_GNU_SOURCE=1" "-D_THREAD_SAFE" "-lSDLmain"
 #"-lSDL -Wl,-framework,Cocoa" "-lft")

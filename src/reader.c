@@ -1,0 +1,36 @@
+#include "doom_nukem.h"
+
+void	reader_init(t_reader *read)
+{
+	read->posf.pos = 0;
+	read->posf.value = 0;
+	read->posf.is_y = 0;
+	read->NuMVertices = 0;
+	read->vert = NULL;
+}
+
+void	reader(char *line, int fd, t_player *p, t_sector **sectors)
+{
+	t_reader *read;
+
+	read = (t_reader *)malloc(sizeof(t_reader));
+	reader_init(read);
+	while (get_next_line(fd, &line) > 0)
+	{
+		read->posf.pos = 0;
+		read->posf.value = 0;
+		if ((read->posf.is_y = 1) && *line == 'v')
+			read = reader_coroutine1(read, line);
+		if (*line == 's')
+		{
+			*sectors = ft_realloc(*sectors, ++p->num_scts * sizeof(**sectors));
+			read->sect = &(*sectors)[p->num_scts - 1];
+			read->num = 0;
+			read = reader_coroutine2(read, sectors, p, line);
+			read = reader_coroutine3(read);
+		}
+		if (*line == 'p')
+			reader_coroutine4(read, line, p, sectors);
+	}
+	free(read->vert);
+}
