@@ -63,9 +63,7 @@ static int	float_len_before(long double k)
 		}
 	}
 	else
-	{
 		len = 1;
-	}
 	return (len);
 }
 

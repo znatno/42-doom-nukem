@@ -36,7 +36,8 @@ void	decor_texture(t_sdl_main *sdl, uint32_t t_n, uint32_t d_n, t_xy_uint cords)
 			while (it[X_0] < size[0] && it[X_1] < size[2])
 			{
 				if (buffer[1][it[Y_1] * size[2] + it[X_1]] != 0)
-					buffer[0][it[Y_0] * size[0] + it[X_0]] = buffer[1][it[Y_1] * size[2] + it[X_1]];
+					buffer[0][it[Y_0] * size[0] + it[X_0]] = buffer[1][it[Y_1]
+														* size[2] + it[X_1]];
 				it[X_0]++;
 				it[X_1]++;
 			}
