@@ -25,7 +25,7 @@
 # include "SDL.h"
 # include "SDL_mixer.h"
 # include "SDL_image.h"
-# include "SDL_ttf.h"
+# include "SDL2/SDL_ttf.h"
 # include "SDL_surface.h"
 # include "SDL_pixels.h"
 
@@ -381,6 +381,18 @@ typedef struct		s_game
 	int			error;		// для виводу тексту помилки при виході
 }					t_game;
 
+typedef struct		s_reader
+{
+	t_xy			*vert;
+	t_posf			posf;
+	t_sector		*sect;
+	int 			NuMVertices;
+	int				*num;
+	int				all;
+	int				len;
+	int 			n;
+}					t_reader;
+
 /*
 ** Initialize functions
 */
@@ -462,5 +474,14 @@ t_scaler	scalar_init(int a, int b, int c, int d, int f);
 int			ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);
 void 		vline2(int y1,int y2, t_scaler ty, unsigned txtx, t_player *p, t_draw_screen_calc *ds, int tn);
 void		vline_texture(int y1, int y2, int text_num, t_player *plr, t_draw_screen_calc *ds);
+int		check_file(int fd);
+void	*ft_realloc(void *ptr, size_t size);
+t_posf	atof_posf(const char *s, t_posf posf, int exp);
+void	reader_init(t_reader *read);
+void	reader(char *line, int fd, t_player *p, t_sector **sectors);
+t_reader	*reader_coroutine1(t_reader *read, char *line);
+t_reader	*reader_coroutine2(t_reader *read, t_sector **sectors, t_player *p, char *line);
+t_reader	*reader_coroutine3(t_reader *read);
+t_reader	*reader_coroutine4(t_reader *read, char *line, t_player *p, t_sector **sectors);
 
 #endif
