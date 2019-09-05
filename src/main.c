@@ -91,6 +91,7 @@ void		events(t_game *g)
 
 void		game_loop(t_game *g)
 {
+	t_draw_screen_calc ds;
 	g->msgs[0] = create_msg("Episode 1", FONT_M_BG, (t_xy_int){40, 64}, 50);
 	g->msgs[1] = create_msg("HP: 100/100", FONT_M_MD, (t_xy_int){32, 680}, -1);
 	g->msgs[2] = create_msg("Notes: 0/10", FONT_M_MD, (t_xy_int){32, 720}, -1);
@@ -157,7 +158,7 @@ void		game_loop(t_game *g)
 			g->plr.moving = 1;
 
 		/* Draw frame */
-		draw_screen(g);
+		draw_screen(g, ds);
 
 		/* update window */
 		SDL_UpdateTexture(g->sdl.texture, NULL, g->sdl.buffer, W * (sizeof(int)));

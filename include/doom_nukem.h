@@ -408,7 +408,7 @@ char			*ft_itof(long double k);
 ** Draw functions
 */
 
-void			draw_screen(t_game *g);
+void			draw_screen(t_game *g, t_draw_screen_calc ds);
 void			vline(int y1, int y2, int color, t_player *plr, t_draw_screen_calc *ds);
 t_xy			vv_to_v(float x0, float y0, float x1, float y1);
 float			len_vector(t_xy		free_vector);
@@ -496,4 +496,20 @@ int			exit_doom(t_game *g);
 int			scaler_next(t_scaler *i);
 t_scaler	scalar_init(int a, int b, int c, int d, int f);
 int			ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);
+int		draw_screen1(t_game *g, t_draw_screen_calc ds);
+void	draw_screen2(t_game *g, t_draw_screen_calc ds);
+void	render_sector_walls(t_draw_screen_calc *ds , t_sector *sector,
+							t_item queue[MAX_QUE], t_game *g);
+void	render_sector_walls1(t_draw_screen_calc *ds,
+							 t_sector *sector, t_game *g);
+void	render_sector(t_draw_screen_calc *ds, t_player *p, t_game *g);
+void	render_ceil_floor(t_draw_screen_calc *ds, t_player *p);
+void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p, t_game *g);
+void	render_walls(t_draw_screen_calc *ds, t_sector *sector, t_player plr);
+void	render_walls2(t_draw_screen_calc *d, t_player plr);
+void	perspective(t_draw_screen_calc *ds);
+void	find_intersect(t_draw_screen_calc *ds);
+void	find_intersect1(t_draw_screen_calc *ds);
+void	find_intersect2(t_draw_screen_calc *ds);
+void	find_intersect3(t_draw_screen_calc *ds);
 #endif
