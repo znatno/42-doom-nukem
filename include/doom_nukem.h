@@ -423,6 +423,35 @@ typedef struct		s_reader
 	int 			n;
 }					t_reader;
 
+typedef	struct 		s_math
+{
+	float a0;
+	float a1;
+	float b0;
+	float b1;
+	float x0;
+	float x1;
+	float y0;
+	float y1;
+	float x2;
+	float y2;
+	float x3;
+	float y3;
+	float px;
+	float py;
+	float xx0;
+	float yy0;
+	float xx1;
+	float xxx1;
+	float yyy1;
+	float xxx2;
+	float yyy2;
+	float xxx3;
+	float yyy3;
+	float xxx4;
+	float yyy4;
+}					t_math;
+
 /*
 ** Initialize functions
 */
@@ -543,4 +572,28 @@ void	pick_sector_slice(t_draw_screen_calc *ds);
 void	rotate_view(t_draw_screen_calc *ds, t_game *g);
 void	init_draw(t_draw_screen_calc *ds, t_player plr);
 void		do_fall(t_player *plr, t_sector **sc, t_sounds *sounds);
+t_sounds	*init_music_n_sounds(void);
+void		load_weapons(t_game *g);
+void		load_pistol(t_game *g);
+void		load_lighter(t_game *g);
+int		load_pistol_sprite(t_game *g, int sprite_count);
+int		load_lighter_sprite(t_game *g, int sprite_count);
+SDL_Surface		*load_pistol_part(int sprite);
+SDL_Surface		*load_lighter_part(int sprite);
+void		draw_weapons(t_game *g);
+void		draw_pistol(t_game *g);
+void		draw_lighter(t_game *g);
+void		draw_cur_pistol_sprite(t_game *g, int width,
+								   int height, int cur_sprite);
+void		draw_cur_lighter_sprite(t_game *g, int width,
+									int height, int cur_sprite);
+void		events(t_game *g, t_sounds *sounds);
+void		events1(const uint8_t *kstate, SDL_Event ev, t_game *g,
+					t_sounds *sounds);
+void		game_loop(t_game *g, t_player *plr, t_sounds *sounds);
+void		game_loop1(t_game *g, t_sounds *sounds);
+void		game_loop2(t_game *g);
+void		game_loop3(t_game *g, t_player *plr, t_sounds *sounds);
+void		events2(SDL_Event ev, t_game *g,
+					t_sounds *sounds);
 #endif

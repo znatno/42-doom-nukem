@@ -1,4 +1,3 @@
-#include <doom_nukem.h>
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -63,7 +62,7 @@ t_reader	*reader_coroutine2(t_reader *read, t_sector **sectors, t_player *p,
 	while (!ft_isdigit(line[read->posf.pos]))
 		read->posf.pos++;
 	read->posf = atof_posf(line, read->posf, 0);
-	read->sect->ceil = (int) read->posf.value;
+	read->sect->ceil = (int)read->posf.value;
 	read->all = 0;
 	read->len = ft_strlen(line);
 	while (line[read->posf.pos] && read->len >= read->posf.pos)
@@ -84,12 +83,12 @@ t_reader	*reader_coroutine2(t_reader *read, t_sector **sectors, t_player *p,
 
 t_reader	*reader_coroutine1(t_reader *read, char *line)
 {
-	while (line[read->posf.pos])
+	while (line[--read->posf.pos])
 	{
 		while (!ft_isdigit(line[read->posf.pos]))
 			read->posf.pos++;
-		read->vert = ft_realloc(read->vert, ++read->NuMVertices *
-		sizeof(*read->vert));
+		read->vert = ft_realloc(read->vert, ++read->NuMVertices
+		* sizeof(*read->vert));
 		if (read->posf.is_y)
 		{
 			read->posf = atof_posf(line, read->posf, 0);
@@ -107,15 +106,14 @@ t_reader	*reader_coroutine1(t_reader *read, char *line)
 			read->vert[read->NuMVertices - 1].x = read->posf.value;
 			read->vert[read->NuMVertices - 1].y = read->posf.y;
 		}
-		read->posf.pos--;
 	}
-	return(read);
+	return (read);
 }
 
-void	load_data(t_player *player, t_sector **sectors)
+void		load_data(t_player *player, t_sector **sectors)
 {
-	int fd;
-	char *line;
+	int		fd;
+	char	*line;
 
 	line = ft_strnew(1);
 	fd = open("../test.txt", O_RDONLY);
