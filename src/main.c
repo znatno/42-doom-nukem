@@ -12,9 +12,7 @@
 
 #include "doom_nukem.h"
 
-
-
-void		events(t_game *g)
+void		events(t_game *g, t_sounds *sounds)
 {
 	const uint8_t	*kstate;	//	array of keyboard keys states
 	SDL_Event		ev;
@@ -30,8 +28,34 @@ void		events(t_game *g)
 		g->plr.key.s = kstate[SDL_SCANCODE_S];
 		g->plr.key.d = kstate[SDL_SCANCODE_D];
 		g->plr.draw_look = kstate[SDL_SCANCODE_L];
+
+		if (ev.type == SDL_MOUSEBUTTONDOWN && g->wpn.sprite_counter == 1 && g->wpn.type == 2)
+		{
+			if (!Mix_Playing(6))
+				Mix_PlayChannel(6, sounds->lighter, 0);
+//			g->key_down = 1;
+			if (g->wpn.sprite_counter == 1)
+				g->wpn.sprite_counter += 1;
+			g->plr.light = 16;
+		}
+		if (ev.type == SDL_MOUSEBUTTONUP && g->wpn.sprite_counter == 2 && g->wpn.type == 2)
+		{
+//			g->key_down = 0;
+			if (!Mix_Playing(7))
+				Mix_PlayChannel(7, sounds->lighter_close, 0);
+			g->wpn.sprite_counter = 1;
+			g->plr.light = 24;
+		}
+
 		if (ev.type == SDL_KEYDOWN)
 		{
+			if (ev.key.keysym.sym == ' ')
+			{
+				Mix_HaltChannel(RUN);
+				Mix_HaltChannel(FAST_RUN);
+				if (!Mix_Playing(JUMP) && g->plr.ground && !g->plr.ducking)
+					Mix_PlayChannel(JUMP, sounds->jumpbreath, 0);
+			}
 			if (ev.key.keysym.sym == 'f' && !g->plr.ducking)
 				g->plr.fly = !g->plr.fly ? 1 : 0;
 			if (ev.key.keysym.sym == ' ' && g->plr.ground
@@ -89,7 +113,96 @@ void		events(t_game *g)
 	}
 }
 
-void		game_loop(t_game *g)
+void		draw_cur_lighter_sprite(t_game *g, int width, int height, int curSprite)
+{
+	int		x;
+	int		y;
+	int		x_img;
+	float	x_num;
+	float	y_num;
+
+	y = 0;
+	y_num = 0;
+	while (y < 128 && height < H)
+	{
+		x = 0;
+		x_num = 0;
+		x_img = width;
+		while (x < 128 - 1 && x_img < W)
+		{
+			x_num += 0.5;
+			x = (int)x_num;
+			if (g->wpn.lighter_sprite[curSprite][y][x] != 255)
+				g->sdl.buffer[height * W + x_img] = g->wpn.lighter_sprite[curSprite][y][x];
+//			printf("%d ", g->wpn.lighter_sprite[curSprite][y][x]);
+			x_img++;
+		}
+//		printf("\n");
+		y_num += 0.5;
+		y = (int)y_num;
+		height++;
+	}
+}
+
+void		draw_cur_pistol_sprite(t_game *g, int width, int height, int curSprite)
+{
+	int		x;
+	int		y;
+	int		x_img;
+	float	x_num;
+	float	y_num;
+
+	y = 0;
+	y_num = 0;
+	while (y < 128 && height < H)
+	{
+		x = 0;
+		x_num = 0;
+		x_img = width;
+		while (x < 128 - 1 && x_img < W)
+		{
+			x_num += 0.35;
+			x = (int)x_num;
+			if (g->wpn.pistol_sprite[curSprite][y][x] != 0x000000)
+				g->sdl.buffer[height * W + x_img] = g->wpn.pistol_sprite[curSprite][y][x];
+			x_img++;
+		}
+		y_num += 0.5;
+		y = (int)y_num;
+		height++;
+	}
+}
+
+void		draw_lighter(t_game *g)
+{
+	if (g->wpn.sprite_counter == 1)
+		draw_cur_lighter_sprite(g, W - 550, H - 250, 0);
+	else if (g->wpn.sprite_counter == 2)
+		draw_cur_lighter_sprite(g, W - 550, H - 250, 1);
+}
+
+void		draw_pistol(t_game *g)
+{
+	if (g->wpn.sprite_counter == 1)
+		draw_cur_pistol_sprite(g, W - 400, H - 250, 0);
+	else if (g->wpn.sprite_counter > 1)
+	{
+		draw_cur_pistol_sprite(g, W - 400, H - 250, g->wpn.sprite_counter - 1);
+		g->wpn.sprite_counter += 0.5;
+	}
+	if (g->wpn.sprite_counter >= 6)
+		g->wpn.sprite_counter = 1;
+}
+
+void		draw_weapons(t_game *g)
+{
+	if (g->wpn.type == 1)
+		draw_pistol(g);
+	else if (g->wpn.type == 2)
+		draw_lighter(g);
+}
+
+void		game_loop(t_game *g, t_player *plr, t_sounds *sounds)
 {
 	t_draw_screen_calc ds;
 	g->msgs[0] = create_msg("Episode 1", FONT_M_BG, (t_xy_int){40, 64}, 50);
@@ -106,7 +219,7 @@ void		game_loop(t_game *g)
 		//SDL_Fill
 
 		/* Key Events */
-		events(g);
+		events(g, sounds);
 
 		/* Камера при присяді і її підняття */
 		if (g->plr.ducking || g->plr.eyeheight == DUCK_H)
@@ -121,7 +234,7 @@ void		game_loop(t_game *g)
 		/* Vertical collision detection */
 		g->plr.ground = !g->plr.falling;
 		if (g->plr.falling)
-			check_fall(&g->plr, &g->sectors);
+			do_fall(&g->plr, &g->sectors, sounds);
 
 		/* Horizontal collision detection */
 		if (g->plr.moving)
@@ -154,12 +267,23 @@ void		game_loop(t_game *g)
 		g->plr.aclrt = g->plr.pushing ? 0.4 : 0.2;
 		g->plr.vlct.x = g->plr.vlct.x * (1 - g->plr.aclrt) + g->plr.mv.x * g->plr.aclrt;
 		g->plr.vlct.y = g->plr.vlct.y * (1 - g->plr.aclrt) + g->plr.mv.y * g->plr.aclrt;
+		if (g->plr.pushing && !g->plr.ducking && g->plr.ground && !g->plr.run && !Mix_Playing(RUN))
+			Mix_PlayChannel(RUN, sounds->run_sound, 0);
+		if (g->plr.ducking && plr->pushing && !Mix_Playing(SEAT_RUN))
+			Mix_PlayChannel(SEAT_RUN, sounds->low_run, 0);
+		if (plr->speed == 0.28f && !Mix_Playing(FAST_RUN) && plr->pushing && !plr->jump_check)
+			Mix_PlayChannel(FAST_RUN, sounds->fast_run, 0);
+		if (!plr->pushing || plr->speed != 0.28f)
+			Mix_HaltChannel(FAST_RUN);
+		if (plr->pushing)
+			plr->moving = 1;
 		if (g->plr.pushing)
 			g->plr.moving = 1;
 
 		/* Draw frame */
 		draw_screen(g, ds);
 
+		draw_weapons(g);
 		/* update window */
 		SDL_UpdateTexture(g->sdl.texture, NULL, g->sdl.buffer, W * (sizeof(int)));
 		SDL_RenderCopy(g->sdl.renderer, g->sdl.texture, NULL, NULL);
@@ -172,9 +296,171 @@ void		game_loop(t_game *g)
 	}
 }
 
+SDL_Surface		*load_lighter_part(int sprite)
+{
+	SDL_Surface *curSprite;
+
+	curSprite = (SDL_Surface *)malloc(sizeof(SDL_Surface));
+	if (sprite == 0)
+		curSprite = IMG_Load("../sprites/3.png");
+	if (sprite == 1)
+		curSprite = IMG_Load("../sprites/1.png");
+	curSprite = SDL_ConvertSurfaceFormat(curSprite, SDL_PIXELFORMAT_ARGB32, 0);
+	return (curSprite);
+}
+
+SDL_Surface		*load_pistol_part(int sprite)
+{
+	SDL_Surface *curSprite;
+
+	curSprite = (SDL_Surface *)malloc(sizeof(SDL_Surface));
+	if (sprite == 0)
+		curSprite = IMG_Load("../sprites/pistol1.png");
+	if (sprite == 1)
+		curSprite = IMG_Load("../sprites/pistol2.png");
+	if (sprite == 2)
+		curSprite = IMG_Load("../sprites/pistol3.png");
+	if (sprite == 3)
+		curSprite = IMG_Load("../sprites/pistol4.png");
+	if (sprite == 4)
+		curSprite = IMG_Load("../sprites/pistol5.png");
+	if (sprite == 5)
+		curSprite = IMG_Load("../sprites/pistol6.png");
+	curSprite = SDL_ConvertSurfaceFormat(curSprite, SDL_PIXELFORMAT_ARGB32, 0);
+	return (curSprite);
+}
+
+int		load_lighter_sprite(t_game *g, int spriteCount)
+{
+	SDL_Surface		*curSprite;
+	unsigned int	*pixels;
+	int				x;
+	int				y;
+
+	if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG))
+		ft_putendl(IMG_GetError());
+	curSprite = load_lighter_part(spriteCount);
+	y = -1;
+	pixels = (unsigned int *)curSprite->pixels;
+	while (++y < 128)
+	{
+		x = -1;
+		while (++x < 128)
+			g->wpn.lighter_sprite[spriteCount][y][x] = pixels[(y * curSprite->w) + x];
+	}
+	SDL_FreeSurface(curSprite);
+	ft_putendl("Lighter Part Loaded!");
+	return (1);
+}
+
+int		load_pistol_sprite(t_game *g, int spriteCount)
+{
+	SDL_Surface		*curSprite;
+	unsigned int	*pixels;
+	int				x;
+	int				y;
+
+	if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG))
+		ft_putendl(IMG_GetError());
+	curSprite = load_pistol_part(spriteCount);
+	y = -1;
+	pixels = (unsigned int *)curSprite->pixels;
+	while (++y < 128)
+	{
+		x = -1;
+		while (++x < 128)
+			g->wpn.pistol_sprite[spriteCount][y][x] = pixels[(y * curSprite->w) + x];
+	}
+	SDL_FreeSurface(curSprite);
+	ft_putendl("Pistol Part Loaded!");
+	return (1);
+}
+
+void		load_lighter(t_game *g)
+{
+	int y;
+	int sprite;
+	int maxSprites;
+
+	maxSprites = 2;
+	g->wpn.lighter_sprite = (int***)malloc(sizeof(int **) * maxSprites);
+	sprite = 0;
+	while (sprite < maxSprites)
+	{
+		g->wpn.lighter_sprite[sprite] = (int**)malloc(sizeof(int *) * 128);
+		y = 0;
+		while (y < 128)
+		{
+			g->wpn.lighter_sprite[sprite][y] = (int*)malloc(sizeof(int) * 128);
+			y++;
+		}
+		load_lighter_sprite(g, sprite);
+		sprite++;
+	}
+}
+
+void		load_pistol(t_game *g)
+{
+	int y;
+	int sprite;
+	int maxSprites;
+
+	maxSprites = 6;
+	g->wpn.pistol_sprite = (int***)malloc(sizeof(int **) * maxSprites);
+	sprite = 0;
+	while (sprite < maxSprites)
+	{
+		g->wpn.pistol_sprite[sprite] = (int**)malloc(sizeof(int *) * 128);
+		y = 0;
+		while (y < 128)
+		{
+			g->wpn.pistol_sprite[sprite][y] = (int*)malloc(sizeof(int) * 128);
+			y++;
+		}
+		load_pistol_sprite(g, sprite);
+		sprite++;
+	}
+}
+
+void		load_weapons(t_game *g)
+{
+	g->wpn.sprite_counter = 1;
+	g->wpn.type = 2;
+	load_pistol(g);
+	load_lighter(g);
+}
+
+t_sounds *init_music_n_sounds()
+{
+	int audio_rate = 42000;
+	Uint16 audio_format = AUDIO_S16SYS;
+	int audio_channels = 2;
+	int audio_buffers = 4096;
+	t_sounds *sounds;
+
+	sounds = (t_sounds *) malloc(sizeof(t_sounds));
+	SDL_Init(SDL_INIT_AUDIO);
+	Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers);
+	sounds->bg_music = Mix_LoadMUS("../sounds/bestmusic.wav");
+	sounds->run_sound = Mix_LoadWAV("../sounds/run.wav");
+	sounds->jumpbreath = Mix_LoadWAV("../sounds/jumpbreath.wav");
+	sounds->landing = Mix_LoadWAV("../sounds/land2.wav");
+	sounds->fast_run = Mix_LoadWAV("../sounds/fast_run.wav");
+	sounds->low_run = Mix_LoadWAV("../sounds/run.wav");
+	sounds->lighter = Mix_LoadWAV("../sounds/lighter.wav");
+	sounds->lighter_close = Mix_LoadWAV("../sounds/lighter_close.wav");
+	Mix_VolumeMusic(30);
+	Mix_Volume(RUN, 20);
+	Mix_Volume(SEAT_RUN, 10);
+	Mix_Volume(FAST_RUN, 20);
+	return (sounds);
+
+}
+
 int 		main(void)
 {
 	t_game	g;
+	t_sounds	*sounds;
 
 	//Structs initialization
 	g.sectors = NULL;
@@ -191,6 +477,8 @@ int 		main(void)
 	//Load fonts
 	load_fonts(&g);
 
+	load_weapons(&g);
+
 	//Load textures
 	textures_init(&g.sdl);
 
@@ -199,7 +487,9 @@ int 		main(void)
 	SDL_SetRelativeMouseMode(SDL_TRUE);
 
 	//Loop
-	game_loop(&g);
+	sounds = init_music_n_sounds();
+	Mix_PlayMusic(sounds->bg_music, -1);
+	game_loop(&g, &g.plr, sounds);
 
 	//Before quit
 	exit_doom(&g);

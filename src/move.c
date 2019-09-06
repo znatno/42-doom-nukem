@@ -143,26 +143,30 @@ void		check_move(t_player *plr, t_sector **sc, unsigned int s)
 	plr->falling = 1;
 }
 
-void		check_fall(t_player *plr, t_sector **sectors)
+void		do_fall(t_player *plr, t_sector **sc, t_sounds *sounds)
 {
 	float	nextz;
 
-	if (!plr->fly)
-		plr->vlct.z -= 0.05f;
-	else
-		plr->vlct.z += 0.001f;
+	if (plr->vlct.z > 0 || plr->vlct.z < -0.6)
+		plr->jump_check = true;
+	plr->vlct.z -= 0.05f; /* Add gravity */
 	nextz = plr->where.z + plr->vlct.z;
-	if (plr->vlct.z < 0 && nextz < (*sectors)[plr->sector].floor
-	+ plr->eyeheight)
+	if (plr->vlct.z < 0.f && nextz < (*sc)[plr->sector].floor + plr->eyeheight) // When going down
 	{
-		plr->where.z = (*sectors)[plr->sector].floor + plr->eyeheight;
-		plr->vlct.z = 0;
-		plr->falling = 0;
+		if (plr->jump_check)
+		{
+			Mix_PlayChannel(LANDING, sounds->landing, 0);
+			plr->jump_check = false;
+		}
+		//printf("landing, vlct %f\n", plr->vlct.z);
+		plr->where.z = (*sc)[plr->sector].floor + plr->eyeheight; /* Fix to ground */
+		plr->vlct.z = 0.f;
+		//plr->falling = 0;
 		plr->ground = 1;
 	}
-	else if (plr->vlct.z > 0 && nextz > (*sectors)[plr->sector].ceil)
+	else if (plr->vlct.z > 0 && nextz > (*sc)[plr->sector].ceil) // When going up
 	{
-		plr->vlct.z = 0;
+		plr->vlct.z = 0; /* Prevent jumping above ceiling */
 		plr->falling = 1;
 	}
 	if (plr->falling)

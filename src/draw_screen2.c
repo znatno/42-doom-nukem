@@ -33,7 +33,7 @@ void	render_walls(t_draw_screen_calc *ds, t_sector *sector, t_player plr)
 void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p, t_game *g)
 {
 	ds->i->z = (int)roundf(((ds->it->x - ds->i->x1) * (ds->f->tz2-ds->f->tz1)
-							/ (ds->i->x2-ds->i->x1) + ds->f->tz1) * 16);
+							/ (ds->i->x2-ds->i->x1) + ds->f->tz1) * p->light);
 	ds->i->z = (ds->i->z > 250) ? (250) : (ds->i->z);
 	ds->f->perc_light = percentage(250, 0, ds->i->z);
 	ds->i->ya = scaler_next(&ds->s->ya_int);

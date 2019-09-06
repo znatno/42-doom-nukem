@@ -25,7 +25,7 @@
 # include "SDL.h"
 # include "SDL_mixer.h"
 # include "SDL_image.h"
-# include "SDL2/SDL_ttf.h"
+# include "SDL_ttf.h"
 # include "SDL_surface.h"
 # include "SDL_pixels.h"
 
@@ -36,6 +36,11 @@
 #define Y_0 1
 #define X_1 2
 #define Y_1 3
+#define RUN					1
+#define JUMP				2
+#define LANDING				3
+#define SEAT_RUN			4
+#define FAST_RUN			5
 
 # define YAW(y, z) (y + z * plr.yaw)	// Y-axis angle of player camera
 # define MAX_QUE	32					// max num of sectors what will be rendered
@@ -340,15 +345,33 @@ t_obj			// прототип структури для об'єкта
 }
 */
 
+typedef	struct 		s_weapons
+{
+	int 			***pistol_sprite;
+	int 			***lighter_sprite;
+	int 			type;
+	double 			sprite_counter;
+}					t_weapons;
+
+typedef struct		s_sounds
+{
+	Mix_Music 		*bg_music;
+	Mix_Chunk 		*run_sound;
+	Mix_Chunk		*jumpbreath;
+	Mix_Chunk		*landing;
+	Mix_Chunk		*low_run;
+	Mix_Chunk		*fast_run;
+	Mix_Chunk		*lighter;
+	Mix_Chunk		*lighter_close;
+}					t_sounds;
 
 // Player: location
-typedef struct		s_player
+typedef struct		s_players
 {
 	t_xyz			where;		// Current position
 	t_xyz			vlct;		// velocity, curr motion vector / швидкість
 	float			angle;		// камера по X-осі, yaw — по Y-осі
-	float
-			anglesin;
+	float			anglesin;
 	float			anglecos;
 	float			yaw;		// Looking towards (and sin() and cos() thereof)
 	unsigned		sector;		// Which sector the player is currently in
@@ -365,9 +388,11 @@ typedef struct		s_player
 	float 			speed;		// швидкість, менша для присяду
 	int 			pushing;
 	float			aclrt;		// acceleration / прискорення
-	t_xy_int		ms;			// mouse aiming
+	t_xy_int			ms;			// mouse aiming
 	float 			ms_yaw;
 	t_sdl_main		*sdl;
+	int				light;
+	int 			jump_check;
 
 	bool			draw_look; // для перегляду відмальовування полінійно
 }					t_player;
@@ -379,7 +404,9 @@ typedef struct		s_game
 	t_sector	*sectors;
 	t_font		fonts[FONTS_NUM];
 	t_msg		msgs[MAX_MSGS];
-//	t_obj		*objs;		// масив зчитаних об'єктів
+	t_weapons	wpn;
+	bool		key_down;
+	//	t_obj		*objs;		// масив зчитаних об'єктів
 
 	int			error;		// для виводу тексту помилки при виході
 }					t_game;
@@ -512,4 +539,8 @@ void	find_intersect(t_draw_screen_calc *ds);
 void	find_intersect1(t_draw_screen_calc *ds);
 void	find_intersect2(t_draw_screen_calc *ds);
 void	find_intersect3(t_draw_screen_calc *ds);
+void	pick_sector_slice(t_draw_screen_calc *ds);
+void	rotate_view(t_draw_screen_calc *ds, t_game *g);
+void	init_draw(t_draw_screen_calc *ds, t_player plr);
+void		do_fall(t_player *plr, t_sector **sc, t_sounds *sounds);
 #endif

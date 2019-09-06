@@ -28,5 +28,6 @@ void	init_sdl(t_game *g)
 	SDL_UpdateTexture(g->sdl.texture, NULL, g->sdl.buffer, W * (sizeof(int)));
 	SDL_RenderCopy(g->sdl.renderer, g->sdl.texture, NULL, NULL);
 	SDL_RenderPresent(g->sdl.renderer);
+	g->plr.light = 24;
 	SDL_Delay(1000);
 }
