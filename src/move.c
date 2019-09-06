@@ -61,13 +61,13 @@ void		move_player(t_player *plr, t_sector **sectors, float dx, float dy, int i)
 	{
 		if (sect->neighbors[i] >= 0
 				&&
-				intersect_box(px, py, px + dx, py + dy,
-						vert[i + 0].x, vert[i].y,
-						vert[i + 1].x, vert[i + 1].y)
+				intersect_box((t_math){.x0 = px, .y0 = py, .x1 = px + dx, .y1 = py + dy,
+						   .x2 = vert[i + 0].x, .y2 = vert[i].y,
+						.x3 = vert[i + 1].x, .y3 = vert[i + 1].y})
 				&&
-				point_side(px + dx, py + dy,
-						vert[i + 0].x, vert[i].y,
-						vert[i + 1].x, vert[i + 1].y) < 0)
+				point_side((t_math){.px = px + dx, .py = py + dy,
+						.xx0 = vert[i + 0].x, .yy0 = vert[i].y,
+						.xx1 = vert[i + 1].x, .yy1 = vert[i + 1].y}) < 0)
 		{
 			flag = move_or_not(plr->where, (*sectors)[sect->neighbors[i]], sect->neighbors[i], 0);
 			if (flag >= 0 && flag < plr->num_scts)
@@ -131,12 +131,12 @@ void		check_move(t_player *plr, t_sector **sc, unsigned int s)
 	s = -1;
 	while (++s < (*sc)[plr->sector].npoints)
 	{
-		if (intersect_box(px, py, px + dx, py + dy,
-				(*sc)->vert[s + 0].x, (*sc)->vert[s + 0].y,
-				(*sc)->vert[s + 1].x, (*sc)->vert[s + 1].y)
-			&& point_side(px + dx, py + dy,
-					(*sc)->vert[s + 0].x, (*sc)->vert[s + 0].y,
-					(*sc)->vert[s + 1].x, (*sc)->vert[s + 1].y) < 0)
+		if (intersect_box((t_math){.x0 = px, .y0 = py, .x1 = px + dx, .y1 = py + dy,
+				.x2 = (*sc)->vert[s + 0].x, .y2 = (*sc)->vert[s + 0].y,
+				.x3 = (*sc)->vert[s + 1].x, .y3 = (*sc)->vert[s + 1].y})
+			&& point_side((t_math){.px = px + dx, .py =py + dy,
+					.xx0 = (*sc)->vert[s + 0].x, .yy0 = (*sc)->vert[s + 0].y,
+					.xx1 = (*sc)->vert[s + 1].x, .yy1 = (*sc)->vert[s + 1].y}) < 0)
 			chholebump((t_chloe){.sectors = *sc, .sect = (*sc)[plr->sector],
 						.s = s, .plr = &plr, .vert = (*sc)->vert}, &dx, &dy);
 	}

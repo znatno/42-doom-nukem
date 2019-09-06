@@ -27,6 +27,7 @@ t_reader	*reader_coroutine4(t_reader *read, char *line, t_player *p,
 	read->n = (int)read->posf.value;
 	p->sector = read->n;
 	p->where.z = (*sectors)[p->sector].floor + EYE_H;
+	return (read);
 }
 
 t_reader	*reader_coroutine3(t_reader *read)
@@ -65,7 +66,7 @@ t_reader	*reader_coroutine2(t_reader *read, t_sector **sectors, t_player *p,
 	read->sect->ceil = (int)read->posf.value;
 	read->all = 0;
 	read->len = ft_strlen(line);
-	while (line && read && line[read->posf.pos] && read->len >= read->posf.pos)
+	while (line[read->posf.pos] && read->len >= read->posf.pos)
 	{
 		while (!ft_isdigit(line[read->posf.pos]))
 			read->posf.pos++;

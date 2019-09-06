@@ -19,31 +19,29 @@ bool	overlap(float a0, float a1, float b0, float b1)
 	return (false);
 }
 
-bool	intersect_box(float x0, float y0, float x1, float y1,
-					float x2, float y2, float x3, float y3)
+bool	intersect_box(t_math m)
 {
 	bool result;
 
-	result = (overlap(x0, x1, x2, x3) && overlap(y0, y1, y2, y3));
+	result = (overlap(m.x0, m.x1, m.x2, m.x3) && overlap(m.y0, m.y1, m.y2, m.y3));
 	return (result);
 }
 
-float	point_side(float px, float py, float x0, float y0, float x1, float y1)
+float	point_side(t_math m)
 {
 	float result;
 
-	result = VXS((x1) - (x0), (y1) - (y0), (px) - (x0), (py) - (y0));
+	result = VXS((m.xx1) - (m.xx0), (m.yy1) - (m.yy0), (m.px) - (m.xx0), (m.py) - (m.yy0));
 	return (result);
 }
 
-t_xy	intersect(float x1, float y1, float x2, float y2,
-				float x3, float y3, float x4, float y4)
+t_xy	intersect(t_math m)
 {
 	t_xy result;
 
-	result = (t_xy){.x = VXS(VXS(x1, y1, x2, y2), (x1) - (x2), VXS(x3, y3, x4, \
-	y4), (x3) - (x4)) / VXS((x1) - (x2), (y1) - (y2), (x3) - (x4), (y3) - (y4))\
-	, .y = VXS(VXS(x1, y1, x2, y2), (y1) - (y2), VXS(x3, y3, x4, y4), (y3) - \
-	(y4)) / VXS((x1) - (x2), (y1) - (y2), (x3) - (x4), (y3) - (y4))};
+	result = (t_xy){.x = VXS(VXS(m.xxx1, m.yyy1, m.xxx2, m.yyy2), (m.xxx1) - (m.xxx2), VXS(m.xxx3, m.yyy3, m.xxx4, \
+	m.yyy4), (m.xxx3) - (m.xxx4)) / VXS((m.xxx1) - (m.xxx2), (m.yyy1) - (m.yyy2), (m.xxx3) - (m.xxx4), (m.yyy3) - (m.yyy4))\
+	, .y = VXS(VXS(m.xxx1, m.yyy1, m.xxx2, m.yyy2), (m.yyy1) - (m.yyy2), VXS(m.xxx3, m.yyy3, m.xxx4, m.yyy4), (m.yyy3) - \
+	(m.yyy4)) / VXS((m.xxx1) - (m.xxx2), (m.yyy1) - (m.yyy2), (m.xxx3) - (m.xxx4), (m.yyy3) - (m.yyy4))};
 	return (result);
 }

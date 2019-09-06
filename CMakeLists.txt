@@ -53,7 +53,6 @@ file(GLOB all
 add_executable(doom-nukem   ${all})
 
 #target_link_libraries(doom-nukem -lSDL)
-target_link_libraries(doom-nukem -lft -fsanitize="address" -g3 -Og -fno-omit-frame-pointer
-                        -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lm)
+target_link_libraries(doom-nukem -lft -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lm)
 #target_link_libraries(doom-nukem "-D_GNU_SOURCE=1" "-D_THREAD_SAFE" "-lSDLmain"
 #"-lSDL -Wl,-framework,Cocoa" "-lft")

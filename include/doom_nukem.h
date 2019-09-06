@@ -384,6 +384,7 @@ typedef	struct 		s_math
 	float xx0;
 	float yy0;
 	float xx1;
+	float yy1;
 	float xxx1;
 	float yyy1;
 	float xxx2;
@@ -491,15 +492,11 @@ int				move_or_not(t_xyz where ,t_sector sector, unsigned sect_num, int j);
 
 bool 			overlap(float a0, float a1, float b0, float b1);
 
-bool 			intersect_box(float x0, float y0, float x1, float y1,
-							  float x2, float y2, float x3, float y3);
+bool	intersect_box(t_math m);
 
-t_xy 			intersect(float x1, float y1, float x2, float y2, float x3,
-						  float y3, float x4, float y4);
+t_xy			intersect(t_math m);
 
-float			point_side(float px, float py, float x0, float y0,
-							float x1, float y1);
-
+float			point_side(t_math m);
 /*
 **  "move.c"
 */

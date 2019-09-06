@@ -39,12 +39,12 @@ void	find_intersect1(t_draw_screen_calc *ds)
 	ds->f->farz = 5;
 	ds->f->nearside = 1e-5f;
 	ds->f->farside = 20.f;
-	ds->s->i1 = intersect(ds->f->tx1, ds->f->tz1, ds->f->tx2, ds->f->tz2,
-						  -ds->f->nearside, ds->f->nearz, -ds->f->farside,
-						  ds->f->farz);
-	ds->s->i2 = intersect(ds->f->tx1, ds->f->tz1, ds->f->tx2, ds->f->tz2,
-						  ds->f->nearside, ds->f->nearz, ds->f->farside,
-						  ds->f->farz);
+	ds->s->i1 = intersect((t_math){.xxx1 = ds->f->tx1, .yyy1 = ds->f->tz1, .xxx2 = ds->f->tx2, .yyy2 = ds->f->tz2,
+							.xxx3 =	-ds->f->nearside, .yyy3 = ds->f->nearz, .xxx4 = -ds->f->farside,
+						  .yyy4 = ds->f->farz});
+	ds->s->i2 = intersect((t_math){.xxx1 = ds->f->tx1, .yyy1 = ds->f->tz1, .xxx2 = ds->f->tx2, .yyy2 = ds->f->tz2,
+			.xxx3 =	ds->f->nearside, .yyy3 = ds->f->nearz, .xxx4 = ds->f->farside,
+			.yyy4 = ds->f->farz});
 	ds->s->org1.x = ds->f->tx1;
 	ds->s->org1.y = ds->f->tz1;
 	ds->s->org2.x = ds->f->tx2;

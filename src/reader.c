@@ -25,7 +25,7 @@ void	reader(char *line, int fd, t_player *p, t_sector **sectors)
 {
 	t_reader *read;
 
-	read = (t_reader *)malloc(sizeof(t_reader));
+	read = (t_reader *)malloc(sizeof(t_reader) * 1);
 	reader_init(read);
 	while (get_next_line(fd, &line) > 0)
 	{
@@ -36,13 +36,14 @@ void	reader(char *line, int fd, t_player *p, t_sector **sectors)
 		if (*line == 's')
 		{
 			*sectors = ft_realloc(*sectors, ++p->num_scts * sizeof(**sectors));
-			read->sect = &(*sectors)[p->num_scts - 1];
+			read->sect = &((*sectors)[p->num_scts - 1]);
 			read->num = 0;
 			read = reader_coroutine2(read, sectors, p, line);
 			read = reader_coroutine3(read);
 		}
 		if (*line == 'p')
-			reader_coroutine4(read, line, p, sectors);
+			read = reader_coroutine4(read, line, p, sectors);
 	}
 	free(read->vert);
+	free(read);
 }
