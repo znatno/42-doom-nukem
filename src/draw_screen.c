@@ -33,7 +33,7 @@ void	init_draw(t_draw_screen_calc *ds, t_player plr)
 		ds->i->renderedsectors[i] = 0;
 		i++;
 	}
-	*ds->s->head = (t_item){plr.sector, 0, W-1};
+	*ds->s->head = (t_item){plr.sector, 0, W - 1};
 }
 
 void	pick_sector_slice(t_draw_screen_calc *ds)

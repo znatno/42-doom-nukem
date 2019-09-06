@@ -65,7 +65,7 @@ t_reader	*reader_coroutine2(t_reader *read, t_sector **sectors, t_player *p,
 	read->sect->ceil = (int)read->posf.value;
 	read->all = 0;
 	read->len = ft_strlen(line);
-	while (line[read->posf.pos] && read->len >= read->posf.pos)
+	while (line && read && line[read->posf.pos] && read->len >= read->posf.pos)
 	{
 		while (!ft_isdigit(line[read->posf.pos]))
 			read->posf.pos++;

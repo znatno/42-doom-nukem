@@ -93,27 +93,27 @@ void		move_player(t_player *plr, t_sector **sectors, float dx, float dy, int i)
 	plr->anglecos = cosf(plr->angle);
 }
 
-void		chholebump(t_sector **sectors, t_sector sect, const unsigned int *s,
-						t_player *plr, t_xy **vert, float *dx, float *dy)
+void		chholebump(t_chloe c, float *dx, float *dy)
 {
 	float hole_low;
 	float hole_high;
 	float xd;
 	float yd;
 
-	hole_low = sect.neighbors[*s] <
-			0 ? 9e9 : MAX(sect.floor, (*sectors)[sect.neighbors[*s]].floor);
-	hole_high = sect.neighbors[*s] <
-			0 ? -9e9 : MIN(sect.ceil, (*sectors)[sect.neighbors[*s]].ceil);
-	if (hole_high < plr->where.z + HEAD_MARGIN
-		|| hole_low > plr->where.z - plr->eyeheight + KNEE_H)
+	hole_low = c.sect.neighbors[c.s] <
+			0 ? 9e9 : MAX(c.sect.floor, c.sectors[c.sect.neighbors[c.s]].floor);
+	hole_high = c.sect.neighbors[c.s] <
+			0 ? -9e9 : MIN(c.sect.ceil, c.sectors[c.sect.neighbors[c.s]].ceil);
+	if (hole_high < (*c.plr)->where.z + HEAD_MARGIN
+		|| hole_low > (*c.plr)->where.z - (*c.plr)->eyeheight + KNEE_H)
 	{
-		xd = (*vert)[*s + 1].x - (*vert)[*s + 0].x;
-		yd = (*vert)[*s + 1].y - (*vert)[*s + 0].y;
+		xd = c.vert[c.s + 1].x - c.vert[c.s + 0].x;
+		yd = c.vert[c.s + 1].y - c.vert[c.s + 0].y;
 		*dx = xd * (*dx * xd + yd * *dy) / (xd * xd + yd * yd);
 		*dy = yd * (*dx * xd + yd * *dy) / (xd * xd + yd * yd);
-		plr->moving = 0;
+		(*c.plr)->moving = 0;
 	}
+	printf("hole_high - %f\n", hole_high);
 }
 
 void		check_move(t_player *plr, t_sector **sc, unsigned int s)
@@ -137,7 +137,8 @@ void		check_move(t_player *plr, t_sector **sc, unsigned int s)
 			&& point_side(px + dx, py + dy,
 					(*sc)->vert[s + 0].x, (*sc)->vert[s + 0].y,
 					(*sc)->vert[s + 1].x, (*sc)->vert[s + 1].y) < 0)
-			chholebump(sc, (*sc)[plr->sector], &s, plr, &(*sc)->vert, &dx, &dy);
+			chholebump((t_chloe){.sectors = *sc, .sect = (*sc)[plr->sector],
+						.s = s, .plr = &plr, .vert = (*sc)->vert}, &dx, &dy);
 	}
 	move_player(plr, sc, dx, dy, -1);
 	plr->falling = 1;
@@ -147,27 +148,24 @@ void		do_fall(t_player *plr, t_sector **sc, t_sounds *sounds)
 {
 	float	nextz;
 
-	if (plr->vlct.z > 0 || plr->vlct.z < -0.6)
-		plr->jump_check = true;
-	plr->vlct.z -= 0.05f; /* Add gravity */
+	if (!plr->fly)
+		plr->vlct.z -= 0.05f; /* Add gravity */
+	else if ((*sc)[plr->sector].ceil > plr->where.z)
+		plr->vlct.z += 0.001f;
 	nextz = plr->where.z + plr->vlct.z;
-	if (plr->vlct.z < 0.f && nextz < (*sc)[plr->sector].floor + plr->eyeheight) // When going down
+	if (plr->vlct.z < 0 && nextz < (*sc)[plr->sector].floor + plr->eyeheight) // When going down
 	{
-		if (plr->jump_check)
-		{
-			Mix_PlayChannel(LANDING, sounds->landing, 0);
-			plr->jump_check = false;
-		}
-		//printf("landing, vlct %f\n", plr->vlct.z);
 		plr->where.z = (*sc)[plr->sector].floor + plr->eyeheight; /* Fix to ground */
-		plr->vlct.z = 0.f;
-		//plr->falling = 0;
+		plr->vlct.z = 0;
+		plr->falling = 0;
 		plr->ground = 1;
 	}
-	else if (plr->vlct.z > 0 && nextz > (*sc)[plr->sector].ceil) // When going up
+	else if (plr->vlct.z > 0 && nextz >= (*sc)[plr->sector].ceil) // When going up
 	{
 		plr->vlct.z = 0; /* Prevent jumping above ceiling */
 		plr->falling = 1;
+		plr->where.z -= 0.1f;
+		plr->fly = 0;
 	}
 	if (plr->falling)
 	{

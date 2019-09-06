@@ -365,6 +365,35 @@ typedef struct		s_sounds
 	Mix_Chunk		*lighter_close;
 }					t_sounds;
 
+typedef	struct 		s_math
+{
+	float a0;
+	float a1;
+	float b0;
+	float b1;
+	float x0;
+	float x1;
+	float y0;
+	float y1;
+	float x2;
+	float y2;
+	float x3;
+	float y3;
+	float px;
+	float py;
+	float xx0;
+	float yy0;
+	float xx1;
+	float xxx1;
+	float yyy1;
+	float xxx2;
+	float yyy2;
+	float xxx3;
+	float yyy3;
+	float xxx4;
+	float yyy4;
+}					t_math;
+
 // Player: location
 typedef struct		s_players
 {
@@ -393,7 +422,7 @@ typedef struct		s_players
 	t_sdl_main		*sdl;
 	int				light;
 	int 			jump_check;
-
+	t_math			math;
 	bool			draw_look; // для перегляду відмальовування полінійно
 }					t_player;
 
@@ -423,34 +452,15 @@ typedef struct		s_reader
 	int 			n;
 }					t_reader;
 
-typedef	struct 		s_math
+typedef struct		s_chloe
 {
-	float a0;
-	float a1;
-	float b0;
-	float b1;
-	float x0;
-	float x1;
-	float y0;
-	float y1;
-	float x2;
-	float y2;
-	float x3;
-	float y3;
-	float px;
-	float py;
-	float xx0;
-	float yy0;
-	float xx1;
-	float xxx1;
-	float yyy1;
-	float xxx2;
-	float yyy2;
-	float xxx3;
-	float yyy3;
-	float xxx4;
-	float yyy4;
-}					t_math;
+	t_sector		*sectors;
+	t_sector		sect;
+	unsigned int	s;
+	t_player		**plr;
+	t_xy			*vert;
+}					t_chloe;
+
 
 /*
 ** Initialize functions

@@ -17,7 +17,7 @@ void	init_sdl(t_game *g)
 	if (SDL_Init(SDL_INIT_EVERYTHING != 0) || TTF_Init() == -1)
 		printf("SDL_Init || TTF_Init error");
 	g->sdl.window = SDL_CreateWindow("Doom Nukem", SDL_WINDOWPOS_CENTERED,
-			SDL_WINDOWPOS_CENTERED, W, H,  SDL_WINDOW_SHOWN);
+			SDL_WINDOWPOS_CENTERED, W, H, SDL_WINDOW_SHOWN);
 	g->sdl.renderer = SDL_CreateRenderer(g->sdl.window, 0, 0);
 	g->sdl.texture = SDL_CreateTexture(g->sdl.renderer, SDL_PIXELFORMAT_ARGB32,
 			SDL_TEXTUREACCESS_STREAMING, W, H);
