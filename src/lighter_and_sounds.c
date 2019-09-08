@@ -84,7 +84,7 @@ void		load_pistol(t_game *g)
 void		load_weapons(t_game *g)
 {
 	g->wpn.sprite_counter = 1;
-	g->wpn.type = 2;
+	g->wpn.type = 1;
 	load_pistol(g);
 	load_lighter(g);
 }

@@ -22,6 +22,20 @@ void		events1(const uint8_t *kstate, SDL_Event ev, t_game *g,
 	g->plr.key.s = kstate[SDL_SCANCODE_S];
 	g->plr.key.d = kstate[SDL_SCANCODE_D];
 	g->plr.draw_look = kstate[SDL_SCANCODE_L];
+	if (ev.button.button == SDL_SCANCODE_1)
+	{
+		g->wpn.sprite_counter = 1;
+		g->plr.light = 24;
+		g->wpn.type = 1;
+	}
+	if (ev.button.button == SDL_SCANCODE_2)
+	{
+		g->wpn.sprite_counter = 1;
+		g->wpn.type = 2;
+	}
+	if (ev.type == SDL_MOUSEBUTTONDOWN &&
+	g->wpn.sprite_counter == 1 && g->wpn.type == 1)
+			g->wpn.sprite_counter += 1;
 	if (ev.type == SDL_MOUSEBUTTONDOWN && g->wpn.sprite_counter == 1
 		&& g->wpn.type == 2)
 	{
