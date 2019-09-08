@@ -12,7 +12,7 @@
 
 #include "doom_nukem.h"
 
-int		check_file(int fd)
+int			check_file(int fd)
 {
 	if (fd == -1 || read(fd, 0, 0) < 0)
 	{
@@ -22,7 +22,7 @@ int		check_file(int fd)
 	return (1);
 }
 
-void	*ft_realloc(void *ptr, size_t size)
+void		*ft_realloc(void *ptr, size_t size)
 {
 	char *newptr;
 
@@ -43,7 +43,7 @@ void	*ft_realloc(void *ptr, size_t size)
 	return (newptr);
 }
 
-t_posf	atof_posf(const char *s, t_posf posf, int exp)
+t_posf		atof_posf(const char *s, t_posf posf, int exp)
 {
 	int c;
 	int sign;
@@ -69,4 +69,23 @@ t_posf	atof_posf(const char *s, t_posf posf, int exp)
 		posf.value *= 0.1;
 	posf.value *= sign;
 	return (posf);
+}
+
+int			inter_point(unsigned int s, t_sector **sc, t_player *plr)
+{
+	if (intersect_box((t_math){.x0 = plr->where.x, .y0 = plr->where.y,
+			.x1 = plr->where.x + plr->vlct.x,
+			.y1 = plr->where.y + plr->vlct.y,
+			.x2 = (*sc)->vert[s + 0].x,
+			.y2 = (*sc)->vert[s + 0].y,
+			.x3 = (*sc)->vert[s + 1].x,
+			.y3 = (*sc)->vert[s + 1].y})
+		&& point_side((t_math){.px = plr->where.x + plr->vlct.x,
+			.py = plr->where.y + plr->vlct.y,
+			.xx0 = (*sc)->vert[s + 0].x,
+			.yy0 = (*sc)->vert[s + 0].y,
+			.xx1 = (*sc)->vert[s + 1].x,
+			.yy1 = (*sc)->vert[s + 1].y}) < 0)
+		return (1);
+	return (0);
 }

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   additional_fts1.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ggavryly <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/09/08 12:46:20 by ggavryly          #+#    #+#             */
+/*   Updated: 2019/09/08 12:46:22 by ggavryly         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "doom_nukem.h"
 
 void		unload_data(t_game *g)
@@ -44,8 +56,8 @@ void		pix2(t_player *p, t_draw_screen_calc *ds, int y, t_tex_i tex_i)
 	uint32_t *pix;
 
 	pix = (uint32_t *)p->sdl->buffer;
-	pix[y * W + ds->it->x] = color_transoform(ft_get_pixel
-			(p->sdl->textures->arr_tex[tex_i.floor],
+	pix[y * W + ds->it->x] = color_transoform(ft_get_pixel(
+			p->sdl->textures->arr_tex[tex_i.floor],
 					ds->i->txtx1 % p->sdl->textures->arr_tex[tex_i.floor]->w,
 					ds->i->txtz % p->sdl->textures->arr_tex[tex_i.floor]->h),
 					ds->f->perc_light);
@@ -56,8 +68,8 @@ void		pix1(t_player *p, t_draw_screen_calc *ds, int y, t_tex_i tex_i)
 	uint32_t *pix;
 
 	pix = (uint32_t *)p->sdl->buffer;
-	pix[y * W + ds->it->x] = color_transoform(ft_get_pixel
-			(p->sdl->textures->arr_tex[tex_i.ceil],
+	pix[y * W + ds->it->x] = color_transoform(ft_get_pixel(
+			p->sdl->textures->arr_tex[tex_i.ceil],
 					ds->i->txtx1 % p->sdl->textures->arr_tex[tex_i.ceil]->w,
 					ds->i->txtz % p->sdl->textures->arr_tex[tex_i.ceil]->h),
 					ds->f->perc_light);

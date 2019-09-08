@@ -22,7 +22,6 @@ int			move_or_not(t_xyz where, t_sector sector, unsigned sect_num, int j)
 	j = -1;
 	res = -1;
 	sum_angles = 0;
-	cur_angle = 0;
 	while (++j < sector.npoints)
 	{
 		xy[0] = vv_to_v(where.x, where.y, sector.vertex[j].x,
@@ -41,56 +40,32 @@ int			move_or_not(t_xyz where, t_sector sector, unsigned sect_num, int j)
 	return (res);
 }
 
-void		move_player(t_player *plr, t_sector **sectors, float dx, float dy, int i)
+void		move_player(t_player *plr, t_sector **sectors, float dx, float dy)
 {
-	t_sector	*sect;
-	t_xy		*vert;
-	float		px;
-	float		py;
-	int			flag;
-
-	px = plr->where.x;
-	py = plr->where.y;
-	sect = &(*sectors)[plr->sector];
-	vert = sect->vertex;
-	i = -1;
-	flag = -2;
-	plr->where.x += dx;
-	plr->where.y += dy;
-	while (++i < sect->npoints)
+	move_init(&plr, sectors, dx, dy);
+	while (++plr->mc.flag[1] < plr->mc.sect->npoints)
 	{
-		if (sect->neighbors[i] >= 0
+		if (plr->mc.sect->neighbors[plr->mc.flag[1]] >= 0
 				&&
-				intersect_box((t_math){.x0 = px, .y0 = py, .x1 = px + dx, .y1 = py + dy,
-						   .x2 = vert[i + 0].x, .y2 = vert[i].y,
-						.x3 = vert[i + 1].x, .y3 = vert[i + 1].y})
+				intersect_box((t_math){.x0 = plr->mc.px, .y0 = plr->mc.py,
+						.x1 = plr->mc.px + dx, .y1 = plr->mc.py + dy,
+						.x2 = plr->mc.vert[plr->mc.flag[1] + 0].x,
+						.y2 = plr->mc.vert[plr->mc.flag[1]].y,
+						.x3 = plr->mc.vert[plr->mc.flag[1] + 1].x,
+						.y3 = plr->mc.vert[plr->mc.flag[1] + 1].y})
 				&&
-				point_side((t_math){.px = px + dx, .py = py + dy,
-						.xx0 = vert[i + 0].x, .yy0 = vert[i].y,
-						.xx1 = vert[i + 1].x, .yy1 = vert[i + 1].y}) < 0)
+				point_side((t_math){.px = plr->mc.px + dx,
+					.py = plr->mc.py + dy,
+					.xx0 = plr->mc.vert[plr->mc.flag[1] + 0].x,
+					.yy0 = plr->mc.vert[plr->mc.flag[1]].y,
+					.xx1 = plr->mc.vert[plr->mc.flag[1] + 1].x,
+					.yy1 = plr->mc.vert[plr->mc.flag[1] + 1].y}) < 0)
 		{
-			flag = move_or_not(plr->where, (*sectors)[sect->neighbors[i]], sect->neighbors[i], 0);
-			if (flag >= 0 && flag < plr->num_scts)
-				plr->sector = sect->neighbors[i];
-			else if (flag == -1)
-			{
-				plr->where.x -= dx;
-				plr->where.y -= dy;
-			}
+			check_sector(&plr, sectors, dx, dy);
 			break ;
 		}
 	}
-	if (flag == -2)
-	{
-		flag = move_or_not(plr->where, (*sectors)[plr->sector], plr->sector, 0);
-		if (flag == -1)
-		{
-			plr->where.x -= dx;
-			plr->where.y -= dy;
-		}
-	}
-	plr->anglesin = sinf(plr->angle);
-	plr->anglecos = cosf(plr->angle);
+	check_dia(&plr, sectors, dx, dy);
 }
 
 void		chholebump(t_chloe c, float *dx, float *dy)
@@ -113,34 +88,24 @@ void		chholebump(t_chloe c, float *dx, float *dy)
 		*dy = yd * (*dx * xd + yd * *dy) / (xd * xd + yd * yd);
 		(*c.plr)->moving = 0;
 	}
-	printf("hole_high - %f\n", hole_high);
 }
 
 void		check_move(t_player *plr, t_sector **sc, unsigned int s)
 {
-	float	px;
-	float	py;
 	float	dx;
 	float	dy;
 
-	px = plr->where.x;
-	py = plr->where.y;
 	dx = plr->vlct.x;
 	dy = plr->vlct.y;
 	(*sc)->vert = (*sc)[plr->sector].vertex;
 	s = -1;
 	while (++s < (*sc)[plr->sector].npoints)
 	{
-		if (intersect_box((t_math){.x0 = px, .y0 = py, .x1 = px + dx, .y1 = py + dy,
-				.x2 = (*sc)->vert[s + 0].x, .y2 = (*sc)->vert[s + 0].y,
-				.x3 = (*sc)->vert[s + 1].x, .y3 = (*sc)->vert[s + 1].y})
-			&& point_side((t_math){.px = px + dx, .py =py + dy,
-					.xx0 = (*sc)->vert[s + 0].x, .yy0 = (*sc)->vert[s + 0].y,
-					.xx1 = (*sc)->vert[s + 1].x, .yy1 = (*sc)->vert[s + 1].y}) < 0)
+		if (inter_point(s, sc, plr))
 			chholebump((t_chloe){.sectors = *sc, .sect = (*sc)[plr->sector],
 						.s = s, .plr = &plr, .vert = (*sc)->vert}, &dx, &dy);
 	}
-	move_player(plr, sc, dx, dy, -1);
+	move_player(plr, sc, dx, dy);
 	plr->falling = 1;
 }
 
@@ -149,22 +114,21 @@ void		do_fall(t_player *plr, t_sector **sc, t_sounds *sounds)
 	float	nextz;
 
 	if (!plr->fly)
-		plr->vlct.z -= 0.05f; /* Add gravity */
+		plr->vlct.z -= 0.05f;
 	else if ((*sc)[plr->sector].ceil > plr->where.z)
 		plr->vlct.z += 0.001f;
 	nextz = plr->where.z + plr->vlct.z;
-	if (plr->vlct.z < 0 && nextz < (*sc)[plr->sector].floor + plr->eyeheight) // When going down
+	if (plr->vlct.z < 0 && nextz < (*sc)[plr->sector].floor + plr->eyeheight)
 	{
-		plr->where.z = (*sc)[plr->sector].floor + plr->eyeheight; /* Fix to ground */
+		plr->where.z = (*sc)[plr->sector].floor + plr->eyeheight;
 		plr->vlct.z = 0;
 		plr->falling = 0;
 		plr->ground = 1;
 	}
-	else if (plr->vlct.z > 0 && nextz >= (*sc)[plr->sector].ceil) // When going up
+	else if (plr->vlct.z > 0 && nextz >= (*sc)[plr->sector].ceil)
 	{
-		plr->vlct.z = 0; /* Prevent jumping above ceiling */
+		plr->vlct.z = 0;
 		plr->falling = 1;
-		plr->where.z -= 0.1f;
 		plr->fly = 0;
 	}
 	if (plr->falling)

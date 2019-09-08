@@ -102,7 +102,7 @@ void		game_loop1(t_game *g, t_sounds *sounds)
 	g->plr.ms_yaw = CLAMP(g->plr.ms_yaw - g->plr.ms.y * 0.05f, -5, 5);
 	g->plr.yaw = g->plr.ms_yaw - g->plr.vlct.z * 0.5f;
 	g->plr.mv = (t_move_vec){.x = 0.f, .y = 0.f};
-	move_player(&g->plr, &g->sectors, 0, 0, -1);
+	move_player(&g->plr, &g->sectors, 0, 0);
 	if (g->plr.key.w)
 		g->plr.mv = (t_move_vec){.x = g->plr.mv.x + g->plr.anglecos *
 			g->plr.speed, .y = g->plr.mv.y + g->plr.anglesin * g->plr.speed};

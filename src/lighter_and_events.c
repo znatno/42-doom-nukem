@@ -33,26 +33,7 @@ void		events1(const uint8_t *kstate, SDL_Event ev, t_game *g,
 		g->wpn.sprite_counter = 1;
 		g->wpn.type = 2;
 	}
-	if (ev.type == SDL_MOUSEBUTTONDOWN &&
-	g->wpn.sprite_counter == 1 && g->wpn.type == 1)
-			g->wpn.sprite_counter += 1;
-	if (ev.type == SDL_MOUSEBUTTONDOWN && g->wpn.sprite_counter == 1
-		&& g->wpn.type == 2)
-	{
-		if (!Mix_Playing(6))
-			Mix_PlayChannel(6, sounds->lighter, 0);
-		if (g->wpn.sprite_counter == 1)
-			g->wpn.sprite_counter += 1;
-		g->plr.light = 16;
-	}
-	if (ev.type == SDL_MOUSEBUTTONUP && g->wpn.sprite_counter == 2
-		&& g->wpn.type == 2)
-	{
-		if (!Mix_Playing(7))
-			Mix_PlayChannel(7, sounds->lighter_close, 0);
-		g->wpn.sprite_counter = 1;
-		g->plr.light = 24;
-	}
+	help_events1(ev, &g, sounds);
 }
 
 void		events(t_game *g, t_sounds *sounds)

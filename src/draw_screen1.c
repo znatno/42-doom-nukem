@@ -1,21 +1,37 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   draw_screen1.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ggavryly <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/09/08 13:05:42 by ggavryly          #+#    #+#             */
+/*   Updated: 2019/09/08 13:05:55 by ggavryly         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "doom_nukem.h"
 
 void	render_sector_walls1(t_draw_screen_calc *ds,
-							 t_sector *sector, t_game *g)
+		t_sector *sector, t_game *g)
 {
 	render_walls(ds, sector, g->plr);
-	ds->s->ya_int = scalar_init(ds->i->x1, ds->i->beginx, ds->i->x2, ds->i->y1a,
-								ds->i->y2a);
-	ds->s->yb_int = scalar_init(ds->i->x1, ds->i->beginx, ds->i->x2, ds->i->y1b,
-								ds->i->y2b);
-	ds->s->nya_int = scalar_init(ds->i->x1, ds->i->beginx, ds->i->x2,
-								 ds->i->ny1a, ds->i->ny2a);
-	ds->s->nyb_int = scalar_init(ds->i->x1, ds->i->beginx, ds->i->x2,
-								 ds->i->ny1b, ds->i->ny2b);
+	ds->s->ya_int = scalar_init((t_scri){.a = ds->i->x1, .b = ds->i->beginx,
+									.c = ds->i->x2,
+									.d = ds->i->y1a, .f = ds->i->y2a});
+	ds->s->yb_int = scalar_init((t_scri){.a = ds->i->x1, .b = ds->i->beginx,
+									.c = ds->i->x2,
+									.d = ds->i->y1b, .f = ds->i->y2b});
+	ds->s->nya_int = scalar_init((t_scri){.a = ds->i->x1, .b = ds->i->beginx,
+									.c = ds->i->x2,
+									.d = ds->i->ny1a, .f = ds->i->ny2a});
+	ds->s->nyb_int = scalar_init((t_scri){.a = ds->i->x1, .b = ds->i->beginx,
+									.c = ds->i->x2,
+									.d = ds->i->ny1b, .f = ds->i->ny2b});
 	ds->it->x = ds->i->beginx;
 }
 
-void	render_sector_walls(t_draw_screen_calc *ds , t_sector *sector,
+void	render_sector_walls(t_draw_screen_calc *ds, t_sector *sector,
 							t_item queue[MAX_QUE], t_game *g)
 {
 	render_sector_walls1(ds, sector, g);
@@ -29,9 +45,9 @@ void	render_sector_walls(t_draw_screen_calc *ds , t_sector *sector,
 		ds->it->x++;
 	}
 	if (ds->i->neightbor >= 0 && ds->i->endx >= ds->i->beginx
-		&& (ds->s->head  + MAX_QUE + 1 - ds->s->tail) % MAX_QUE)
+		&& (ds->s->head + MAX_QUE + 1 - ds->s->tail) % MAX_QUE)
 	{
-		*ds->s->head  = (t_item) {ds->i->neightbor, ds->i->beginx, ds->i->endx};
+		*ds->s->head = (t_item) {ds->i->neightbor, ds->i->beginx, ds->i->endx};
 		if (++ds->s->head == queue + MAX_QUE)
 			ds->s->head = queue;
 	}
@@ -92,7 +108,7 @@ void	draw_screen(t_game *g, t_draw_screen_calc ds)
 	ds.s->head = ds.queue;
 	ds.s->tail = ds.queue;
 	init_draw(&ds, g->plr);
-	if (++ds.s->head  == ds.queue + MAX_QUE)
+	if (++ds.s->head == ds.queue + MAX_QUE)
 		ds.s->head = ds.queue;
 	while (ds.s->head != ds.s->tail || ds.it->start_do)
 	{

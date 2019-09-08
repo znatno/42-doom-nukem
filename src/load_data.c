@@ -82,34 +82,33 @@ t_reader	*reader_coroutine2(t_reader *read, t_sector **sectors, t_player *p,
 	return (read);
 }
 
-t_reader	*reader_coroutine1(t_reader *read, char *line)
+t_reader	*reader_coroutine1(t_reader *rd, char *line)
 {
-	while (line[read->posf.pos])
+	while (line[rd->posf.pos])
 	{
-		while (!ft_isdigit(line[read->posf.pos]))
-			read->posf.pos++;
-		read->vert = ft_realloc(read->vert,
-				++read->NuMVertices * sizeof(*read->vert));
-		if (read->posf.is_y)
+		while (!ft_isdigit(line[rd->posf.pos]))
+			rd->posf.pos++;
+		rd->vert = ft_realloc(rd->vert, ++rd->NuMVertices * sizeof(*rd->vert));
+		if (rd->posf.is_y)
 		{
-			read->posf = atof_posf(line, read->posf, 0);
-			read->vert[read->NuMVertices - 1].y = read->posf.value;
-			read->posf.y = read->posf.value;
-			while (!ft_isdigit(line[read->posf.pos]))
-				read->posf.pos++;
-			read->posf = atof_posf(line, read->posf, 0);
-			read->vert[read->NuMVertices - 1].x = read->posf.value;
-			read->posf.is_y = 0;
+			rd->posf = atof_posf(line, rd->posf, 0);
+			rd->vert[rd->NuMVertices - 1].y = rd->posf.value;
+			rd->posf.y = rd->posf.value;
+			while (!ft_isdigit(line[rd->posf.pos]))
+				rd->posf.pos++;
+			rd->posf = atof_posf(line, rd->posf, 0);
+			rd->vert[rd->NuMVertices - 1].x = rd->posf.value;
+			rd->posf.is_y = 0;
 		}
 		else
 		{
-			read->posf = atof_posf(line, read->posf, 0);
-			read->vert[read->NuMVertices - 1].x = read->posf.value;
-			read->vert[read->NuMVertices - 1].y = read->posf.y;
+			rd->posf = atof_posf(line, rd->posf, 0);
+			rd->vert[rd->NuMVertices - 1].x = rd->posf.value;
+			rd->vert[rd->NuMVertices - 1].y = rd->posf.y;
 		}
-		read->posf.pos--;
+		rd->posf.pos--;
 	}
-	return (read);
+	return (rd);
 }
 
 void		load_data(t_player *player, t_sector **sectors)

@@ -1,8 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   additional_fts2.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ggavryly <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/09/08 12:47:56 by ggavryly          #+#    #+#             */
+/*   Updated: 2019/09/08 12:48:06 by ggavryly         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "doom_nukem.h"
 
 void		draw_ceil_floor(t_draw_screen_calc *ds, t_player *p, t_tex_i tex_i)
 {
-
 	int y;
 
 	y = ds->i->y_top[ds->it->x];
@@ -53,15 +64,15 @@ int			scaler_next(t_scaler *i)
 	return (i->result);
 }
 
-t_scaler	scalar_init(int a, int b, int c, int d, int f)
+t_scaler	scalar_init(t_scri r)
 {
 	t_scaler	s;
 
-	s.result = d + (b - 1 - a) * (f - d) / (c - a);
-	s.bop = ((f < d) ^ (c < a)) ? -1 : 1;
-	s.fd = abs(f - d);
-	s.ca = abs(c - a);
-	s.cache = (int)((b - 1 - a) * abs(f - d)) % abs(c - a);
+	s.result = r.d + (r.b - 1 - r.a) * (r.f - r.d) / (r.c - r.a);
+	s.bop = ((r.f < r.d) ^ (r.c < r.a)) ? -1 : 1;
+	s.fd = abs(r.f - r.d);
+	s.ca = abs(r.c - r.a);
+	s.cache = (int)((r.b - 1 - r.a) * abs(r.f - r.d)) % abs(r.c - r.a);
 	return (s);
 }
 
