@@ -88,23 +88,23 @@ t_reader	*reader_coroutine1(t_reader *rd, char *line)
 	{
 		while (!ft_isdigit(line[rd->posf.pos]))
 			rd->posf.pos++;
-		rd->vert = ft_realloc(rd->vert, ++rd->NuMVertices * sizeof(*rd->vert));
+		rd->vert = ft_realloc(rd->vert, ++rd->num_vertices * sizeof(*rd->vert));
 		if (rd->posf.is_y)
 		{
 			rd->posf = atof_posf(line, rd->posf, 0);
-			rd->vert[rd->NuMVertices - 1].y = rd->posf.value;
+			rd->vert[rd->num_vertices - 1].y = rd->posf.value;
 			rd->posf.y = rd->posf.value;
 			while (!ft_isdigit(line[rd->posf.pos]))
 				rd->posf.pos++;
 			rd->posf = atof_posf(line, rd->posf, 0);
-			rd->vert[rd->NuMVertices - 1].x = rd->posf.value;
+			rd->vert[rd->num_vertices - 1].x = rd->posf.value;
 			rd->posf.is_y = 0;
 		}
 		else
 		{
 			rd->posf = atof_posf(line, rd->posf, 0);
-			rd->vert[rd->NuMVertices - 1].x = rd->posf.value;
-			rd->vert[rd->NuMVertices - 1].y = rd->posf.y;
+			rd->vert[rd->num_vertices - 1].x = rd->posf.value;
+			rd->vert[rd->num_vertices - 1].y = rd->posf.y;
 		}
 		rd->posf.pos--;
 	}

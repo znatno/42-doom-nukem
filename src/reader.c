@@ -17,7 +17,7 @@ void	reader_init(t_reader *read)
 	read->posf.pos = 0;
 	read->posf.value = 0;
 	read->posf.is_y = 0;
-	read->NuMVertices = 0;
+	read->num_vertices = 0;
 	read->vert = NULL;
 }
 

@@ -31,8 +31,8 @@ void	render_sector_walls1(t_draw_screen_calc *ds,
 	ds->it->x = ds->i->beginx;
 }
 
-void	render_sector_walls(t_draw_screen_calc *ds, t_sector *sector,
-							t_item queue[MAX_QUE], t_game *g)
+void	rsw(t_draw_screen_calc *ds, t_sector *sector,
+			t_item *queue, t_game *g)
 {
 	render_sector_walls1(ds, sector, g);
 	while (ds->it->x <= ds->i->endx)
@@ -74,7 +74,7 @@ void	draw_screen2(t_game *g, t_draw_screen_calc ds)
 			ds.it->s++;
 			continue;
 		}
-		render_sector_walls(&ds, g->sectors, ds.queue, g);
+		rsw(&ds, g->sectors, ds.queue, g);
 		ds.it->s++;
 	}
 	++ds.i->renderedsectors[ds.s->now.sectorno];
