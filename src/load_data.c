@@ -121,4 +121,6 @@ void		load_data(t_player *player, t_sector **sectors)
 	if (!(check_file(fd)))
 		exit(-1);
 	reader(line, fd, player, sectors);
+	close(fd);
+	free(line);
 }

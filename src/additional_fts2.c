@@ -43,10 +43,7 @@ void		draw_ceil_floor(t_draw_screen_calc *ds, t_player *p, t_tex_i tex_i)
 
 int			exit_doom(t_game *g)
 {
-	if (g->error)
-		ft_putendl_fd("text", 2);
-	else
-		ft_putendl("text");
+	system("leaks doom-nukem");
 	unload_data(g);
 	SDL_Quit();
 	TTF_Quit();

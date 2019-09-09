@@ -43,6 +43,8 @@ void	reader(char *line, int fd, t_player *p, t_sector **sectors)
 		}
 		if (*line == 'p')
 			read = reader_coroutine4(read, line, p, sectors);
+		free(line);
 	}
+	free(read->vert);
 	free(read);
 }

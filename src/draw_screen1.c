@@ -116,4 +116,5 @@ void	draw_screen(t_game *g, t_draw_screen_calc ds)
 			continue;
 		draw_screen2(g, ds);
 	}
+	free(ds.i->renderedsectors);
 }
