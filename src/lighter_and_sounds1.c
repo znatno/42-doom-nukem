@@ -19,7 +19,7 @@ void			draw_pistol(t_game *g)
 	else if (g->wpn.sprite_counter > 1)
 	{
 		draw_cur_pistol_sprite(g, W - 400, H - 250, g->wpn.sprite_counter - 1);
-		g->wpn.sprite_counter += 0.5;
+		g->wpn.sprite_counter += 1;
 	}
 	if (g->wpn.sprite_counter >= 6)
 		g->wpn.sprite_counter = 1;

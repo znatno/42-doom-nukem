@@ -70,5 +70,4 @@ void			textures_init(t_sdl_main *sdl)
 	arr_tex = (SDL_Surface **)malloc(sizeof(SDL_Surface *) * 7);
 	get_mandatory_textures(arr_tex);
 	sdl->textures->arr_tex = arr_tex;
-//	decor_init(sdl);
 }
