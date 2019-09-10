@@ -57,7 +57,10 @@ void	help_events1(SDL_Event ev, t_game **g, t_sounds *sounds)
 {
 	if (ev.type == SDL_MOUSEBUTTONDOWN &&
 			(*g)->wpn.sprite_counter == 1 && (*g)->wpn.type == 1)
+	{
+		Mix_PlayChannel(7, sounds->gun_fire, 0);
 		(*g)->wpn.sprite_counter += 1;
+	}
 	if (ev.type == SDL_MOUSEBUTTONDOWN && (*g)->wpn.sprite_counter == 1
 		&& (*g)->wpn.type == 2)
 	{

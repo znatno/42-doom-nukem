@@ -104,6 +104,7 @@ t_sounds	*init_music_n_sounds(void)
 	sounds->low_run = Mix_LoadWAV("../sounds/run.wav");
 	sounds->lighter = Mix_LoadWAV("../sounds/lighter.wav");
 	sounds->lighter_close = Mix_LoadWAV("../sounds/lighter_close.wav");
+	sounds->gun_fire = Mix_LoadWAV("../sounds/gun_fire.wav");
 	Mix_VolumeMusic(30);
 	Mix_Volume(RUN, 20);
 	Mix_Volume(SEAT_RUN, 10);

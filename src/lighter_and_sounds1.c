@@ -42,7 +42,6 @@ SDL_Surface		*load_lighter_part(int sprite)
 		cur_sprite = IMG_Load("../sprites/3.png");
 	if (sprite == 1)
 		cur_sprite = IMG_Load("../sprites/1.png");
-
 	tmp = SDL_ConvertSurfaceFormat(cur_sprite,
 										SDL_PIXELFORMAT_ARGB32, 0);
 	SDL_FreeSurface(cur_sprite);

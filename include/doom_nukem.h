@@ -39,6 +39,7 @@
 # define JUMP					2
 # define SEAT_RUN				4
 # define FAST_RUN				5
+# define GUN_FIRE				6
 # define YAW(y, z)				(y + z * plr.yaw)
 # define MAX_QUE				32
 # define EYE_H 					6
@@ -324,6 +325,7 @@ typedef struct			s_sounds
 	Mix_Chunk			*fast_run;
 	Mix_Chunk			*lighter;
 	Mix_Chunk			*lighter_close;
+	Mix_Chunk			*gun_fire;
 }						t_sounds;
 
 typedef	struct			s_math
