@@ -47,7 +47,7 @@ void		render(int dm, t_tex_i tex_i, t_player *p, t_draw_screen_calc *ds)
 }
 
 void		vertl(t_scaler ty, unsigned txtx, t_player *p,
-				  t_draw_screen_calc *ds)
+				t_draw_screen_calc *ds)
 {
 	uint32_t	*pix;
 	unsigned	txty;

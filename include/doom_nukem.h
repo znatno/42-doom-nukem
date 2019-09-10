@@ -454,7 +454,7 @@ bool					surface_in(t_math m);
 t_xy					crossing(t_math m);
 float					point_basis(t_math m);
 void					motion(t_player *plr, t_sector **sectors,
-							   float dx, float dy);
+						float dx, float dy);
 float					angles(t_xy xy0, t_xy xy1);
 void					check_move(t_player *p, t_sector **sc, unsigned int s);
 void					check_fall(t_player *plr, t_sector **sectors);
@@ -481,7 +481,7 @@ int						scr_nxt(t_scaler *i);
 t_scaler				scalar_create(t_scri r);
 int						ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);
 void					vertl(t_scaler ty, unsigned txtx, t_player *p,
-							  t_draw_screen_calc *ds);
+							t_draw_screen_calc *ds);
 int						check_file(int fd);
 void					*ft_realloc(void *ptr, size_t size);
 t_posf					atof_posf(const char *s, t_posf posf, int exp);
