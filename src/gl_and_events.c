@@ -102,7 +102,7 @@ void		game_loop1(t_game *g, t_sounds *sounds)
 	g->plr.ms_yaw = CLAMP(g->plr.ms_yaw - g->plr.ms.y * 0.05f, -5, 5);
 	g->plr.yaw = g->plr.ms_yaw - g->plr.vlct.z * 0.5f;
 	g->plr.mv = (t_move_vec){.x = 0.f, .y = 0.f};
-	move_player(&g->plr, &g->sectors, 0, 0);
+	motion(&g->plr, &g->sectors, 0, 0);
 	if (g->plr.key.w)
 		g->plr.mv = (t_move_vec){.x = g->plr.mv.x + g->plr.anglecos *
 			g->plr.speed, .y = g->plr.mv.y + g->plr.anglesin * g->plr.speed};
@@ -121,7 +121,7 @@ void		game_loop(t_game *g, t_player *plr, t_sounds *sounds)
 		game_loop1(g, sounds);
 		game_loop2(g);
 		game_loop3(g, plr, sounds);
-		draw_screen(g, ds);
+		main_draw(g, ds);
 		draw_weapons(g);
 		SDL_UpdateTexture(g->sdl.texture, NULL, g->sdl.buffer,
 						W * (sizeof(int)));

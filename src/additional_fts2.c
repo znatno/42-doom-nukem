@@ -50,7 +50,7 @@ int			exit_doom(t_game *g)
 	exit(0);
 }
 
-int			scaler_next(t_scaler *i)
+int			scr_nxt(t_scaler *i)
 {
 	i->cache += i->fd;
 	while (i->cache >= i->ca)
@@ -61,7 +61,7 @@ int			scaler_next(t_scaler *i)
 	return (i->result);
 }
 
-t_scaler	scalar_init(t_scri r)
+t_scaler	scalar_create(t_scri r)
 {
 	t_scaler	s;
 

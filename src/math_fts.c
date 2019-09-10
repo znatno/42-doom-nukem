@@ -12,23 +12,23 @@
 
 #include "doom_nukem.h"
 
-bool	overlap(float a0, float a1, float b0, float b1)
+bool	overflow(float a0, float a1, float b0, float b1)
 {
 	if (MIN(a0, a1) <= MAX(b0, b1) && MIN(b0, b1) <= MAX(a0, a1))
 		return (true);
 	return (false);
 }
 
-bool	intersect_box(t_math m)
+bool	surface_in(t_math m)
 {
 	bool result;
 
-	result = (overlap(m.x0, m.x1, m.x2, m.x3)
-			&& overlap(m.y0, m.y1, m.y2, m.y3));
+	result = (overflow(m.x0, m.x1, m.x2, m.x3)
+			&& overflow(m.y0, m.y1, m.y2, m.y3));
 	return (result);
 }
 
-float	point_side(t_math m)
+float	point_basis(t_math m)
 {
 	float result;
 
@@ -37,7 +37,7 @@ float	point_side(t_math m)
 	return (result);
 }
 
-t_xy	intersect(t_math m)
+t_xy	crossing(t_math m)
 {
 	t_xy result;
 

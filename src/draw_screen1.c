@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   draw_screen1.c                                     :+:      :+:    :+:   */
+/*   main_draw1.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ggavryly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -16,18 +16,18 @@ void	render_sector_walls1(t_draw_screen_calc *ds,
 		t_sector *sector, t_game *g)
 {
 	render_walls(ds, sector, g->plr);
-	ds->s->ya_int = scalar_init((t_scri){.a = ds->i->x1, .b = ds->i->beginx,
-									.c = ds->i->x2,
-									.d = ds->i->y1a, .f = ds->i->y2a});
-	ds->s->yb_int = scalar_init((t_scri){.a = ds->i->x1, .b = ds->i->beginx,
-									.c = ds->i->x2,
-									.d = ds->i->y1b, .f = ds->i->y2b});
-	ds->s->nya_int = scalar_init((t_scri){.a = ds->i->x1, .b = ds->i->beginx,
-									.c = ds->i->x2,
-									.d = ds->i->ny1a, .f = ds->i->ny2a});
-	ds->s->nyb_int = scalar_init((t_scri){.a = ds->i->x1, .b = ds->i->beginx,
-									.c = ds->i->x2,
-									.d = ds->i->ny1b, .f = ds->i->ny2b});
+	ds->s->ya_int = scalar_create((t_scri) {.a = ds->i->x1, .b = ds->i->beginx,
+			.c = ds->i->x2,
+			.d = ds->i->y1a, .f = ds->i->y2a});
+	ds->s->yb_int = scalar_create((t_scri) {.a = ds->i->x1, .b = ds->i->beginx,
+			.c = ds->i->x2,
+			.d = ds->i->y1b, .f = ds->i->y2b});
+	ds->s->nya_int = scalar_create((t_scri) {.a = ds->i->x1, .b = ds->i->beginx,
+			.c = ds->i->x2,
+			.d = ds->i->ny1a, .f = ds->i->ny2a});
+	ds->s->nyb_int = scalar_create((t_scri) {.a = ds->i->x1, .b = ds->i->beginx,
+			.c = ds->i->x2,
+			.d = ds->i->ny1b, .f = ds->i->ny2b});
 	ds->it->x = ds->i->beginx;
 }
 
@@ -53,7 +53,7 @@ void	rsw(t_draw_screen_calc *ds, t_sector *sector,
 	}
 }
 
-void	draw_screen2(t_game *g, t_draw_screen_calc ds)
+void	main_draw2(t_game *g, t_draw_screen_calc ds)
 {
 	while (ds.it->s < ds.s->sect->npoints)
 	{
@@ -81,7 +81,7 @@ void	draw_screen2(t_game *g, t_draw_screen_calc ds)
 	ds.it->start_do == 1 ? ds.it->start_do = 0 : 0;
 }
 
-int		draw_screen1(t_game *g, t_draw_screen_calc ds)
+int		main_draw1(t_game *g, t_draw_screen_calc ds)
 {
 	pick_sector_slice(&ds);
 	if ((unsigned)ds.i->renderedsectors[ds.s->now.sectorno] & 0x21u)
@@ -92,7 +92,7 @@ int		draw_screen1(t_game *g, t_draw_screen_calc ds)
 	return (1);
 }
 
-void	draw_screen(t_game *g, t_draw_screen_calc ds)
+void	main_draw(t_game *g, t_draw_screen_calc ds)
 {
 	t_tmp_iter			it;
 	t_item				qe[MAX_QUE];
@@ -112,9 +112,9 @@ void	draw_screen(t_game *g, t_draw_screen_calc ds)
 		ds.s->head = ds.queue;
 	while (ds.s->head != ds.s->tail || ds.it->start_do)
 	{
-		if (draw_screen1(g, ds) == 0)
+		if (main_draw1(g, ds) == 0)
 			continue;
-		draw_screen2(g, ds);
+		main_draw2(g, ds);
 	}
 	free(ds.i->renderedsectors);
 }

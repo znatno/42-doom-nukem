@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   draw_screen2.c                                     :+:      :+:    :+:   */
+/*   main_draw2.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: ggavryly <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -48,8 +48,8 @@ void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p, t_game *g)
 							/ (ds->i->x2 - ds->i->x1) + ds->f->tz1) * p->light);
 	ds->i->z = (ds->i->z > 250) ? (250) : (ds->i->z);
 	ds->f->perc_light = percentage(250, 0, ds->i->z);
-	ds->i->ya = scaler_next(&ds->s->ya_int);
-	ds->i->yb = scaler_next(&ds->s->yb_int);
+	ds->i->ya = scr_nxt(&ds->s->ya_int);
+	ds->i->yb = scr_nxt(&ds->s->yb_int);
 	ds->i->cya = CLAMP(ds->i->ya, ds->i->y_top[ds->it->x],
 			ds->i->y_bottom[ds->it->x]);
 	ds->i->cyb = CLAMP(ds->i->yb, ds->i->y_top[ds->it->x],
@@ -59,8 +59,8 @@ void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p, t_game *g)
 
 void	render_ceil_floor(t_draw_screen_calc *ds, t_player *p)
 {
-	ds->i->nya = scaler_next(&ds->s->nya_int);
-	ds->i->nyb = scaler_next(&ds->s->nyb_int);
+	ds->i->nya = scr_nxt(&ds->s->nya_int);
+	ds->i->nyb = scr_nxt(&ds->s->nyb_int);
 	ds->i->cnya = CLAMP(ds->i->nya, ds->i->y_top[ds->it->x],
 						ds->i->y_bottom[ds->it->x]);
 	ds->i->cnyb = CLAMP(ds->i->nyb, ds->i->y_top[ds->it->x],

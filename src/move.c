@@ -40,26 +40,26 @@ int			move_or_not(t_xyz where, t_sector sector, unsigned sect_num, int j)
 	return (res);
 }
 
-void		move_player(t_player *plr, t_sector **sectors, float dx, float dy)
+void		motion(t_player *plr, t_sector **sectors, float dx, float dy)
 {
 	move_init(&plr, sectors, dx, dy);
 	while (++plr->mc.flag[1] < plr->mc.sect->npoints)
 	{
 		if (plr->mc.sect->neighbors[plr->mc.flag[1]] >= 0
 				&&
-				intersect_box((t_math){.x0 = plr->mc.px, .y0 = plr->mc.py,
+				surface_in((t_math) {.x0 = plr->mc.px, .y0 = plr->mc.py,
 						.x1 = plr->mc.px + dx, .y1 = plr->mc.py + dy,
 						.x2 = plr->mc.vert[plr->mc.flag[1] + 0].x,
 						.y2 = plr->mc.vert[plr->mc.flag[1]].y,
 						.x3 = plr->mc.vert[plr->mc.flag[1] + 1].x,
 						.y3 = plr->mc.vert[plr->mc.flag[1] + 1].y})
 				&&
-				point_side((t_math){.px = plr->mc.px + dx,
-					.py = plr->mc.py + dy,
-					.xx0 = plr->mc.vert[plr->mc.flag[1] + 0].x,
-					.yy0 = plr->mc.vert[plr->mc.flag[1]].y,
-					.xx1 = plr->mc.vert[plr->mc.flag[1] + 1].x,
-					.yy1 = plr->mc.vert[plr->mc.flag[1] + 1].y}) < 0)
+				point_basis((t_math) {.px = plr->mc.px + dx,
+						.py = plr->mc.py + dy,
+						.xx0 = plr->mc.vert[plr->mc.flag[1] + 0].x,
+						.yy0 = plr->mc.vert[plr->mc.flag[1]].y,
+						.xx1 = plr->mc.vert[plr->mc.flag[1] + 1].x,
+						.yy1 = plr->mc.vert[plr->mc.flag[1] + 1].y}) < 0)
 		{
 			check_sector(&plr, sectors, dx, dy);
 			break ;
@@ -105,7 +105,7 @@ void		check_move(t_player *plr, t_sector **sc, unsigned int s)
 			chholebump((t_chloe){.sectors = *sc, .sect = (*sc)[plr->sector],
 						.s = s, .plr = &plr, .vert = (*sc)->vert}, &dx, &dy);
 	}
-	move_player(plr, sc, dx, dy);
+	motion(plr, sc, dx, dy);
 	plr->falling = 1;
 }
 

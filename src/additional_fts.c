@@ -24,30 +24,30 @@ void		render(int dm, t_tex_i tex_i, t_player *p, t_draw_screen_calc *ds)
 	if (dm == TOP_PORTAL_WALL)
 	{
 		render_var(ds->i->cya, ds->i->cnya - 1, ds);
-		vline2(scalar_init((t_scri){.a = ds->i->ya, .b = ds->i->
-		cya, .c = ds->i->yb, .d = 0, .f = p->sdl->textures->
+		vertl(scalar_create((t_scri) {.a = ds->i->ya, .b = ds->i->
+				cya, .c = ds->i->yb, .d = 0, .f = p->sdl->textures->
 				arr_tex[tex_i.wall]->w - 1}), ds->i->txtx, p, ds);
 	}
 	else if (dm == BOTTOM_PORTAL_WALL)
 	{
 		render_var(ds->i->cnyb + 1, ds->i->cyb, ds);
-		vline2(scalar_init((t_scri){.a = ds->i->ya, .b = ds->i->
-		cnyb + 1, .c = ds->i->yb, .d = 0, .f = p->sdl->textures->
+		vertl(scalar_create((t_scri) {.a = ds->i->ya, .b = ds->i->
+				cnyb + 1, .c = ds->i->yb, .d = 0, .f = p->sdl->textures->
 				arr_tex[tex_i.wall]->w - 1}), ds->i->txtx, p, ds);
 	}
 	else if (dm == FULL_WALL)
 	{
 		render_var(ds->i->cya, ds->i->cyb, ds);
-		vline2(scalar_init((t_scri){.a = ds->i->ya, .b = ds->i->
-		cya, .c = ds->i->yb, .d = 0, .f = p->sdl->
+		vertl(scalar_create((t_scri) {.a = ds->i->ya, .b = ds->i->
+				cya, .c = ds->i->yb, .d = 0, .f = p->sdl->
 				textures->arr_tex[tex_i.wall]->w - 1}), ds->i->txtx, p, ds);
 	}
 	else if (dm == CEIL || dm == FLOOR)
 		draw_ceil_floor(ds, p, tex_i);
 }
 
-void		vline2(t_scaler ty, unsigned txtx, t_player *p,
-					t_draw_screen_calc *ds)
+void		vertl(t_scaler ty, unsigned txtx, t_player *p,
+				  t_draw_screen_calc *ds)
 {
 	uint32_t	*pix;
 	unsigned	txty;
@@ -61,7 +61,7 @@ void		vline2(t_scaler ty, unsigned txtx, t_player *p,
 	while (y <= ds->i->y2)
 	{
 		++y;
-		txty = scaler_next(&ty);
+		txty = scr_nxt(&ty);
 		*pix = color_transoform(ft_get_pixel(
 				p->sdl->textures->arr_tex[ds->i->tn],
 						txtx % p->sdl->textures->arr_tex[ds->i->tn]->w,

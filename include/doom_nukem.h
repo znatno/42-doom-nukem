@@ -440,7 +440,7 @@ typedef struct			s_chloe
 void					init_sdl(t_game *g);
 void					load_data(t_player *player, t_sector **sectors);
 char					*ft_itof(long double k);
-void					draw_screen(t_game *g, t_draw_screen_calc ds);
+void					main_draw(t_game *g, t_draw_screen_calc ds);
 t_xy					vv_to_v(float x0, float y0, float x1, float y1);
 float					len_vector(t_xy		free_vector);
 float					scalar_product(t_xy xy0, t_xy xy1);
@@ -449,12 +449,12 @@ float					radian_to_grades(float rad);
 float					vector_product(t_xy xy0, t_xy xy1);
 int						move_or_not(t_xyz where, t_sector sector,
 						unsigned sect_num, int j);
-bool					overlap(float a0, float a1, float b0, float b1);
-bool					intersect_box(t_math m);
-t_xy					intersect(t_math m);
-float					point_side(t_math m);
-void					move_player(t_player *plr, t_sector **sectors,
-						float dx, float dy);
+bool					overflow(float a0, float a1, float b0, float b1);
+bool					surface_in(t_math m);
+t_xy					crossing(t_math m);
+float					point_basis(t_math m);
+void					motion(t_player *plr, t_sector **sectors,
+							   float dx, float dy);
 float					angles(t_xy xy0, t_xy xy1);
 void					check_move(t_player *p, t_sector **sc, unsigned int s);
 void					check_fall(t_player *plr, t_sector **sectors);
@@ -473,17 +473,15 @@ void					check_sector(t_player **p,
 						t_sector **s, float x, float y);
 void					check_dia(t_player **plr,
 						t_sector **sectors, float dx, float dy);
-void					decor_texture(t_sdl_main *sdl, uint32_t t_n,
-						uint32_t d_n, t_xy_uint cords);
 void					textures_init(t_sdl_main *sdl);
 float					percentage(int start, int end, int curr);
 void					render(int d, t_tex_i t, t_player *p,
 						t_draw_screen_calc *ds);
-int						scaler_next(t_scaler *i);
-t_scaler				scalar_init(t_scri r);
+int						scr_nxt(t_scaler *i);
+t_scaler				scalar_create(t_scri r);
 int						ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);
-void					vline2(t_scaler ty, unsigned txtx, t_player *p,
-						t_draw_screen_calc *ds);
+void					vertl(t_scaler ty, unsigned txtx, t_player *p,
+							  t_draw_screen_calc *ds);
 int						check_file(int fd);
 void					*ft_realloc(void *ptr, size_t size);
 t_posf					atof_posf(const char *s, t_posf posf, int exp);
@@ -507,10 +505,10 @@ void					draw_ceil_floor(t_draw_screen_calc *ds,
 						t_player *p, t_tex_i tex_i);
 int						exit_doom(t_game *g);
 void					help_events1(SDL_Event ev, t_game **g, t_sounds *s);
-int						scaler_next(t_scaler *i);
+int						scr_nxt(t_scaler *i);
 int						ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);
-int						draw_screen1(t_game *g, t_draw_screen_calc ds);
-void					draw_screen2(t_game *g, t_draw_screen_calc ds);
+int						main_draw1(t_game *g, t_draw_screen_calc ds);
+void					main_draw2(t_game *g, t_draw_screen_calc ds);
 void					rsw(t_draw_screen_calc *ds, t_sector *sector,
 						t_item *queue, t_game *g);
 void					render_sector_walls1(t_draw_screen_calc *ds,
