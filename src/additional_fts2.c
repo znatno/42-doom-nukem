@@ -46,7 +46,6 @@ int			exit_doom(t_game *g)
 	unload_data(g);
 	SDL_Quit();
 	TTF_Quit();
-	system("leaks doom-nukem");
 	exit(0);
 }
 

@@ -24,11 +24,11 @@ SDL_Surface		*new_surface(SDL_Surface **arr_tex, int i)
 
 void			get_decor_textures(SDL_Surface **arr_tex)
 {
-	arr_tex[0] = IMG_Load("../doom_decor/blood_hand_decor.png");
-	arr_tex[1] = IMG_Load("../doom_decor/face_decor.png");
-	arr_tex[2] = IMG_Load("../doom_decor/scary_decor.png");
-	arr_tex[3] = IMG_Load("../doom_decor/illuminate_decor.png");
-	arr_tex[4] = IMG_Load("../doom_decor/eye_decor.png");
+	arr_tex[0] = IMG_Load("doom_decor/blood_hand_decor.png");
+	arr_tex[1] = IMG_Load("doom_decor/face_decor.png");
+	arr_tex[2] = IMG_Load("doom_decor/scary_decor.png");
+	arr_tex[3] = IMG_Load("doom_decor/illuminate_decor.png");
+	arr_tex[4] = IMG_Load("doom_decor/eye_decor.png");
 	new_surface(arr_tex, 0);
 	new_surface(arr_tex, 1);
 	new_surface(arr_tex, 2);
@@ -47,13 +47,13 @@ void			decor_init(t_sdl_main *sdl)
 
 void			get_mandatory_textures(SDL_Surface **arr_tex)
 {
-	arr_tex[0] = IMG_Load("../doom_textures/bloody_game.jpg");
-	arr_tex[1] = IMG_Load("../doom_textures/carpet_game.jpg");
-	arr_tex[2] = IMG_Load("../doom_textures/forest_game.jpg");
-	arr_tex[3] = IMG_Load("../doom_textures/mess_game.jpg");
-	arr_tex[4] = IMG_Load("../doom_textures/scull_game.jpg");
-	arr_tex[5] = IMG_Load("../doom_textures/wall_game.jpg");
-	arr_tex[6] = IMG_Load("../doom_textures/ground.jpg");
+	arr_tex[0] = IMG_Load("doom_textures/bloody_game.jpg");
+	arr_tex[1] = IMG_Load("doom_textures/carpet_game.jpg");
+	arr_tex[2] = IMG_Load("doom_textures/forest_game.jpg");
+	arr_tex[3] = IMG_Load("doom_textures/mess_game.jpg");
+	arr_tex[4] = IMG_Load("doom_textures/scull_game.jpg");
+	arr_tex[5] = IMG_Load("doom_textures/wall_game.jpg");
+	arr_tex[6] = IMG_Load("doom_textures/ground.jpg");
 	arr_tex[0] = new_surface(arr_tex, 0);
 	arr_tex[1] = new_surface(arr_tex, 1);
 	arr_tex[2] = new_surface(arr_tex, 2);

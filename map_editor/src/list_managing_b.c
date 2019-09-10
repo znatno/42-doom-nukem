@@ -12,7 +12,7 @@
 
 #include "duke_nukem_editor.h"
 
-t_sector			*last_portal(t_draw *draw)
+t_portals			*last_portal(t_draw *draw)
 {
 	t_portals		*cur;
 

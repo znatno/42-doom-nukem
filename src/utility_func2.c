@@ -58,7 +58,7 @@ t_posf		atof_posf(const char *s, t_posf posf, int exp)
 	while ((c = s[0 + posf.pos++]) != '\0' && ISDIGIT(c))
 		posf.value = posf.value * 10.0 + (c - '0');
 	if (c == '.')
-		while ((c = s[0 + posf.pos++]) != '\0' && ISDIGIT(c) || exp--)
+		while (((c = s[0 + posf.pos++]) != '\0' && ISDIGIT(c)) || exp--)
 			posf.value = posf.value * 10.0 + (c - '0');
 	while (ISDIGIT(c))
 	{

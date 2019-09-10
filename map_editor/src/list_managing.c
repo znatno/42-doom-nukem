@@ -12,7 +12,7 @@
 
 #include "duke_nukem_editor.h"
 
-t_sector		*zero_objects(t_sector *cur_s, int i)
+void			zero_objects(t_sector *cur_s, int i)
 {
 	cur_s->walls = i;
 	ft_bzero(&cur_s->object, 3);
@@ -46,7 +46,7 @@ void			pop_from_stack_to_list(t_env *env,
 			head_v = head_v->next;
 		}
 	}
-	cur_s = zero_objects(cur_s, i);
+	zero_objects(cur_s, i);
 }
 
 void			save_stack_to_list(t_env *env, t_draw *draw, t_stack **head)

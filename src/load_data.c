@@ -117,7 +117,7 @@ void		load_data(t_player *player, t_sector **sectors)
 	char	*line;
 
 	line = ft_strnew(1);
-	fd = open("../test.txt", O_RDONLY);
+	fd = open("maps/ya_karta.doom", O_RDONLY);
 	if (!(check_file(fd)))
 		exit(-1);
 	reader(line, fd, player, sectors);

@@ -28,7 +28,6 @@ void	record_free_vert(t_record *record)
 		next_v = walk_v->next;
 	}
 	free(walk_v);
-	system("leaks doom-nukem");
 }
 
 void	record_free_sec_index(t_rec_sec *rec_sec)

@@ -14,29 +14,29 @@
 
 void	image_load(SDL_Surface **arr_tex)
 {
-	arr_tex[0] = IMG_Load("../textures/ceil.png");
-	arr_tex[1] = IMG_Load("../textures/draw_mode.png");
-	arr_tex[2] = IMG_Load("../textures/floor.png");
-	arr_tex[3] = IMG_Load("../textures/left.png");
-	arr_tex[4] = IMG_Load("../textures/objects.png");
-	arr_tex[5] = IMG_Load("../textures/player.png");
-	arr_tex[6] = IMG_Load("../textures/refresh.png");
-	arr_tex[7] = IMG_Load("../textures/right.png");
-	arr_tex[8] = IMG_Load("../textures/select_mode.png");
-	arr_tex[9] = IMG_Load("../textures/wall_mode.png");
-	arr_tex[10] = IMG_Load("../textures/guns_editor.png");
-	arr_tex[11] = IMG_Load("../textures/kits_editor.png");
-	arr_tex[12] = IMG_Load("../textures/armor_editor.png");
-	arr_tex[13] = IMG_Load("../textures/death_editor.png");
-	arr_tex[14] = IMG_Load("../textures/fly_editor.png");
-	arr_tex[15] = IMG_Load("../textures/network_editor.png");
-	arr_tex[20] = IMG_Load("../textures/wood_editor.png");
-	arr_tex[21] = IMG_Load("../textures/skulls_editor.png");
-	arr_tex[22] = IMG_Load("../textures/bloody_editor.png");
-	arr_tex[23] = IMG_Load("../textures/mess_editor.png");
-	arr_tex[24] = IMG_Load("../textures/forest_editor.png");
-	arr_tex[25] = IMG_Load("../textures/wall_editor.png");
-	arr_tex[26] = IMG_Load("../textures/carpet_editor.png");
+	arr_tex[0] = IMG_Load("textures/ceil.png");
+	arr_tex[1] = IMG_Load("textures/draw_mode.png");
+	arr_tex[2] = IMG_Load("textures/floor.png");
+	arr_tex[3] = IMG_Load("textures/left.png");
+	arr_tex[4] = IMG_Load("textures/objects.png");
+	arr_tex[5] = IMG_Load("textures/player.png");
+	arr_tex[6] = IMG_Load("textures/refresh.png");
+	arr_tex[7] = IMG_Load("textures/right.png");
+	arr_tex[8] = IMG_Load("textures/select_mode.png");
+	arr_tex[9] = IMG_Load("textures/wall_mode.png");
+	arr_tex[10] = IMG_Load("textures/guns_editor.png");
+	arr_tex[11] = IMG_Load("textures/kits_editor.png");
+	arr_tex[12] = IMG_Load("textures/armor_editor.png");
+	arr_tex[13] = IMG_Load("textures/death_editor.png");
+	arr_tex[14] = IMG_Load("textures/fly_editor.png");
+	arr_tex[15] = IMG_Load("textures/network_editor.png");
+	arr_tex[20] = IMG_Load("textures/wood_editor.png");
+	arr_tex[21] = IMG_Load("textures/skulls_editor.png");
+	arr_tex[22] = IMG_Load("textures/bloody_editor.png");
+	arr_tex[23] = IMG_Load("textures/mess_editor.png");
+	arr_tex[24] = IMG_Load("textures/forest_editor.png");
+	arr_tex[25] = IMG_Load("textures/wall_editor.png");
+	arr_tex[26] = IMG_Load("textures/carpet_editor.png");
 }
 
 void	convert_surface(SDL_Surface **arr_tex, int num)

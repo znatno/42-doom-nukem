@@ -39,9 +39,9 @@ SDL_Surface		*load_lighter_part(int sprite)
 	SDL_Surface	*tmp;
 
 	if (sprite == 0)
-		cur_sprite = IMG_Load("../sprites/3.png");
+		cur_sprite = IMG_Load("sprites/3.png");
 	if (sprite == 1)
-		cur_sprite = IMG_Load("../sprites/1.png");
+		cur_sprite = IMG_Load("sprites/1.png");
 	tmp = SDL_ConvertSurfaceFormat(cur_sprite,
 										SDL_PIXELFORMAT_ARGB32, 0);
 	SDL_FreeSurface(cur_sprite);
@@ -55,17 +55,17 @@ SDL_Surface		*load_pistol_part(int sprite)
 	SDL_Surface *tmp;
 
 	if (sprite == 0)
-		cur_sprite = IMG_Load("../sprites/pistol1.png");
+		cur_sprite = IMG_Load("sprites/pistol1.png");
 	else if (sprite == 1)
-		cur_sprite = IMG_Load("../sprites/pistol2.png");
+		cur_sprite = IMG_Load("sprites/pistol2.png");
 	else if (sprite == 2)
-		cur_sprite = IMG_Load("../sprites/pistol3.png");
+		cur_sprite = IMG_Load("sprites/pistol3.png");
 	else if (sprite == 3)
-		cur_sprite = IMG_Load("../sprites/pistol4.png");
+		cur_sprite = IMG_Load("sprites/pistol4.png");
 	else if (sprite == 4)
-		cur_sprite = IMG_Load("../sprites/pistol5.png");
+		cur_sprite = IMG_Load("sprites/pistol5.png");
 	else if (sprite == 5)
-		cur_sprite = IMG_Load("../sprites/pistol6.png");
+		cur_sprite = IMG_Load("sprites/pistol6.png");
 	tmp = SDL_ConvertSurfaceFormat(cur_sprite,
 										SDL_PIXELFORMAT_ARGB32, 0);
 	SDL_FreeSurface(cur_sprite);

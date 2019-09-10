@@ -123,7 +123,7 @@ typedef struct			s_xy_l
 typedef struct			s_stack
 {
 	struct s_xy			xy;
-	struct t_stack		*next;
+	struct s_stack		*next;
 }						t_stack;
 
 typedef struct			s_vertex
@@ -429,7 +429,7 @@ t_draw					*init_draw(t_draw *draw);
 
 void					init_vars(t_env *env);
 
-t_sector				*last_portal(t_draw *draw);
+t_portals				*last_portal(t_draw *draw);
 
 void					new_portal(t_draw *draw, t_vertex *temp,
 						t_sector *temp_s, t_sector *cur_s);

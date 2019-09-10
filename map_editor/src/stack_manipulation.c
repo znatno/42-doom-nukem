@@ -12,9 +12,9 @@
 
 #include "duke_nukem_editor.h"
 
-int					stack_more_than_two(struct s_stack **head)
+int					stack_more_than_two(t_stack **head)
 {
-	struct s_stack	*temp;
+	t_stack			*temp;
 	int				i;
 
 	temp = *head;
@@ -29,7 +29,7 @@ int					stack_more_than_two(struct s_stack **head)
 	return (false);
 }
 
-t_xy				stack_pop(struct s_stack **head)
+t_xy				stack_pop(t_stack **head)
 {
 	t_stack			*temp;
 	t_xy			data;
@@ -47,9 +47,9 @@ t_xy				stack_pop(struct s_stack **head)
 	return (data);
 }
 
-void				stack_push(struct s_stack **head, t_xy data)
+void				stack_push(t_stack **head, t_xy data)
 {
-	struct s_stack	*new_next;
+	t_stack			*new_next;
 
 	new_next = (t_stack*)ft_memalloc(sizeof(t_stack));
 	new_next->next = *head;
@@ -60,8 +60,8 @@ void				stack_push(struct s_stack **head, t_xy data)
 
 void				stack_draw(t_env *env, t_draw *draw, t_stack **head)
 {
-	struct s_stack	*temp;
-	struct s_stack	*prev;
+	t_stack			*temp;
+	t_stack			*prev;
 
 	if (head && *head)
 	{

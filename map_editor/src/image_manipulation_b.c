@@ -58,7 +58,7 @@ void		open_font(TTF_Font **f, SDL_Color *color, SDL_Surface **fs, char *t)
 {
 	SDL_Surface *f2;
 
-	*f = TTF_OpenFont("../fonts/FiraSans-Regular.ttf", 32);
+	*f = TTF_OpenFont("fonts/FiraSans-Regular.ttf", 32);
 	(*color).r = 255;
 	(*color).g = 255;
 	(*color).b = 255;
