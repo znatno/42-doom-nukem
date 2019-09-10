@@ -11,12 +11,11 @@ FRAMEWORKS = -L. ~/.brew/Cellar/sdl2/2.0.9_1/lib/libSDL2.a -L. ~/.brew/Cellar/sd
 
 SRCS_NAME = src/*.c
 
-SRCO_NAME = $(SRCS_NAME:.c=.o)
+SRCO_NAME = $(SRCS_NAME:%.c=%.o)
 
 all: $(NAME)
 
 $(NAME):
-	@make -C $(LIBFT_PATH)
 	@make -C $(MAP_EDITOR)
 	@gcc $(SRCS_NAME) $(INC) -L $(LIBFT_PATH) `sdl2-config --libs` -O3 -lft -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf -o $(NAME)
 	@echo "\033[32m\033[1m[√] - Binary \033[1;33m\033[4m\033[1m$(NAME)\033[0m\033[1;0m\033[32m\033[1m created.\033[0m"
