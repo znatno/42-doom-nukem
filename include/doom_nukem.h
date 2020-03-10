@@ -38,6 +38,8 @@ typedef struct			s_sdl_main
 	SDL_Texture			*texture;
 	SDL_Rect			src_rect;
 	SDL_Rect			dst_rect;
+	SDL_Event           event;
+	SDL_bool            done;
 }						t_sdl_main;
 
 
