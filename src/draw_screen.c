@@ -55,12 +55,12 @@ void	init_draw(t_draw_screen_calc *ds, t_player plr)
 		ds->i->y_top[i] = 0;
 		i++;
 	}
-	i = 0;
+	i = -1;
 	ds->i->renderedsectors = (int *)malloc(sizeof(int) * plr.num_scts);
-	while (i < plr.num_scts)
+	while (++i < plr.num_scts)
 	{
 		ds->i->renderedsectors[i] = 0;
-		i++;
+//		i++;
 	}
 	/* Begin whole-screen rendering from where the player is. */
 	*ds->s->head = (t_item){plr.sector, 0, W-1};
