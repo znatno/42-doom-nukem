@@ -162,4 +162,6 @@ int					get_next_line(const int fd, char **line);
 
 char				*file_to_line(const char *name);
 
+int					ft_rgb(int r, int g, int b);
+
 #endif

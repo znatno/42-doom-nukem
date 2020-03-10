@@ -3,20 +3,33 @@
 /*                                                        :::      ::::::::   */
 /*   texture_load.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ggavryly <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/01 14:49:16 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/01 14:49:17 by ggavryly         ###   ########.fr       */
+/*   Updated: 2019/08/23 19:43:07 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "doom_nukem.h"
 
-SDL_Texture		*load_texture(char *path, t_sdl_main *sdl)
+
+void	init_textures(t_sdl_main *sdl)
 {
-	SDL_Texture	*texture;
+	SDL_Surface		**arr_tex;
 
-	texture = IMG_LoadTexture(sdl->renderer, path);
-	return (texture);
+	arr_tex = (SDL_Surface **)malloc(sizeof(SDL_Surface *) * 6);
+	arr_tex[0] = IMG_Load("../textures-doom/brick.jpg");
+	arr_tex[1] = IMG_Load("../textures-doom/steel_0.jpg");
+	arr_tex[2] = IMG_Load("../textures-doom/steel_1.jpg");
+	arr_tex[3] = IMG_Load("../textures-doom/wall_grey.jpg");
+	arr_tex[4] = IMG_Load("../textures-doom/wood_white_0.jpg");
+	arr_tex[5] = IMG_Load("../textures-doom/wood_white_1.jpg");
+
+	arr_tex[0] = SDL_ConvertSurfaceFormat(arr_tex[0], SDL_PIXELFORMAT_ARGB32, 0);
+	arr_tex[1] = SDL_ConvertSurfaceFormat(arr_tex[1], SDL_PIXELFORMAT_ARGB32, 0);
+	arr_tex[2] = SDL_ConvertSurfaceFormat(arr_tex[2], SDL_PIXELFORMAT_ARGB32, 0);
+	arr_tex[3] = SDL_ConvertSurfaceFormat(arr_tex[3], SDL_PIXELFORMAT_ARGB32, 0);
+	arr_tex[4] = SDL_ConvertSurfaceFormat(arr_tex[4], SDL_PIXELFORMAT_ARGB32, 0);
+	arr_tex[5] = SDL_ConvertSurfaceFormat(arr_tex[5], SDL_PIXELFORMAT_ARGB32, 0);
+	sdl->textures->arr_tex = arr_tex;
 }
-

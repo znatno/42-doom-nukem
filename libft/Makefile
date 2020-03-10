@@ -81,7 +81,8 @@ SRCS_NAME = ft_memset.c \
 	   ft_range.c \
 	   get_next_line.c \
 	   file_to_line.c \
-	   ft_itoa_base.c
+	   ft_itoa_base.c \
+	   ft_rgb.c
 
 SRCS_PATH = src/
 OBJ_PATH  = obj/
