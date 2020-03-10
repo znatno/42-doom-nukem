@@ -30,8 +30,8 @@
 # include "SDL_pixels.h"
 
 /* Define window size */
-#define W 1024
-#define H 768
+# define W 1024
+# define H 768
 
 # define YAW(y, z) (y + z * plr.yaw)	// Y-axis angle of player camera
 # define MAX_QUE	32					// max num of sectors what will be rendered
@@ -187,6 +187,14 @@ typedef struct			s_sdl_main
 	int					*buffer;
 }						t_sdl_main;
 
+typedef	struct 		s_weapons
+{
+	int 			***pistol_sprite;
+	int 			***lighter_sprite;
+	int 			type;
+	double 			sprite_counter;
+}					t_weapons;
+
 // Player: location
 typedef struct		s_player
 {
@@ -214,6 +222,7 @@ typedef struct		s_player
 	t_xy_int		ms;			// mouse aiming
 	float 			ms_yaw;
 	t_sdl_main		*sdl;
+	int				light;
 
 	bool			draw_look; // для перегляду відмальовування полінійно
 }					t_player;
@@ -364,7 +373,9 @@ typedef struct		s_game
 	t_sector	*sectors;
 	t_font		fonts[FONTS_NUM];
 	t_msg		msgs[MAX_MSGS];
-//	t_obj		*objs;		// масив зчитаних об'єктів
+	t_weapons	wpn;
+	bool		key_down;
+	//	t_obj		*objs;		// масив зчитаних об'єктів
 
 	int			error;		// для виводу тексту помилки при виході
 }					t_game;

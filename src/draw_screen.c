@@ -96,7 +96,11 @@ void	rotate_view(t_draw_screen_calc *ds, t_game *g)
 
 void	find_intersect(t_draw_screen_calc *ds)
 {
-	// todo тут значення відповідають за відмальовування тому ймовірно тут
+	ds->f->nearz = 1e-4f;		//ds->f->nearz = 1e-4f;
+	ds->f->farz = 5;			//ds->f->farz = 5;
+	ds->f->nearside = -1e-5f;	//ds->f->nearside = 1e-5f;
+	ds->f->farside = -20.f;		//ds->f->farside = 20.f;
+	//todo тут значення відповідають за відмальовування тому ймовірно тут
 	// можна знайти чому відмальовує зайвого чи не відмальовує коли треба
 
 	ds->f->nearz = 1e-4f;
@@ -199,7 +203,7 @@ void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p, t_game *g)
 {
 	/* Calculate the Z coordinate for this point. (Only used for lighting.) */
 	ds->i->z = (int)roundf(((ds->it->x - ds->i->x1) * (ds->f->tz2-ds->f->tz1)
-			/ (ds->i->x2-ds->i->x1) + ds->f->tz1) * 8);
+			/ (ds->i->x2-ds->i->x1) + ds->f->tz1) * p->light);
 	ds->i->z = (ds->i->z > 250) ? (250) : (ds->i->z);
 
 	ds->f->perc_light = percentage(250, 0, ds->i->z); //light percent by ds-i->z
