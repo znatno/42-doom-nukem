@@ -74,6 +74,7 @@ file(GLOB all
 #        "${SOURCE}*.c")
 >>>>>>> editor_simple
 
+<<<<<<< HEAD
 #include_directories(~/.brew/Cellar/sdl/1.2.15_1/include/SDL/)
 #include_directories(~/.brew/include/SDL libft/include/)
 
@@ -109,3 +110,9 @@ target_link_libraries(doom-nukem -g -fsanitize=address -lft -lSDL2 -lSDL2_image 
 >>>>>>> editor_simple
 #target_link_libraries(doom-nukem "-D_GNU_SOURCE=1" "-D_THREAD_SAFE" "-lSDLmain"
 #"-lSDL -Wl,-framework,Cocoa" "-lft")
+=======
+
+add_executable(doom-nukem   ${all})
+
+target_link_libraries(doom-nukem -O3 -lft -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf -lm)
+>>>>>>> norme

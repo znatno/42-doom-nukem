@@ -29,59 +29,43 @@
 # include "SDL_pixels.h"
 # include "SDL_ttf.h"
 
-/* Define window size */
-# define W 1024
-# define H 768
+# define W						1024
+# define H						768
+# define X_0					0
+# define Y_0					1
+# define X_1					2
+# define Y_1					3
+# define RUN					1
+# define JUMP					2
+# define SEAT_RUN				4
+# define FAST_RUN				5
+# define GUN_FIRE				6
+# define YAW(y, z)				(y + z * plr.yaw)
+# define MAX_QUE				32
+# define EYE_H 					6
+# define DUCK_H					2.5
+# define HEAD_MARGIN			1
+# define KNEE_H					2
+# define HFOV					(0.73f * H)
+# define VFOV					(.2f * H)
+# define H_FOV					(1.0 * 0.73f * H / W)
+# define V_FOV					(1.0 * .2f)
+# define ISDIGIT(c)				(c >= '0' && c <= '9')
+# define RED					0
+# define GREEN					1
+# define TOP_PORTAL_WALL		0
+# define BLUE					2
+# define BOTTOM_PORTAL_WALL		1
+# define CEIL					3
+# define FULL_WALL				2
+# define FLOOR					4
+# define MIN(a, b)             (((a) < (b)) ? (a) : (b))
+# define MAX(a, b)             (((a) > (b)) ? (a) : (b))
+# define CLAMP(a, mi, ma)      MIN(MAX(a,mi),ma)
+# define VXS(x0, y0, x1, y1)   ((x0)*(y1) - (x1)*(y0))
+# define MAX_MSGS				100
 
-# define YAW(y, z) (y + z * plr.yaw)	// Y-axis angle of player camera
-# define MAX_QUE	32					// max num of sectors what will be rendered
-# define EYE_H  6					// Camera height from floor when standing
-# define DUCK_H 2.5					// And when crouching
-# define HEAD_MARGIN 1				// How much room there is above camera before the head hits the ceiling
-# define KNEE_H 2					// How tall obstacles the player can simply walk over without jumping
-# define HFOV (0.73f * H)			// Affects the horizontal field of vision
-# define VFOV (.2f * H)				// Affects the vertical field of vision
-# define H_FOV		(1.0 * 0.73f * H / W) //шось з перспективою
-# define V_FOV		(1.0 * .2f)
-#define ISDIGIT(c) (c >= '0' && c <= '9')
-#define SEC_COLOR	0x0000ff00
-#define BLACK_COLOR	0x00
-#define FILE_NAME "../test.txt"
-
-#define RED					0
-#define GREEN				1
-#define TOP_PORTAL_WALL		0
-#define BLUE				2
-#define BOTTOM_PORTAL_WALL	1
-#define CEIL				3
-#define FULL_WALL			2
-#define FLOOR				4
-#define RUN					1
-#define JUMP				2
-#define LANDING				3
-#define SEAT_RUN			4
-#define FAST_RUN			5
-//	Utility functions. Because C doesn't have templates,
-//	we use the slightly less safe preprocessor macros to
-//	implement these functions that work with multiple types.
-//	TODO: DELETE ALL OF THESE — MAKE FUNCTIONS
-
-#define MIN(a, b)             (((a) < (b)) ? (a) : (b))		// min: Choose smaller of two scalars.
-#define MAX(a, b)             (((a) > (b)) ? (a) : (b))		// max: Choose greater of two scalars.
-
-// мінімальне з {"ma", максимальне з {a, mi}}
-#define CLAMP(a, mi, ma)      MIN(MAX(a,mi),ma)				// clamp: Clamp
-// value into set range.x
-
-// Векторний добуток
-#define VXS(x0, y0, x1, y1)   ((x0) * (y1) - (x1) * (y0))	// vxs: Vector cross product
-
-//	Overlap:  Determine whether the two number ranges overlap.
-//	Overlap(a0, a1, b0, b1) (min(a0,a1) <= max(b0,b1) && min(b0,b1) <= max(a0,a1))
-
-#define MAX_MSGS 100
-
-typedef enum	e_fonts
+typedef enum			e_fonts
 {
 	FONT_M_SM = 0,
 	FONT_M_MD,
@@ -90,96 +74,84 @@ typedef enum	e_fonts
 	FONT_S_MD,
 	FONT_S_BG,
 	FONTS_NUM
-}				t_fonts;
+}						t_fonts;
 
-//Coordinates
-typedef struct	s_xyz
+typedef struct			s_xyz
 {
-	float	x;
-	float	y;
-	float	z;
-}				t_xyz;
+	float				x;
+	float				y;
+	float				z;
+}						t_xyz;
 
-typedef struct s_posf_t
+typedef struct			s_tex_i
 {
-	int     pos;
-	bool    is_y;
-	float   value;
-	float   y;
-}				t_posf;
+	uint32_t			wall;
+	uint32_t			ceil;
+	uint32_t			floor;
+}						t_tex_i;
 
-
-typedef struct	s_xy
+typedef struct			s_posf_t
 {
-	float	x;
-	float	y;
-}				t_xy;
+	int					pos;
+	bool				is_y;
+	float				value;
+	float				y;
+}						t_posf;
 
-typedef struct	s_xy_int
+typedef struct			s_xy
 {
-	int			x;
-	int			y;
-}				t_xy_int;
+	float				x;
+	float				y;
+}						t_xy;
 
-typedef struct		s_obj	// прототип структури для об'єкта
+typedef struct			s_xy_int
 {
-	unsigned		sector;	// номер сектора (звідти ще беремо висоту)
-	t_xy			pos;	// позиція X Y
+	int					x;
+	int					y;
+}						t_xy_int;
 
-	// масив текстури для різних боків і знищення
-	// todo придумати e_num для боків/анімації
-	SDL_Surface		**texture;
-
-	int				hp;		// -1 - невразливий
-							// від 1 - потрібна к-сть пострілів/ударів для смерті
-							// 0 - вбито
-
-	unsigned		animated;	// 0 - анімація смерті відтворена
-								// від 1 - к-сть кадрів анімації (циклом пройдеться до нуля)
-
-}					t_obj;
-
-/* Sectors: Floor and ceiling height; list of edge vertices and neighbors */
-typedef struct		s_sector
+typedef struct			s_xy_uint
 {
-	float			floor;
-	float			ceil;
-	t_xy			*vertex;
-	int				*neighbors;       // Each edge may have a corresponding neighboring sector
-	unsigned		npoints;          // How many vertexes there are
-	t_xy			*vert;
+	uint32_t			x;
+	uint32_t			y;
+}						t_xy_uint;
 
-	t_obj			**objects;
-	unsigned		objs;
-}					t_sector;
-
-typedef struct		s_keys
+typedef struct			s_sector
 {
-	bool			w;
-	bool			s;
-	bool			a;
-	bool			d;
-}					t_keys;
+	float				floor;
+	float				ceil;
+	t_xy				*vertex;
+	int					*neighbors;
+	unsigned			npoints;
+	t_xy				*vert;
+}						t_sector;
 
-typedef struct		s_move_vec
+typedef struct			s_keys
 {
-	float 			x;
-	float 			y;
-}					t_move_vec;
+	bool				w;
+	bool				s;
+	bool				a;
+	bool				d;
+}						t_keys;
 
-typedef struct		s_textures
+typedef struct			s_move_vec
 {
-	SDL_Surface		**arr_tex;
-	uint32_t 		txt_y;
-	uint32_t		txt_x;
-	float 			perc_x;
-	float 			perc_y;
-}					t_textures;
+	float				x;
+	float				y;
+}						t_move_vec;
 
+typedef struct			s_textures
+{
+	SDL_Surface			**arr_tex;
+	SDL_Surface			**decor_tex;
+	uint32_t			txt_y;
+	uint32_t			txt_x;
+	float				perc_x;
+	float				perc_y;
+}						t_textures;
 
 typedef struct			s_sdl_main
 {
-	//SDL_DisplayMode		display_mode;
 	SDL_Window			*window;
 	SDL_Renderer		*renderer;
 	SDL_Surface			*win_surface;
@@ -192,160 +164,108 @@ typedef struct			s_sdl_main
 	int					*buffer;
 }						t_sdl_main;
 
-typedef	struct 		s_weapons
+typedef struct			s_tmp_iter
 {
-	int 			***pistol_sprite;
-	int 			***lighter_sprite;
-	int 			type;
-	double 			sprite_counter;
-}					t_weapons;
+	int					start_do;
+	int					x;
+	unsigned			s;
+}						t_tmp_iter;
 
-typedef struct		s_sounds
+typedef struct			s_calc_tmp_float
 {
-	Mix_Music 		*bg_music;
-	Mix_Chunk 		*run_sound;
-	Mix_Chunk		*jumpbreath;
-	Mix_Chunk		*landing;
-	Mix_Chunk		*low_run;
-	Mix_Chunk		*fast_run;
-}					t_sounds;
+	float				vx1;
+	float				vx2;
+	float				vy1;
+	float				vy2;
+	float				pcos;
+	float				psin;
+	float				tx1;
+	float				tx2;
+	float				tz1;
+	float				tz2;
+	float				nearz;
+	float				farz;
+	float				nearside;
+	float				farside;
+	float				xscale1;
+	float				xscale2;
+	float				yscale1;
+	float				yscale2;
+	float				yceil;
+	float				yfloor;
+	float				nyceil;
+	float				nyfloor;
+	float				perc_light;
+	float				hei;
+	float				mapx;
+	float				mapz;
+	float				rtx;
+	float				rtz;
+}						t_calc_tmp_float;
 
-// Player: location
-typedef struct		s_player
+typedef struct			s_calc_tmp_int
 {
-	t_xyz			where;		// Current position
-	t_xyz			vlct;		// velocity, curr motion vector / швидкість
-	float			angle;		// камера по X-осі, yaw — по Y-осі
-	float
-	anglesin;
-	float			anglecos;
-	float			yaw;		// Looking towards (and sin() and cos() thereof)
-	unsigned		sector;		// Which sector the player is currently in
-	unsigned int	num_scts;	// Number of Sectors
-	bool			ground;
-	bool			falling;
-	bool			moving;
-	bool			ducking;	// присяд
-	bool 			run;		// пришвидшення
-	bool 			fly;		// політ
-	float			eyeheight;
-	t_keys			key;		// WASD провірка натиску клавіш
-	t_move_vec		mv;			// вектор руху
-	float 			speed;		// швидкість, менша для присяду
-	int 			pushing;
-	float			aclrt;
-	bool			first_land;// acceleration / прискорення
-	t_xy_i			ms;			// mouse aiming
-	t_sdl_main		*sdl;
-	int				light;
+	int					y_top[W];
+	int					y_bottom[W];
+	int					*renderedsectors;
+	int					x1;
+	int					x2;
+	int					neightbor;
+	int					y1a;
+	int					y1b;
+	int					y2a;
+	int					y2b;
+	int					ny1a;
+	int					ny1b;
+	int					ny2a;
+	int					ny2b;
+	int					beginx;
+	int					endx;
+	int					z;
+	int					ya;
+	int					cya;
+	int					yb;
+	int					cyb;
+	int					nya;
+	int					cnya;
+	int					nyb;
+	int					cnyb;
+	int					u0;
+	int					u1;
+	int					txtx;
+	int					txty;
+	int					pel;
+	unsigned			txtz;
+	unsigned			txtx1;
+	int					y1;
+	int					y2;
+	int					tn;
+}						t_calc_tmp_int;
 
-	bool			draw_look; // для перегляду відмальовування полінійно
-	bool			jump_check; //для звуку стрибка
-}					t_player;
-
-typedef struct	s_tmp_iter
+typedef struct			s_item
 {
-	int 		start_do;
-	int 		x;
-	unsigned 	s;
-}				t_tmp_iter;
+	int					sectorno;
+	int					sx1;
+	int					sx2;
+}						t_item;
 
-typedef struct	s_calc_tmp_float
+typedef struct			s_scaler
 {
-	float vx1;
-	float vx2;
-	float vy1;
-	float vy2;
-	float pcos;
-	float psin;
-	float tx1;			//
-	float tx2;			//
-	float tz1;			// якщо більше-рівне 0, то потрапляє в екран
-	float tz2;			// якщо більше-рівне 0, то потрапляє в екран
-	float nearz;
-	float farz;
-	float nearside;
-	float farside;
-	float xscale1;
-	float xscale2;
-	float yscale1;
-	float yscale2;
-	float yceil;
-	float yfloor;
-	float nyceil;
-	float nyfloor;
-	float perc_light;
-	float hei;
-	float mapx;
-	float mapz;
-	float rtx;
-	float rtz;
-}				t_calc_tmp_float;
+	int					result;
+	int					bop;
+	int					fd;
+	int					ca;
+	int					cache;
+}						t_scaler;
 
-typedef struct	s_calc_tmp_int
-{
-	int 		y_top[W];
-	int 		y_bottom[W];
-	int 		*renderedsectors;
-	int 		x1;
-	int 		x2;
-	int 		neightbor;
-	int 		y1a;
-	int 		y1b;
-	int 		y2a;
-	int 		y2b;
-	int 		ny1a;
-	int 		ny1b;
-	int 		ny2a;
-	int 		ny2b;
-	int 		beginx;
-	int 		endx;
-	int			z;
-	int 		ya;
-	int 		cya;
-	int 		yb;
-	int 		cyb;
-	int 		nya;
-	int 		cnya;
-	int 		nyb;
-	int 		cnyb;
-	int 		u0;
-	int 		u1;
-	int 		txtx;
-	int 		txty;
-	int 		pel;
-//	unsigned	r1;
-//	unsigned 	r2;
-//	unsigned	r;
-	unsigned	txtz;
-	unsigned	txtx1;
-}				t_calc_tmp_int;
-
-
-typedef struct	s_item
-{
-	int sectorno;
-	int sx1;
-	int sx2;
-}				t_item;
-
-typedef struct		s_scaler
-{
-	int				result;
-	int 			bop;
-	int 			fd;
-	int 			ca;
-	int 			cache;
-}					t_scaler;
-
-typedef struct		s_calc_tmp_struct
+typedef struct			s_calc_tmp_struct
 {
 	t_item				now;
 	t_scaler			ya_int;
 	t_scaler			yb_int;
 	t_scaler			nya_int;
 	t_scaler			nyb_int;
-	const t_sector 		*sect;
+	const t_sector		*sect;
 	t_xy				i1;
 	t_xy				i2;
 	t_xy				org1;
@@ -353,128 +273,289 @@ typedef struct		s_calc_tmp_struct
 	t_item				*head;
 	t_item				*tail;
 	t_sector			*sector;
-}					t_calc_tmp_struct;
+}						t_calc_tmp_struct;
 
-typedef struct		s_draw_screen_calc
+typedef struct			s_draw_screen_calc
 {
 	t_calc_tmp_int		*i;
 	t_calc_tmp_float	*f;
 	t_calc_tmp_struct	*s;
 	t_tmp_iter			*it;
 	t_item				*queue;
-}					t_draw_screen_calc;
+}						t_draw_screen_calc;
 
-typedef struct		s_font
+typedef struct			s_font
 {
-	TTF_Font		*ttf;
-	char 			*name;
-	int 			size;
-	SDL_Color		color;
-}					t_font;
+	TTF_Font			*ttf;
+	char				*name;
+	int					size;
+	SDL_Color			color;
+}						t_font;
 
-typedef struct		s_msg
+typedef struct			s_msg
 {
-	char			*text;
-	uint8_t 		font_num;
-	t_xy_int		pos;
-	double			seconds;
-	double 			start_t;
-	bool			constant;
-}					t_msg;
+	char				*text;
+	uint8_t				font_num;
+	t_xy_int			pos;
+	double				seconds;
+	double				start_t;
+	bool				constant;
+}						t_msg;
 
-typedef struct		s_game
+typedef	struct			s_weapons
 {
-	t_player	plr;
-	t_sdl_main	sdl;
-	t_sector	*sectors;
-	t_font		fonts[FONTS_NUM];
-	t_msg		msgs[MAX_MSGS];
-	t_weapons	wpn;
-	bool		key_down;
-	//	t_obj		*objs;		// масив зчитаних об'єктів
+	int					***pistol_sprite;
+	int					***lighter_sprite;
+	int					type;
+	double				sprite_counter;
+}						t_weapons;
 
-	int			error;		// для виводу тексту помилки при виході
-}					t_game;
+typedef struct			s_scri
+{
+	int					a;
+	int					b;
+	int					c;
+	int					d;
+	int					f;
+}						t_scri;
 
-void		init_textures(t_sdl_main *sdl);
-float		percentage(int start, int end, int curr);
-void		render(int draw_mode ,int texture_num, t_player *p, t_draw_screen_calc *ds);
-int 		scaler_next(t_scaler *i);
-t_scaler	scalar_init(int a, int b, int c, int d, int f);
-float		getangle_2vectors(t_xy v1, t_xy v2);
+typedef struct			s_sounds
+{
+	Mix_Music			*bg_music;
+	Mix_Chunk			*run_sound;
+	Mix_Chunk			*jumpbreath;
+	Mix_Chunk			*landing;
+	Mix_Chunk			*low_run;
+	Mix_Chunk			*fast_run;
+	Mix_Chunk			*lighter;
+	Mix_Chunk			*lighter_close;
+	Mix_Chunk			*gun_fire;
+}						t_sounds;
 
-int			ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);
-void 		vline2(int y1,int y2, t_scaler ty, unsigned txtx, t_player *p, t_draw_screen_calc *ds, int tn);
-void		vline_texture(int y1, int y2, int text_num, t_player *plr, t_draw_screen_calc *ds);
+typedef	struct			s_math
+{
+	float				a0;
+	float				a1;
+	float				b0;
+	float				b1;
+	float				x0;
+	float				x1;
+	float				y0;
+	float				y1;
+	float				x2;
+	float				y2;
+	float				x3;
+	float				y3;
+	float				px;
+	float				py;
+	float				xx0;
+	float				yy0;
+	float				xx1;
+	float				yy1;
+	float				xxx1;
+	float				yyy1;
+	float				xxx2;
+	float				yyy2;
+	float				xxx3;
+	float				yyy3;
+	float				xxx4;
+	float				yyy4;
+}						t_math;
 
-/*
-** Initialize functions
-*/
+typedef struct			s_moca
+{
+	t_sector			*sect;
+	t_xy				*vert;
+	float				px;
+	float				py;
+	int					flag[2];
+}						t_moca;
 
-void			init_sdl(t_game *g);
-void 			load_data(t_player *player, t_sector **sectors);
-char			*ft_itof(long double k);
+typedef struct			s_ui
+{
+	uint32_t			t_n;
+	uint32_t			d_n;
+}						t_ui;
 
-/*
-** Draw functions
-*/
+typedef struct			s_players
+{
+	t_xyz				where;
+	t_xyz				vlct;
+	float				angle;
+	float				anglesin;
+	float				anglecos;
+	float				yaw;
+	unsigned			sector;
+	unsigned int		num_scts;
+	bool				ground;
+	bool				falling;
+	bool				moving;
+	bool				ducking;
+	bool				run;
+	bool				fly;
+	float				eyeheight;
+	t_keys				key;
+	t_move_vec			mv;
+	float				speed;
+	int					pushing;
+	float				aclrt;
+	t_xy_int			ms;
+	float				ms_yaw;
+	t_sdl_main			*sdl;
+	t_moca				mc;
+	int					light;
+	int					jump_check;
+	bool				draw_look;
+}						t_player;
 
-void			draw_screen(t_game *g);
-void			vline(int y1, int y2, int color, t_player *plr, t_draw_screen_calc *ds);
-t_xy			vect_to_dist(float x0, float y0, float x1, float y1);
-float			dist_to_len(t_xy free_vector);
-float 			getdistance(float x0, float y0, float x1, float y1);
-float			scalar_product(t_xy xy0, t_xy xy1);
-float			angle_vv(float scalar_product, float len0, float len1);
-float			radian_to_grades(float rad);
-float			vector_product(t_xy xy0, t_xy xy1);
-int				move_or_not(t_xyz where ,t_sector sector, unsigned sect_num);
+typedef struct			s_game
+{
+	t_player			plr;
+	t_sdl_main			sdl;
+	t_sector			*sectors;
+	t_font				fonts[FONTS_NUM];
+	t_msg				msgs[MAX_MSGS];
+	t_weapons			wpn;
+	bool				key_down;
+	int					error;
+}						t_game;
 
-/*
-**  "math_fts.c" Math functions for vectors and other things
-**	Define various vision related constants
-*/
+typedef struct			s_reader
+{
+	t_xy				*vert;
+	t_posf				posf;
+	t_sector			*sect;
+	int					num_vertices;
+	int					*num;
+	int					all;
+	int					len;
+	int					n;
+}						t_reader;
 
-bool 			overlap(float a0, float a1, float b0, float b1);
+typedef struct			s_chloe
+{
+	t_sector			*sectors;
+	t_sector			sect;
+	unsigned int		s;
+	t_player			**plr;
+	t_xy				*vert;
+}						t_chloe;
 
-bool 			intersect_box(float x0, float y0, float x1, float y1,
-							  float x2, float y2, float x3, float y3);
+void					init_sdl(t_game *g);
+void					load_data(t_player *player, t_sector **sectors);
+char					*ft_itof(long double k);
+void					main_draw(t_game *g, t_draw_screen_calc ds);
+t_xy					vv_to_v(float x0, float y0, float x1, float y1);
+float					len_vector(t_xy		free_vector);
+float					scalar_product(t_xy xy0, t_xy xy1);
+float					angle_vv(float scalar_product, float len0, float len1);
+float					radian_to_grades(float rad);
+float					vector_product(t_xy xy0, t_xy xy1);
+int						move_or_not(t_xyz where, t_sector sector,
+						unsigned sect_num, int j);
+bool					overflow(float a0, float a1, float b0, float b1);
+bool					surface_in(t_math m);
+t_xy					crossing(t_math m);
+float					point_basis(t_math m);
+void					motion(t_player *plr, t_sector **sectors,
+						float dx, float dy);
+float					angles(t_xy xy0, t_xy xy1);
+void					check_move(t_player *p, t_sector **sc, unsigned int s);
+void					check_fall(t_player *plr, t_sector **sectors);
+int						exit_doom(t_game *g);
+void					load_fonts(t_game *g);
+void					clear_font(t_font *t);
+void					init_msgs(t_game *g);
+void					show_msg(t_game *g, t_msg m, t_font font);
+void					get_messages(t_game *g);
+t_msg					create_msg(char *text, uint8_t fontname,
+						t_xy_int pos, int sec);
+void					clear_msg(t_msg *m);
+int						inter_point(unsigned int s, t_sector **sc, t_player *p);
+void					move_init(t_player **p, t_sector **s, float d, float z);
+void					check_sector(t_player **p,
+						t_sector **s, float x, float y);
+void					check_dia(t_player **plr,
+						t_sector **sectors, float dx, float dy);
+void					textures_init(t_sdl_main *sdl);
+float					percentage(int start, int end, int curr);
+void					render(int d, t_tex_i t, t_player *p,
+						t_draw_screen_calc *ds);
+int						scr_nxt(t_scaler *i);
+t_scaler				scalar_create(t_scri r);
+int						ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);
+void					vertl(t_scaler ty, unsigned txtx, t_player *p,
+							t_draw_screen_calc *ds);
+int						check_file(int fd);
+void					*ft_realloc(void *ptr, size_t size);
+t_posf					atof_posf(const char *s, t_posf posf, int exp);
+void					reader_init(t_reader *read);
+void					reader(char *line,
+						int fd, t_player *p, t_sector **sectors);
+t_reader				*reader_coroutine1(t_reader *read, char *line);
+t_reader				*reader_coroutine2(t_reader *read,
+						t_sector **sectors, t_player *p, char *line);
+t_reader				*reader_coroutine3(t_reader *read);
+t_reader				*reader_coroutine4(t_reader *read,
+						char *line, t_player *p, t_sector **sectors);
+void					unload_data(t_game *g);
+float					percentage(int start, int end, int curr);
+int						color_transoform(int color, float percent);
+void					pix2(t_player *p, t_draw_screen_calc *ds,
+						int y, t_tex_i tex_i);
+void					pix1(t_player *p,
+						t_draw_screen_calc *ds, int y, t_tex_i tex_i);
+void					draw_ceil_floor(t_draw_screen_calc *ds,
+						t_player *p, t_tex_i tex_i);
+int						exit_doom(t_game *g);
+void					help_events1(SDL_Event ev, t_game **g, t_sounds *s);
+int						scr_nxt(t_scaler *i);
+int						ft_get_pixel(SDL_Surface *sur, uint32_t x, uint32_t y);
+int						main_draw1(t_game *g, t_draw_screen_calc ds);
+void					main_draw2(t_game *g, t_draw_screen_calc ds);
+void					rsw(t_draw_screen_calc *ds, t_sector *sector,
+						t_item *queue, t_game *g);
+void					render_sector_walls1(t_draw_screen_calc *ds,
+						t_sector *sector, t_game *g);
+void					render_sector(t_draw_screen_calc *ds,
+						t_player *p, t_game *g);
+void					render_ceil_floor(t_draw_screen_calc *ds, t_player *p);
+void					ceil_floor_light(t_draw_screen_calc *ds,
+						t_player *p, t_game *g);
+void					render_walls(t_draw_screen_calc *ds, t_sector *sector,
+						t_player plr);
+void					render_walls2(t_draw_screen_calc *d, t_player plr);
+void					perspective(t_draw_screen_calc *ds);
+void					find_intersect(t_draw_screen_calc *ds);
+void					find_intersect1(t_draw_screen_calc *ds);
+void					find_intersect2(t_draw_screen_calc *ds);
+void					find_intersect3(t_draw_screen_calc *ds);
+void					pick_sector_slice(t_draw_screen_calc *ds);
+void					rotate_view(t_draw_screen_calc *ds, t_game *g);
+void					init_draw(t_draw_screen_calc *ds, t_player plr);
+void					do_fall(t_player *plr, t_sector **sc, t_sounds *sounds);
+t_sounds				*init_music_n_sounds(void);
+void					load_weapons(t_game *g);
+void					load_pistol(t_game *g);
+void					load_lighter(t_game *g);
+int						load_pistol_sprite(t_game *g, int sprite_count);
+int						load_lighter_sprite(t_game *g, int sprite_count);
+SDL_Surface				*load_pistol_part(int sprite);
+SDL_Surface				*load_lighter_part(int sprite);
+void					draw_weapons(t_game *g);
+void					draw_pistol(t_game *g);
+void					draw_lighter(t_game *g);
+void					draw_cur_pistol_sprite(t_game *g, int width,
+						int height, int cur_sprite);
+void					draw_cur_lighter_sprite(t_game *g, int width,
+						int height, int cur_sprite);
+void					events(t_game *g, t_sounds *sounds);
+void					events1(const uint8_t *kstate, SDL_Event ev, t_game *g,
+						t_sounds *sounds);
+void					game_loop(t_game *g, t_player *plr, t_sounds *sounds);
+void					game_loop1(t_game *g, t_sounds *sounds);
+void					game_loop2(t_game *g);
+void					game_loop3(t_game *g, t_player *plr, t_sounds *sounds);
+void					events2(SDL_Event ev, t_game *g, t_sounds *sounds);
 
-t_xy 			intersect(float x1, float y1, float x2, float y2, float x3,
-						  float y3, float x4, float y4);
-
-float			point_side(float px, float py, float x0, float y0,
-							float x1, float y1);
-
-/*
-**  "move.c"
-*/
-
-void			move_player(t_player *plr, t_sector **sectors,
-							float dx, float dy);
-
-void			do_move(t_player *plr, t_sector **sc);
-void			do_fall(t_player *plr, t_sector **sectors, t_sounds *sounds);
-
-/*
-**	Quit
-*/
-
-int				exit_doom(t_game *g);
-
-
-/*
-** Font and text functions
-*/
-
-void			load_fonts(t_game *g);
-void			clear_font(t_font *t);
-void			init_msgs(t_game *g);
-void			show_msg(t_game *g, t_msg m, t_font font);
-void			get_messages(t_game *g);
-t_msg			create_msg(char *text, uint8_t fontname, t_xy_int pos, int sec);
-void			clear_msg(t_msg *m);
-
-
-void	print_data_ds(t_player *p); // todo delete
 #endif
