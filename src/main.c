@@ -449,12 +449,23 @@ void		load_weapons(t_game *g)
 int 		main(void)
 {
 	t_game	g;
+	int audio_rate = 22050; Uint16 audio_format = AUDIO_S16SYS; int audio_channels = 2; int audio_buffers = 4096;
+	Mix_Chunk *sound = NULL;
 
 	//Structs initialization
 	g.sectors = NULL;
 	g.plr = (t_player){.falling = 1, .eyeheight = EYE_H, .sdl = &g.sdl};
 
 	init_msgs(&g);
+
+	/**/
+    
+if(Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers) != 0) { fprintf(stderr, "Unable to initialize audio: %s\n", Mix_GetError()); exit(1); }
+	//object test
+	g.sectors[0].objs = 2;
+	g.sectors[0].objects = ft_memalloc(sizeof(t_obj*));
+	if(Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers) != 0) { fprintf(stderr, "Unable to initialize audio: %s\n", Mix_GetError()); exit(1); }
+
 
 	//Framework initialization
 	init_sdl(&g);
@@ -479,6 +490,13 @@ int 		main(void)
 	g.sectors[0].objects[0]->hp = -1;
 	g.sectors[0].objects[0]->animated = 0;
 	/**/
+    
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) { fprintf(stderr, "Unable to initialize SDL: %s\n", SDL_GetError()); return 1; }
+	if (Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers) != 0) { fprintf(stderr, "Unable to initialize audio: %s\n", Mix_GetError()); exit(1); }
+    sound = Mix_LoadWAV("../bestmusic.wav"); if(sound == NULL) { fprintf(stderr, "Unable to load WAV file: %s\n", Mix_GetError()); }
+    if (sound == NULL)
+    	return 0;
+
 
 	//Load fonts
 	load_fonts(&g);
@@ -493,3 +511,4 @@ int 		main(void)
 	//Before quit
 	exit_doom(&g);
 }
+	
