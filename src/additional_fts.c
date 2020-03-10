@@ -134,10 +134,9 @@ void		vline(int y1, int y2, int color, t_player *plr, t_draw_screen_calc *ds)
 	int x;
 	uint32_t *pix;
 
-	x = ds->it->x;
-	pix = (uint32_t *)plr->sdl->buffer;
-	y1 = CLAMP(y1, 0, H - 1);
-	y2 = CLAMP(y2, 0, H - 1);
+	uint32_t *pix = (uint32_t *)plr->sdl->win_surface->pixels;
+	y1 = clamp(y1, 0, H - 1);
+	y2 = clamp(y2, 0, H - 1);
 	if (y2 == y1)
 		pix[y1 * W + x] = BLACK_COLOR; //нижня межа вікна
 	else if (y2 > y1)

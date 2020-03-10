@@ -41,6 +41,18 @@ void	print_data_ds(t_player *p)
 	printf("------------------------------------------\n");
 }
 
+int		main_loop_condition(t_draw_screen_calc *ds)
+{
+	if (ds->it->start_do == 1)
+	{
+		ds->it->start_do = 0;
+		return (1);
+	}
+	if (ds->s->head  != ds->s->tail)
+		return (1);
+	return (0);
+}
+
 void	init_draw(t_draw_screen_calc *ds, t_player plr)
 {
 	unsigned		i;
@@ -205,6 +217,8 @@ void	ceil_floor_light(t_draw_screen_calc *ds, t_player *p, t_game *g)
 	ds->i->z = (int)roundf(((ds->it->x - ds->i->x1) * (ds->f->tz2-ds->f->tz1)
 			/ (ds->i->x2-ds->i->x1) + ds->f->tz1) * p->light);
 	ds->i->z = (ds->i->z > 250) ? (250) : (ds->i->z);
+//	printf("%d\n", ds->i->z);
+//	vline(W / 2, H / 2, 0xFFFFFF, p, ds);
 
 	ds->f->perc_light = percentage(250, 0, ds->i->z); //light percent by ds-i->z
 	/* Acquire the Y coordinates for our ceiling & floor for this X coordinate-> Clamp them-> */
@@ -232,7 +246,9 @@ void	render_ceil_floor(t_draw_screen_calc *ds, t_player *p)
 //	ds->i->r1 = 0x010101 * (255 - ds->i->z); // top portal wall color
 //	ds->i->r2 = 0x010101 * (255 - ds->i->z); // bottom portal wall color
 
-	ds->i->y_top[ds->it->x] = CLAMP(MAX(ds->i->cya, ds->i->cnya), ds->i->y_top[ds->it->x], H - 1); // Shrink the remaining window below these ceilings
+//	render(TOP_PORTAL_WALL, 0, p, ds); // Between our and their ceiling TODO:texture_mapping
+//	SDL_UpdateWindowSurface(p->sdl->window);
+	ds->i->y_top[ds->it->x] = clamp(max(ds->i->cya, ds->i->cnya), ds->i->y_top[ds->it->x], H - 1); // Shrink the remaining window below these ceilings
 	render(BOTTOM_PORTAL_WALL, 3, p, ds);
 	/* If our floor is lower than their floor, render bottom wall */
 //	render(BOTTOM_PORTAL_WALL, 0, p, ds); // Between their and our floor

@@ -13,6 +13,18 @@
 #define FILE_NAME "test2.map"
 #include "doom_nukem.h"
 
+void	print_data_ds(t_player *p)
+{
+	printf("\n---------------------\n");
+	printf("| player_x = %5f | player_y = %5f |\n", p->where.x, p->where.y);
+	printf("| vlct_x = %5f | vlct_y = %5f | vlct_z = %5f|\n", p->vlct.x, p->vlct.y, p->vlct.z);
+	printf("| angle = %f | ang_sin = %5f | ang_cos = %5f | yaw = %5f|\n", p->angle, p->anglesin, p->anglecos, p->yaw);
+	printf("| cur_s = %u | num_s = %u|\n", p->sector, p->num_scts);
+	printf("| ground = %i | falling = %i | moving = %i | ducking = %i | eyeheight = %5f|\n", p->ground, p->falling, p->moving, p->ducking,p->eyeheight);
+	printf("| move_x = %5f | move_y = %5f |\n", p->mv.x, p->mv.y);
+	printf("| mouse_aim_x = %i | mouse_aim_y = %i | mouse_aim_yaw = %5f |\n", p->ms.x, p->ms.y, p->ms.yaw);
+	printf("---------------------\n");
+}
 
 
 void		events(t_game *g)
@@ -80,6 +92,10 @@ void		events(t_game *g)
 			if (ev.key.keysym.sym == ' ' && g->plr.ground
 				&& g->plr.where.z == g->sectors[g->plr.sector].floor + EYE_H)
 			{
+				Mix_HaltChannel(RUN);
+				Mix_HaltChannel(FAST_RUN);
+				if (!Mix_Playing(JUMP) && plr->ground && !plr->ducking)
+					Mix_PlayChannel(JUMP, sounds->jumpbreath, 0);
 				g->plr.vlct.z += 0.5;
 				g->plr.falling = 1;
 			}
@@ -310,6 +326,30 @@ void		game_loop(t_game *g)
 		SDL_RenderPresent(g->sdl.renderer);
 		//SDL_Delay(20);
 	}
+}
+
+t_sounds *init_music_n_sounds() {
+	int audio_rate = 42000;
+	Uint16 audio_format = AUDIO_S16SYS;
+	int audio_channels = 2;
+	int audio_buffers = 4096;
+	t_sounds *sounds;
+
+	sounds = (t_sounds *) malloc(sizeof(t_sounds));
+	SDL_Init(SDL_INIT_AUDIO);
+	Mix_OpenAudio(audio_rate, audio_format, audio_channels, audio_buffers);
+	sounds->bg_music = Mix_LoadMUS("../sounds/bestmusic.wav");
+	sounds->run_sound = Mix_LoadWAV("../sounds/run.wav");
+	sounds->jumpbreath = Mix_LoadWAV("../sounds/jumpbreath.wav");
+	sounds->landing = Mix_LoadWAV("../sounds/land2.wav");
+	sounds->fast_run = Mix_LoadWAV("../sounds/fast_run.wav");
+	sounds->low_run = Mix_LoadWAV("../sounds/run.wav");
+	Mix_VolumeMusic(30);
+	Mix_Volume(RUN, 20);
+	Mix_Volume(SEAT_RUN, 10);
+	Mix_Volume(FAST_RUN, 20);
+	return (sounds);
+
 }
 
 SDL_Surface		*load_lighter_part(int sprite)

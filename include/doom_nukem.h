@@ -25,9 +25,9 @@
 # include "SDL.h"
 # include "SDL_mixer.h"
 # include "SDL_image.h"
-# include "SDL_ttf.h"
 # include "SDL_surface.h"
 # include "SDL_pixels.h"
+# include "SDL_ttf.h"
 
 /* Define window size */
 # define W 1024
@@ -56,6 +56,11 @@
 #define CEIL				3
 #define FULL_WALL			2
 #define FLOOR				4
+#define RUN					1
+#define JUMP				2
+#define LANDING				3
+#define SEAT_RUN			4
+#define FAST_RUN			5
 //	Utility functions. Because C doesn't have templates,
 //	we use the slightly less safe preprocessor macros to
 //	implement these functions that work with multiple types.
@@ -195,6 +200,16 @@ typedef	struct 		s_weapons
 	double 			sprite_counter;
 }					t_weapons;
 
+typedef struct		s_sounds
+{
+	Mix_Music 		*bg_music;
+	Mix_Chunk 		*run_sound;
+	Mix_Chunk		*jumpbreath;
+	Mix_Chunk		*landing;
+	Mix_Chunk		*low_run;
+	Mix_Chunk		*fast_run;
+}					t_sounds;
+
 // Player: location
 typedef struct		s_player
 {
@@ -218,13 +233,14 @@ typedef struct		s_player
 	t_move_vec		mv;			// вектор руху
 	float 			speed;		// швидкість, менша для присяду
 	int 			pushing;
-	float			aclrt;		// acceleration / прискорення
-	t_xy_int		ms;			// mouse aiming
-	float 			ms_yaw;
+	float			aclrt;
+	bool			first_land;// acceleration / прискорення
+	t_xy_i			ms;			// mouse aiming
 	t_sdl_main		*sdl;
 	int				light;
 
 	bool			draw_look; // для перегляду відмальовування полінійно
+	bool			jump_check; //для звуку стрибка
 }					t_player;
 
 typedef struct	s_tmp_iter
@@ -437,8 +453,8 @@ float			point_side(float px, float py, float x0, float y0,
 void			move_player(t_player *plr, t_sector **sectors,
 							float dx, float dy);
 
-void			check_move(t_player *plr, t_sector **sc);
-void			check_fall(t_player *plr, t_sector **sectors);
+void			do_move(t_player *plr, t_sector **sc);
+void			do_fall(t_player *plr, t_sector **sectors, t_sounds *sounds);
 
 /*
 **	Quit
@@ -459,4 +475,6 @@ void			get_messages(t_game *g);
 t_msg			create_msg(char *text, uint8_t fontname, t_xy_int pos, int sec);
 void			clear_msg(t_msg *m);
 
+
+void	print_data_ds(t_player *p); // todo delete
 #endif
