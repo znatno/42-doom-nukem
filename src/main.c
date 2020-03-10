@@ -6,11 +6,10 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/12 16:03:03 by ibohun            #+#    #+#             */
-/*   Updated: 2019/08/24 22:24:27 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/23 20:06:51 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#define FILE_NAME "test2.map"
 #include "doom_nukem.h"
 
 int			main(void)
@@ -33,4 +32,3 @@ int			main(void)
 	game_loop(&g, &g.plr, sounds);
 	exit_doom(&g);
 }
-	

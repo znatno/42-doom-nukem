@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/08/02 21:38:26 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/24 23:02:23 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/23 19:53:37 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,12 @@ void	init_draw(t_draw_screen_calc *ds, t_player plr)
 		ds->i->y_top[i] = 0;
 		i++;
 	}
-	i = -1;
+	i = 0;
 	ds->i->renderedsectors = (int *)malloc(sizeof(int) * plr.num_scts);
-	while (++i < plr.num_scts)
+	while (i < plr.num_scts)
 	{
 		ds->i->renderedsectors[i] = 0;
-//		i++;
+		i++;
 	}
 	*ds->s->head = (t_item){plr.sector, 0, W - 1};
 }
