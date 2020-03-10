@@ -1,5 +1,8 @@
-vertex 1.5 1.5
-vertex 3.5 17
-vertex 7.5 8
-vertex 96 3
-vertex 0 17.5
+vertex 82 64
+vertex 70 112
+vertex 24 54
+vertex 16 72
+
+sector 0 20	 1 0 2 3	 -1 -1 -1 -1
+
+player 78 42 0 0

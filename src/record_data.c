@@ -11,87 +11,89 @@
 /* ************************************************************************** */
 
 #include "doom_nukem.h"
+#include "duke_nukem_editor.h"
 
-char	*trim_itof(char *flt)
+int				open_create_map(void)
 {
-	int		i;
+	int			fd;
 
-	i = ft_strlen(flt);
-	if (flt[i - 1] == '0')
-	{
-		flt[i - 2] = '\0';
-		return (flt);
-	}
-	return (flt);
-}
-
-int		open_create_map()
-{
-	int 	fd;
-
-	fd = open("../maps/ya_karta.doom", O_WRONLY);
+	fd = open("../maps/ya_karta.doom", O_WRONLY | O_TRUNC);
 	if (fd == -1)
 	{
 		system("touch ../maps/ya_karta.doom");
-		fd = open("../maps/ya_karta.doom", O_WRONLY);
+		fd = open("../maps/ya_karta.doom", O_WRONLY | O_TRUNC);
 	}
 	return (fd);
 }
 
-void	vertex_record(t_xy *vertex, int num_vertex, int fd)
+void			num_cat(char **tmp, int num)
 {
-	int i;
-	char *tmp;
+	char *number;
 
-	i = 0;
+	number = ft_itoa(num);
+	*tmp = ft_strcat(*tmp, number);
+	free(number);
+}
+
+void			vertex_record(t_xy_l *vertex, int fd)
+{
+	t_xy_l		*walk_v;
+	int			tmp_y;
+	char		*tmp;
+
 	tmp = (char *)malloc(sizeof(char) * 256);
 	ft_bzero(tmp, 256);
-	while (i < num_vertex)
+	walk_v = vertex;
+	while (walk_v)
 	{
 		tmp = ft_strcpy(tmp, "vertex ");
-		tmp = ft_strcat(tmp , trim_itof(ft_itof(vertex[i].y)));
-		tmp = ft_strcat(tmp, " ");
-		tmp = ft_strcat(tmp, trim_itof(ft_itof(vertex[i].x)));
+		num_cat(&tmp, walk_v->y / 10);
+		tmp_y = walk_v->y;
+		while (walk_v && walk_v->y == tmp_y)
+		{
+			tmp = ft_strcat(tmp, " ");
+			num_cat(&tmp, walk_v->x / 10);
+			walk_v = walk_v->next;
+		}
 		tmp = ft_strcat(tmp, "\n");
 		write(fd, tmp, ft_strlen(tmp));
 		ft_bzero(tmp, 256);
-		i++;
 	}
+	write(fd, "\n", 1);
+	free(tmp);
 }
 
-void	sector_record(t_sector *sectors, int num_sectors, int fd)
+void			player_record(t_record *record, int fd)
 {
-	int		i;
-	char 	*tmp;
+	char		*tmp;
+	char		*itoa_tmp;
 
-	i = 0;
 	tmp = (char *)malloc(sizeof(char) * 256);
 	ft_bzero(tmp, 256);
-	while (i < num_sectors)
-	{
-		tmp = ft_strcpy(tmp, "sector ");
-		tmp = ft_strcat(tmp, trim_itof((ft_itof(sectors->floor))));
-		tmp = ft_strcat(tmp, " ");
-		tmp = ft_strcat(tmp, trim_itof((ft_itof(sectors->ceil))));
-		tmp = ft_strcat(tmp, " ");
-		write(fd, tmp, ft_strlen(tmp));
-		ft_bzero(tmp, 256);
-		i++;
-	}
+	tmp = ft_strcpy(tmp, "\nplayer ");
+	itoa_tmp = ft_itoa(record->player_x);
+	tmp = ft_strcat(tmp, itoa_tmp);
+	free(itoa_tmp);
+	tmp = ft_strcat(tmp, " ");
+	itoa_tmp = ft_itoa(record->player_y);
+	tmp = ft_strcat(tmp, itoa_tmp);
+	free(itoa_tmp);
+	tmp = ft_strcat(tmp, " 0 ");
+	itoa_tmp = ft_itoa(record->player_sec);
+	tmp = ft_strcat(tmp, itoa_tmp);
+	free(itoa_tmp);
+	write(fd, tmp, ft_strlen(tmp));
+	free(tmp);
 }
 
-void	player_record()
+void			record_data(t_record *record)
 {
-	//record player to file
-}
+	int			fd;
 
-//void	record_data(t_xy *vertex, int num_vertex, t_sector *sectors, int num_sectors)
-//{
-//	int fd;
-//
-//	fd = open_create_map();
-//	vertex_record(vertex, num_vertex, fd);
-//	sector_record(sectors, num_sectors, fd);
-//	player_record(player, fd);
-//	close(fd);
-//}
+	fd = open_create_map();
+	vertex_record(record->head_ver, fd);
+	sector_record(record->head_sec, fd);
+	player_record(record, fd);
+	close(fd);
+	record_free(record);
+}

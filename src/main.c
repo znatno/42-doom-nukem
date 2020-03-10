@@ -185,6 +185,9 @@ void		draw_cur_lighter_sprite(t_game *g, int width, int height, int curSprite)
 		y = (int)y_num;
 		height++;
 	}
+	free(*head);
+	free(head);
+	return (env);
 }
 
 void		draw_cur_pistol_sprite(t_game *g, int width, int height, int curSprite)
