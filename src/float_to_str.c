@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "doom_nukem.h"
-#include "duke_nukem_editor.h"
 
 static void	float_put_before(char **str, int *len, long double k, int *iter)
 {

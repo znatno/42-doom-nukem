@@ -6,7 +6,7 @@
 /*   By: ibohun <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/31 19:21:08 by ggavryly          #+#    #+#             */
-/*   Updated: 2019/08/24 22:37:16 by ibohun           ###   ########.fr       */
+/*   Updated: 2019/08/23 19:48:20 by ibohun           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,9 @@
 # include "SDL.h"
 # include "SDL_mixer.h"
 # include "SDL_image.h"
+# include "SDL_ttf.h"
 # include "SDL_surface.h"
 # include "SDL_pixels.h"
-# include "SDL_ttf.h"
 
 # define W						1024
 # define H						768
@@ -157,10 +157,6 @@ typedef struct			s_sdl_main
 	SDL_Surface			*win_surface;
 	t_textures			*textures;
 	SDL_Texture			*texture;
-	SDL_Rect			src_rect;
-	SDL_Rect			dst_rect;
-	SDL_Event           event;
-	SDL_bool            done;
 	int					*buffer;
 }						t_sdl_main;
 
